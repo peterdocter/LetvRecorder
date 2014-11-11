@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="default_time_line_color">#7fffffff</color>
+    <color name="default_time_color">#7fffffff</color>
+    <color name="default_db_color">#ffffff</color>
+    <color name="default_mid_line_color">#54545b</color>
+    <dimen name="default_time_size">12sp</dimen>
+    <color name="default_line_color">#87888c</color>
+	<drawable name="default_rule">@drawable/ic_rec_time_rule</drawable>
+	<dimen name="default_rule_hight">48dp</dimen>
+	<dimen name="default_bottom_line_margin">108dp</dimen>
+	<color name="default_sound_wave_color">#f3532b</color>
+	
+</resources>

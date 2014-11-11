@@ -1,0 +1,50 @@
+<ViewFlipper xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/recordVF"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.letv.recorder.MainActivity$PlaceholderFragment" 
+    >
+
+    <!-- no record layout -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" 
+        android:gravity="center"
+        android:orientation="vertical" >
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_rec_no_record"/>
+
+        <TextView
+            android:padding="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/textSizeMedium"
+            android:text="@string/no_recorder" 
+            android:includeFontPadding="false"
+            android:textColor="@color/no_record_text_color"/>
+    </LinearLayout>
+
+    <!-- record list view-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/listBackground">
+
+        <ListView
+            android:id="@+id/record_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbarStyle="outsideOverlay"
+            android:divider="@drawable/list_divider"
+            android:dividerHeight="2px"
+             >
+        </ListView>
+    </RelativeLayout>
+    
+    <include layout="@layout/fragment_recording"/>
+
+</ViewFlipper>

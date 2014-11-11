@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@color/actionBarBackground">
+
+    <View
+            android:layout_alignParentBottom="true"
+            android:background="@color/actionBarLine"
+            android:layout_width="match_parent"
+            android:layout_height="2px"/>
+    <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+
+        <LinearLayout
+                android:id="@+id/back"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentLeft="true"
+                android:gravity="center"
+                android:visibility="gone"
+                android:layout_marginLeft="8dp">
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_rec_back"/>
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/back"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/actionBarActionColor"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+                android:id="@+id/select_cancel"
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/cancel"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/actionBarActionColor"/>
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <TextView
+            android:id="@android:id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:singleLine="true"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/actionBarTitleColor"/>
+
+    <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="8dp">
+
+        <LinearLayout
+                android:id="@+id/select_mode"
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/choose"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/actionBarActionColor"/>
+        </LinearLayout>
+
+        <LinearLayout
+                android:id="@+id/select_all"
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/select_all"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/actionBarActionColor"/>
+        </LinearLayout>
+    </LinearLayout>
+
+
+</RelativeLayout>

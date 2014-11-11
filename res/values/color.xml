@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="tanslucent_half">#D9191821</color>
+    <color name="listBackground">#f4f2ed</color>
+    <color name="actionBarBackground">#33323a</color>
+    <color name="actionBarTitleColor">#ffffff</color>
+    <color name="actionBarActionColor">#ffffff</color>
+    <color name="actionBarLine">#27272d</color>
+
+    <color name="recordControlTopLine">#d6d3ce</color>
+
+    <color name="no_record_text_color">#e5e4e3</color>
+    <color name="summary_color">#b4b9bd</color>
+    <color name="title_color">#1e2d38</color>
+    <color name="activityBackground">#fffdf8</color>
+    <drawable name="list_divider">#daddde</drawable>
+    <color name="sherlock_text_enable">#6f7980</color>
+    <color name="sherlock_text_disable">#cbd0d1</color>
+
+    <color name="bgDotColor">#232226</color>
+    <color name="activeDotColor">#ff5a2d</color>
+
+</resources>

@@ -1,0 +1,53 @@
+<resources>
+
+    <!--
+        Base application theme, dependent on API level. This theme is replaced
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+    -->
+    <style name="AppBaseTheme" parent="@*android:style/Theme.Leui">
+        <!--<item name="android:windowActionBar">false</item>-->
+        <!--<item name="android:windowNoTitle">true</item>-->
+    </style>
+
+    <!-- Application theme. -->
+    <style name="AppTheme" parent="@style/AppBaseTheme">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+        <item name="recordViewStyle">@style/recordView</item>
+        <item name="android:actionBarStyle">@style/actionbar_style</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <!--<item name="android:windowBackground">@color/actionBarBackground</item>-->
+    </style>
+    
+    <style name="recordView">
+        <item name="timeColor" >@color/default_time_color</item>
+        <item name="timeSize" >@dimen/default_time_size</item>
+        <item name="ruleDrawable">@drawable/ic_rec_time_rule</item>
+        <item name="ruleHight" >@dimen/default_rule_hight</item>
+        <item name="bottomLineMarginBottom" >@dimen/default_bottom_line_margin</item>
+        <item name="midLineColor" >@color/default_mid_line_color</item>
+        <item name="soundWaveColor">@color/default_sound_wave_color</item>
+    </style>
+
+    <style name="TranslucentTheme" parent="@style/AppBaseTheme">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <!--<item name="android:backgroundDimEnabled">false</item>-->
+    </style>
+
+    <style name="appCheckbox">
+        <item name="android:button">@drawable/checkbox_selector</item>
+        <item name="android:background">@null</item>
+        <item name="android:gravity">center</item>
+        
+    </style>
+
+    <style name="actionbar_style" parent="@android:style/Widget.Holo.Light.ActionBar">
+        <item name="android:displayOptions">showCustom</item>
+        <item name="android:background">@color/actionBarBackground</item>
+    </style>
+
+</resources>

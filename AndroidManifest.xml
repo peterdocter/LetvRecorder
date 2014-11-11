@@ -1,0 +1,113 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.letv.android.recorder"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="14"
+        android:targetSdkVersion="19" />
+
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+
+    <permission
+        android:name="com.letv.leui.permission.RECORDER"
+        android:protectionLevel="normal" >
+    </permission>
+
+    <application
+        android:name="com.letv.android.recorder.RecordApp"
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+
+        <activity
+            android:name="com.letv.android.recorder.RecorderActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".SoundRecorder"
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.provider.MediaStore.RECORD_SOUND" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.letv.android.recorder.SaveRecordActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/TranslucentTheme"
+            android:windowSoftInputMode="adjustResize" >
+        </activity>
+        <activity
+            android:name="com.letv.android.recorder.PlayRecordActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/TranslucentTheme" >
+        </activity>
+
+        <activity android:name="com.letv.android.recorder.settings.RecorderSetting"/>
+
+        <!-- record service -->
+        <!-- other app need  permission "com.letv.permission.RECORDER" -->
+        <service
+            android:name="com.letv.android.recorder.service.RecorderService"
+            android:permission="com.letv.leui.permission.RECORDER" >
+            <intent-filter>
+                <action android:name="com.letv.recorder.action.Recorder" />
+            </intent-filter>
+        </service>
+        <service android:name="com.letv.android.recorder.service.PlayService" >
+        </service>
+
+        <receiver android:name=".receiver.AlertReceiver" >
+            <intent-filter>
+                <action android:name="com.leui.record.alert" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".receiver.PhoneReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.PHONE_STATE"/>
+                <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
+            </intent-filter>
+        </receiver>
+
+        <provider
+            android:name="com.letv.android.recorder.provider.RecordProvider"
+            android:authorities="com.letv.provider.record"
+            android:exported="true" >
+        </provider>
+
+
+        <!-- app widget -->
+        <receiver android:name=".widget.RecorderAppWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+
+                <action android:name="com.letv.android.recorder.AppWidget.ACTION_FLAG"/>
+                <action android:name="com.letv.android.recorder.AppWidget.ACTION_PAUSE"/>
+                <action android:name="com.letv.android.recorder.AppWidget.ACTION_START"/>
+                <action android:name="com.letv.android.recorder.AppWidget.ACTION_DONE"/>
+                <action android:name="com.letv.android.recorder.AppWidget.ACTION_UPDATE"/>
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/appwidget_info" />
+        </receiver>
+
+    </application>
+
+</manifest>
