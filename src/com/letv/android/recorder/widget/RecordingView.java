@@ -115,7 +115,7 @@ public class RecordingView extends View {
 	private final float markItemMills = 500f;
 	private final int ruleBmpMills = 2000;
 
-	private int maxDbNum = 80;
+	private int maxDbNum = 100;
 
 
 	private long recordTimeMillis = 0;

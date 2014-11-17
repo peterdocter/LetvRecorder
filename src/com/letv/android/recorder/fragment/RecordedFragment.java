@@ -19,6 +19,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 
 import com.letv.android.recorder.*;
 import com.letv.android.recorder.provider.ProviderTool;
@@ -219,7 +220,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                 refreshRecordList();
             }
             recordList.setOnItemClickListener(getRecordItemClickListener());
-
+            recordList.setOnItemLongClickListener(longClickListener);
             selectView = getActivity().getActionBar().getCustomView().findViewById(R.id.select_mode);
             cancelView = getActivity().getActionBar().getCustomView().findViewById(R.id.select_cancel);
             selectAllView = getActivity().getActionBar().getCustomView().findViewById(R.id.select_all);
@@ -258,7 +259,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                     getResources().getString(R.string.delete));
             leBottomWidget.addTab(2,"rename",R.drawable.ic_rec_rename,R.drawable.ic_rec_rename_disable,
                     getResources().getString(R.string.rename));
-
+            leBottomWidget.setTitleTextColor(R.color.actionBarBackground);
             leBottomWidget.setOnClickAndLongClickListener(new LeBottomWidget.OnClickAndLongClickListener() {
                 @Override
                 public void onClick(int pos, String tag) {
@@ -378,6 +379,27 @@ public class RecordedFragment extends Fragment implements OnClickListener {
             });
         }
     }
+    
+    
+    private OnItemLongClickListener longClickListener = new OnItemLongClickListener() {
+
+		@Override
+		public boolean onItemLongClick(AdapterView<?> parent, View view,
+				int position, long id) {
+			System.out.println("chang an");
+			if(!recordedAdapter.isActionMode())
+				return false;
+			initSelectItem();
+			if (recordedAdapter.isActionMode()) {
+				boolean flag = recordSelectFlag.get(position);
+                recordSelectFlag.set(position, !flag);
+                ((LeCheckBox)view.findViewById(R.id.item_select)).setChecked(!flag,true);
+                changeSelectStatus();
+				updateSherlockUI();
+			}
+			return true;
+		}
+	};
 
 
     private OnClickListener getUpdateRecordListener(){
@@ -441,15 +463,19 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 			
 			@Override
 			public void onClick(View arg0) {
-				getActivity().findViewById(R.id.bottom_widget).setVisibility(View.VISIBLE);
-				getActivity().findViewById(R.id.record_control_layout).setVisibility(View.GONE);
-				recordedAdapter.setActionMode(true);
-                recordSelectFlag = recordedAdapter.getRecordSelectFlag();
-				onPrepareOptionsMenu();
-				updateSherlockUI();
-                backView.setVisibility(View.GONE);
+				initSelectItem();
 			}
 		};
+	}
+	
+	private void initSelectItem(){
+		getActivity().findViewById(R.id.bottom_widget).setVisibility(View.VISIBLE);
+		getActivity().findViewById(R.id.record_control_layout).setVisibility(View.GONE);
+		recordedAdapter.setActionMode(true);
+        recordSelectFlag = recordedAdapter.getRecordSelectFlag();
+		onPrepareOptionsMenu();
+		updateSherlockUI();
+        backView.setVisibility(View.GONE);
 	}
 
     public void changeSelectStatus(){

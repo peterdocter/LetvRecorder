@@ -49,8 +49,8 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
         setContentView(R.layout.activity_recorder);
         isFistTime = RecordTool.isFirstLaunch(this);
 
-        StatusBarTool.updateStausBar(this);
-        StatusBarTool.updateStatusBarActionBackgroundAndTopMargin(this, new ColorDrawable(getResources().getColor(R.color.actionBarBackground)));
+//        StatusBarTool.updateStausBar(this);
+//        StatusBarTool.updateStatusBarActionBackgroundAndTopMargin(this, new ColorDrawable(getResources().getColor(R.color.actionBarBackground)));
 
         topWidget = new LeTopWidget(this);
 
