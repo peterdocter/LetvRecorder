@@ -77,6 +77,7 @@ public class EditRecordNameDialog {
         }else{
             mEditText.setText(RecordApp.getInstance().getRecordName());
         }
+        mEditText.setSelection(mEditText.getText().length());
         if(mEditDialog!=null) {
             mEditDialog.show();
         }

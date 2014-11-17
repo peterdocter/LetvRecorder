@@ -387,7 +387,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 		public boolean onItemLongClick(AdapterView<?> parent, View view,
 				int position, long id) {
 			System.out.println("chang an");
-			if(!recordedAdapter.isActionMode())
+			if(recordedAdapter.isActionMode())
 				return false;
 			initSelectItem();
 			if (recordedAdapter.isActionMode()) {
