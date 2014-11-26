@@ -68,29 +68,37 @@ public class PlayRecordActivity extends Activity implements OnClickListener, Sen
 		audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
 		sensorManager = (SensorManager) RecordApp.getInstance().getSystemService(Context.SENSOR_SERVICE);
 		sensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
-        mSeekBar.setMax((int)mEntry.getRecordDuring());
-        mSeekBar.setFlags(mEntry.getFlags());
+		mSeekBar.setMax((int)mEntry.getRecordDuring());
+		mSeekBar.setFlags(mEntry.getFlags());
 		PlayEngineImp.getInstance().setpEngineListener(getPlayListener());
 		PlayService.startPlay(this, mEntry.getFilePath());
 
 
-        findViewById(R.id.empty_part).setOnClickListener(new OnClickListener(){
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+		findViewById(R.id.empty_part).setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
 
 
 
-    }
+	}
+
+	@Override
+	protected void onStop() {
+		if (RecordApp.getInstance().getmState() == MediaRecorderState.PLAYING) {
+			PlayService.pausePlay(this);
+		}
+		super.onStop();
+	}
 
 	@Override
 	protected void onDestroy() {
 		unregisterHeadsetPlugReceiver();
 		unregisterSensorListener();
 		PlayEngineImp.getInstance().setpEngineListener(null);
-        PlayEngineImp.getInstance().stop();
+		PlayEngineImp.getInstance().stop();
 		super.onDestroy();
 	}
 
@@ -100,8 +108,11 @@ public class PlayRecordActivity extends Activity implements OnClickListener, Sen
 		shareBtn.setOnClickListener(this);
 		playBtn.setOnClickListener(this);
 		editBtn.setOnClickListener(this);
-        recordTitle.setOnClickListener(this);
+		recordTitle.setOnClickListener(this);
 		mSeekBar.setOnSeekBarChangeListener(getChangeListener());
+		if(RecordApp.getInstance().getmState()==MediaRecorderState.PLAYING_PAUSED){
+			PlayService.startPlay(this,mEntry.getFilePath());
+		}
 		super.onResume();
 	}
 
@@ -130,60 +141,60 @@ public class PlayRecordActivity extends Activity implements OnClickListener, Sen
 	@Override
 	public void onClick(View arg0) {
 		switch (arg0.getId()) {
-		case R.id.shareBtn:
-			Intent share = new Intent(Intent.ACTION_SEND);
-			share.setType("audio/*");
-			share.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.share));
-			share.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.record_files));
-			share.putExtra(Intent.EXTRA_STREAM, ProviderTool.getShareUri(mEntry.getFilePath()));
-			share.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			startActivity(Intent.createChooser(share, getTitle()));
-			break;
-		case R.id.playBtn:
-			if (RecordApp.getInstance().getmState() == MediaRecorderState.PLAYING) {
-				PlayService.pausePlay(this);
-			} else if (RecordApp.getInstance().getmState() == MediaRecorderState.PLAYING_PAUSED) {
-				PlayService.startPlay(this, mEntry.getFilePath());
-			} else {
-				PlayService.startPlay(this, mEntry.getFilePath());
-			}
-			break;
-		case R.id.editBtn:
-        case R.id.record_title:
+			case R.id.shareBtn:
+				Intent share = new Intent(Intent.ACTION_SEND);
+				share.setType("audio/*");
+				share.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.share));
+				share.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.record_files));
+				share.putExtra(Intent.EXTRA_STREAM, ProviderTool.getShareUri(mEntry.getFilePath()));
+				share.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(Intent.createChooser(share, getTitle()));
+				break;
+			case R.id.playBtn:
+				if (RecordApp.getInstance().getmState() == MediaRecorderState.PLAYING) {
+					PlayService.pausePlay(this);
+				} else if (RecordApp.getInstance().getmState() == MediaRecorderState.PLAYING_PAUSED) {
+					PlayService.startPlay(this, mEntry.getFilePath());
+				} else {
+					PlayService.startPlay(this, mEntry.getFilePath());
+				}
+				break;
+			case R.id.editBtn:
+			case R.id.record_title:
 
-            final EditRecordNameDialog mDialog = new EditRecordNameDialog(this);
-            mDialog.setPositiveButton(new Dialog.OnClickListener(){
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    File file = new File(mEntry.getFilePath());
-                    String fileName = RecordTool.getRecordName(mEntry.getFilePath());
-                    if (fileName.equalsIgnoreCase(mDialog.getText())) {
+				final EditRecordNameDialog mDialog = new EditRecordNameDialog(this);
+				mDialog.setPositiveButton(new Dialog.OnClickListener(){
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						File file = new File(mEntry.getFilePath());
+						String fileName = RecordTool.getRecordName(mEntry.getFilePath());
+						if (fileName.equalsIgnoreCase(mDialog.getText())) {
 //                        Toast.makeText(PlayRecordActivity.this, R.string.no_change_recordname, Toast.LENGTH_LONG).show();
-                    } else if (RecordTool.canSave(PlayRecordActivity.this, mDialog.getText())) {
-                        String oldPath = mEntry.getFilePath();
-                        String newPath = mEntry.getFilePath().replace(fileName, mDialog.getText());
-                        if(file.renameTo(new File(newPath))){
-                            RecordDb recordDb = RecordDb.getInstance(PlayRecordActivity.this);
-                            recordDb.update(oldPath, newPath);
-                            RecordDb.destroyInstance();
-                            FileSyncContentProvider.renameFile(PlayRecordActivity.this,oldPath,newPath);
-                            mEntry.setFilePath(newPath);
-                        }
-                    }
-                    dialog.dismiss();
-                }
-            });
-            mDialog.setNegativeButton(new Dialog.OnClickListener(){
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
+						} else if (RecordTool.canSave(PlayRecordActivity.this, mDialog.getText())) {
+							String oldPath = mEntry.getFilePath();
+							String newPath = mEntry.getFilePath().replace(fileName, mDialog.getText());
+							if(file.renameTo(new File(newPath))){
+								RecordDb recordDb = RecordDb.getInstance(PlayRecordActivity.this);
+								recordDb.update(oldPath, newPath);
+								RecordDb.destroyInstance();
+								FileSyncContentProvider.renameFile(PlayRecordActivity.this,oldPath,newPath);
+								mEntry.setFilePath(newPath);
+							}
+						}
+						dialog.dismiss();
+					}
+				});
+				mDialog.setNegativeButton(new Dialog.OnClickListener(){
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
 
-                }
-            });
+					}
+				});
 
-            mDialog.show(mEntry,true);
-            break;
-		default:
-			break;
+				mDialog.show(mEntry,true);
+				break;
+			default:
+				break;
 		}
 
 	}
@@ -242,9 +253,9 @@ public class PlayRecordActivity extends Activity implements OnClickListener, Sen
 
 	/**
 	 * 耳机插拔广播
-	 * 
+	 *
 	 * @author snile
-	 * 
+	 *
 	 */
 	class HeadsetPlugReceiver extends BroadcastReceiver {
 
@@ -307,9 +318,9 @@ public class PlayRecordActivity extends Activity implements OnClickListener, Sen
 			}
 		};
 	}
-	
-	
-	
+
+
+
 	@Override
 	public void onAccuracyChanged(Sensor arg0, int arg1) {
 		// TODO Auto-generated method stub
