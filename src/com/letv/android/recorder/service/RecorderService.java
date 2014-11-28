@@ -37,6 +37,7 @@ import com.letv.android.recorder.service.Recorder.MediaRecorderState;
 import com.letv.android.recorder.tool.FileSyncContentProvider;
 import com.letv.android.recorder.tool.RecordTool;
 import com.letv.android.recorder.tool.RemainingTimeCalculator;
+import com.letv.android.recorder.tool.SettingTool;
 import com.letv.android.recorder.widget.RecorderAppWidget;
 import com.letv.leui.widget.ScreenRecordingView;
 
@@ -399,10 +400,11 @@ public class RecorderService extends Service implements RecorderInterface {
             mRecorderState = MediaRecorderState.IDLE_STATE;
             sendStateBroadcast();
 		}
-
-        AudioManager am=(AudioManager)getSystemService(Context.AUDIO_SERVICE);
-        PRE_RECORD_RINGER_MODE =am.getRingerMode();
-        am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+		if(SettingTool.isSilence(this)) {
+			AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+			PRE_RECORD_RINGER_MODE = am.getRingerMode();
+			am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+		}
         RecordTool.loge(LOG_TAG,"startRecording");
 		return  Constants.START_RECORD_SUCCESS;
 	}
@@ -436,7 +438,7 @@ public class RecorderService extends Service implements RecorderInterface {
         AudioManager am=(AudioManager)getSystemService(Context.AUDIO_SERVICE);
 
         int currentRingerMode =am.getRingerMode();
-        if(currentRingerMode==AudioManager.RINGER_MODE_SILENT) {
+        if(SettingTool.isSilence(this) && currentRingerMode==AudioManager.RINGER_MODE_SILENT) {
             am.setRingerMode(PRE_RECORD_RINGER_MODE);
         }
 

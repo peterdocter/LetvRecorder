@@ -13,6 +13,6 @@ public class RecorderSetting extends PreferenceActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.recorder_setting);
-
+        setTitle(R.string.app_name);
     }
 }
