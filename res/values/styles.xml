@@ -13,11 +13,14 @@
     <style name="AppTheme" parent="@style/AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
         <item name="recordViewStyle">@style/recordView</item>
-        <item name="android:actionBarStyle">@style/actionbar_style</item>
+        <item name="android:actionBarStyle">@style/actionbar_style</item> 
+        <item name="android:actionMenuTextColor">@color/actionBarTitleColor</item>
+        <item name="android:actionMenuTextAppearance">@style/textAppearanceMenu</item>
+        <item name="android:windowActionBarOverlay">true</item>
         <!-- <item name="android:windowTranslucentStatus">true</item> -->
        <!--  <item name="android:windowTranslucentNavigation">true</item> -->
         <item name="android:statusBarColor">@color/actionBarBackground</item>
-        
+        <item name="android:windowBackground">@color/actionBarBackground</item>
        <!--   <item name="android:colorPrimary">@color/calculator_accent_color</item> -->
         <!-- <item name="android:navigationBarColor">@color/actionBarBackground</item> -->
         <item name="android:windowContentOverlay">@null</item>
@@ -49,9 +52,19 @@
         
     </style>
 
-    <style name="actionbar_style" parent="@android:style/Widget.Holo.Light.ActionBar">
-        <item name="android:displayOptions">showCustom</item>
+    <style name="actionbar_style" parent="@android:style/Widget.Material.ActionBar">
         <item name="android:background">@color/actionBarBackground</item>
+        <item name="android:titleTextStyle">@style/AcBar_titleStyle</item>  
+    </style>
+    
+    <style name="AcBar_titleStyle"  parent="@*android:style/TextAppearance.Material.Widget.ActionBar.Title">   
+        <item name="android:textColor">@color/actionBarTitleColor</item>  
+    </style>
+    
+    <style name="textAppearanceMenu"  
+        parent="@*android:style/TextAppearance.Material.Widget.ActionBar.Menu">
+        <item name="android:textColor">@color/actionBarTitleColor</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
 </resources>

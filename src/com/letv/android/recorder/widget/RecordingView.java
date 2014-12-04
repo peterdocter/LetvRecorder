@@ -11,6 +11,7 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -67,17 +68,12 @@ public class RecordingView extends View {
 
 		timePaint.setColor(timeDefaultColor);
 		timePaint.setTextSize(timeDefaultSize);
-
-
-		int resId = typedArray.getResourceId(R.styleable.RecordingView_ruleDrawable, ruleDrawableResId);
-		if (resId != 0) {
-			ruleBmp = ((BitmapDrawable) getResources().getDrawable(resId)).getBitmap();
-			ruleBmpWidth = ruleBmp.getWidth();
-			ruleBmpHeight = ruleBmp.getHeight();
-			markItemWidth = ruleBmpWidth / 4;
-		}
-
-        dotTime = (int)(9f/markItemWidth*500);
+		
+		int timeLineWidth = typedArray.getDimensionPixelSize(R.styleable.RecordingView_timeLineWidth, 2);
+		int timePreLength = typedArray.getDimensionPixelSize(R.styleable.RecordingView_timePreLength, 27*3);
+		ruleBmpWidth = (timeLineWidth+timePreLength)<<1;
+		ruleBmpHeight = tallHeight*3;
+		markItemWidth = ruleBmpWidth>>1;
 
 		ruleItemHeight = typedArray.getDimensionPixelSize(R.styleable.RecordingView_ruleHight, ruleItemHeightDef);
 
@@ -85,8 +81,7 @@ public class RecordingView extends View {
 
 		Rect rect = new Rect();
 		timePaint.getTextBounds("00:00", 0, 5, rect);
-//		textOffset = (ruleBmpWidth - rect.width()) >> 1;
-		textHeight = ruleItemHeight - (ruleBmpHeight >> 0);
+		textHeight = ruleItemHeight - ruleBmpHeight;
 
 	}
 
@@ -98,36 +93,32 @@ public class RecordingView extends View {
 		this(context, null);
 	}
 
-	private Paint bgDotPaint, activeDotPaint, timePaint, rulePaint = new Paint();
+	private Paint bgDotPaint, activeDotPaint, timePaint;
 
     private Paint flagPaint;
-
-	private Bitmap ruleBmp = null;
-
-    private int dotTime = 0;
 
 	private int ruleBmpWidth = 0;
 	private int ruleBmpHeight = 0;
 	private int ruleItemHeight = 0;
 
 	private int markItemWidth = 0;
-
-	private final float markItemMills = 500f;
+	
+	private int smallHeight =9;
+	private int tallHeight = 15;//15
+	private float ringR = 9/2f;
+	
+	private final float markItemMills = 1000f;
 	private final int ruleBmpMills = 2000;
-
-	private int maxDbNum = 100;
-
-
+	private int maxDbNum = 200;
 	private long recordTimeMillis = 0;
 
 	private float textHeight;
 	private float midY;
 	private int width, height;
 	private float offsetX;
+	private float intercaterOffsetX;
 
 	private List<TimeHolder> holders = new ArrayList<RecordingView.TimeHolder>();
-
-//    private List<TimeTable> cacheTimeTable = new ArrayList<TimeTable>();
 
 	private PointF curPoint = new PointF();
 
@@ -140,14 +131,27 @@ public class RecordingView extends View {
     }
 
     int waveCount = 0;
-
+    
+    void calculateIntercaterOffsetX(){
+    	long mostOffsetTimeMills = getTimeMillsByLength(getWidth()/2-markItemWidth);
+    	
+    	long needOffsetTimeMills = mostOffsetTimeMills - recordTimeMillis;
+    	
+    	if(needOffsetTimeMills>0){
+    		intercaterOffsetX = needOffsetTimeMills / markItemMills*markItemWidth;
+    	}else{
+    		intercaterOffsetX = 0;
+    	}
+    }
+    
     @Override
 	protected void onDraw(Canvas canvas) {
 		width = getWidth();
 		height = getHeight();
 
 		offsetX = (recordTimeMillis % ruleBmpMills) / markItemMills * markItemWidth;
-
+		calculateIntercaterOffsetX();
+		
         int offsetTime = getTimeMillsByLength(offsetX);
 
         waveCount = (int)Math.min((recordTimeMillis)/getTimeMillsByLength(9),(getWidth()>>1)/9+1);
@@ -158,51 +162,13 @@ public class RecordingView extends View {
         canvas.drawColor(bgDotColor);
         canvas.drawRect(0,0,width,ruleItemHeight,bgDotPaint);
 
-		canvas.save();
-		canvas.translate(-offsetX, 0);
-
-		// draw time mark begin
-		curPoint.set((width >> 1) - (ruleBmpWidth >> 1), ruleItemHeight - ruleBmpHeight);
-		canvas.drawBitmap(ruleBmp, curPoint.x, curPoint.y, rulePaint);
-
-		canvas.drawText(RecordTool.ruleTime(recordTimeMillis - offsetTime), curPoint.x + (ruleBmpWidth>>1), textHeight, timePaint);
-
-		int index = 1;
-		while (true) {// left mark
-			if (curPoint.x > -ruleBmpWidth) {
-				curPoint.x -= ruleBmpWidth;
-				canvas.drawBitmap(ruleBmp, curPoint.x, curPoint.y, rulePaint);
-				canvas.drawText(RecordTool.ruleTime(recordTimeMillis - ruleBmpMills * index - offsetTime), curPoint.x + (ruleBmpWidth>>1), textHeight, timePaint);
-				index++;
-			} else {
-				index = 1;
-				break;
-			}
-		}
-		curPoint.set((width >> 1) - (ruleBmpWidth >> 1), ruleItemHeight - ruleBmpHeight);
-
-		while (true) {// right mark
-			if (curPoint.x < width + ruleBmpWidth) {
-				curPoint.x += ruleBmpWidth;
-				canvas.drawBitmap(ruleBmp, curPoint.x, curPoint.y, rulePaint);
-				canvas.drawText(RecordTool.ruleTime(recordTimeMillis + ruleBmpMills * index - offsetTime), curPoint.x + (ruleBmpWidth>>1), textHeight, timePaint);
-				index++;
-			} else {
-				index = 1;
-				break;
-			}
-		}
-
-        canvas.restore();
-
-        // draw right
-
         float dotOffsetTime = recordTimeMillis%getTimeMillsByLength(9);
         float dotOffest = dotOffsetTime/getTimeMillsByLength(9)*9;
         canvas.save();
         canvas.translate(-dotOffest,0);
+        canvas.translate(-intercaterOffsetX, 0);
 
-        for(int i=(width>>1)-2;i<=width+10+offsetX;i+=9){
+        for(int i=(width>>1)-2;i<=width+10+offsetX+intercaterOffsetX;i+=9){
             canvas.drawLine(i,ruleItemHeight,i,height,bgDotPaint);
         }
 
@@ -217,22 +183,67 @@ public class RecordingView extends View {
 
         // draw top
         for(int i=(int)(midY-5);i<=height;i+=9){
-            canvas.drawLine(0,i,width+offsetX,i,bgDotPaint);
+            canvas.drawLine(0,i,width+offsetX+intercaterOffsetX,i,bgDotPaint);
         }
 
         // draw bottom
         for(int i=(int)(midY-5);i>=ruleItemHeight+5;i-=9){
-            canvas.drawLine(0,i,width+offsetX,i,bgDotPaint);
+            canvas.drawLine(0,i,width+offsetX+intercaterOffsetX,i,bgDotPaint);
         }
 
         canvas.restore();
 
+		canvas.save();
+		canvas.translate(-offsetX, 0);
+		canvas.translate(-intercaterOffsetX, 0);
+		// draw time mark begin
+		curPoint.set(width >> 1, ruleItemHeight );
+		canvas.drawLine(curPoint.x, curPoint.y, curPoint.x, curPoint.y-tallHeight, timePaint);
+		canvas.drawLine(0, curPoint.y, getWidth()+offsetX+intercaterOffsetX, curPoint.y, timePaint);
+		canvas.drawLine(0, getHeight() - ringR, getWidth()+offsetX+intercaterOffsetX, getHeight() - ringR, timePaint);
+		canvas.drawText(RecordTool.ruleTime(recordTimeMillis - offsetTime), curPoint.x , textHeight, timePaint);
+		int index = 1;
+		while (true) {// left mark
+			if (curPoint.x > -ruleBmpWidth+intercaterOffsetX) {
+				curPoint.x -= markItemWidth;
+				if(index%2==0){
+					canvas.drawLine(curPoint.x, curPoint.y, curPoint.x, curPoint.y-tallHeight, timePaint);
+					canvas.drawText(RecordTool.ruleTime(recordTimeMillis - ruleBmpMills * index/2 - offsetTime), curPoint.x , textHeight, timePaint);
+				}else{
+					canvas.drawLine(curPoint.x, curPoint.y, curPoint.x, curPoint.y-smallHeight, timePaint);
+				}
+				index++;
+			} else {
+				index = 1;
+				break;
+			}
+		}
+		curPoint.set(width >> 1, ruleItemHeight);
+
+		while (true) {// right mark
+			if (curPoint.x < width + ruleBmpWidth+intercaterOffsetX) {
+				curPoint.x += markItemWidth;
+				if(index%2==0){
+					canvas.drawLine(curPoint.x, curPoint.y, curPoint.x, curPoint.y-tallHeight, timePaint);
+					canvas.drawText(RecordTool.ruleTime(recordTimeMillis + ruleBmpMills * index/2 - offsetTime), curPoint.x , textHeight, timePaint);
+				}else{
+					canvas.drawLine(curPoint.x, curPoint.y, curPoint.x, curPoint.y-smallHeight, timePaint);
+				}
+				index++;
+			} else {
+				index = 1;
+				break;
+			}
+		}
+
+        canvas.restore();
 
         canvas.save();
         canvas.translate(-offsetX, 0);
 
         ArrayList<Long> flag = RecordApp.getInstance().getFlags();
         if(flag!=null&&flag.size()>0){
+        	flagPaint.setStrokeWidth(2);
             for(int i = flag.size()-1;i>=0;i-- ){
                 float startXTemp = (width >> 1) - ((recordTimeMillis - flag.get(i))) / markItemMills * markItemWidth + offsetX;
                 if(startXTemp > -Math.abs(offsetX)) {
@@ -242,10 +253,23 @@ public class RecordingView extends View {
         }
 
         canvas.restore();
-
+        //draw intercater
+        canvas.save();
+        canvas.translate(-intercaterOffsetX, 0);
+        canvas.drawLine(getWidth()>>1, ruleItemHeight, getWidth()>>1, getHeight()-ringR, flagPaint);
+        RectF oval = new RectF((getWidth()>>1) - ringR , ruleItemHeight -  ringR,
+        		                                 (getWidth()>>1) +ringR , ruleItemHeight + ringR);
+        canvas.drawArc(oval, 0, 360, false, flagPaint);
+        oval.set(oval.left	 , getHeight()-(ringR*2), 
+        		       oval.right , getHeight());
+        canvas.drawArc(oval, 0, 360, false, flagPaint);
+        canvas.restore();
+        
 	}
 
     int waveIndex = 0;
+    
+    
 
 
     private void drawWaveLine(Canvas canvas,int startX,long curMills){
@@ -329,16 +353,5 @@ public class RecordingView extends View {
 			this.db = db;
 		}
 	}
-
-//    class WavePoint{
-//        float x;
-//        float upY;
-//        float downY;
-//
-//        WavePoint(float x, float upY, float downY) {
-//            this.x = x;
-//            this.upY = upY;
-//            this.downY = downY;
-//        }
-//    }
+	
 }

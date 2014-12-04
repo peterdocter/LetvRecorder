@@ -52,14 +52,14 @@
                             android:src="@drawable/ic_rec_recording_rename"/>
             </LinearLayout>
 
-            <TextView
+<!--             <TextView
                 android:id="@+id/record_start_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:includeFontPadding="false"
                 android:textColor="#cbd0d1"
-                android:textSize="12sp" />
+                android:textSize="12sp" /> -->
         </LinearLayout>
         <!--<View-->
                 <!--android:layout_width="wrap_content"-->
@@ -88,29 +88,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:timeSize="12sp" />
-
-        <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                >
-
-            <View
-                    android:layout_width="match_parent"
-                    android:layout_height="2px"
-                    android:background="@color/default_time_line_color" />
-        </LinearLayout>
-
     </RelativeLayout>
 
 
-    <View
+    <!-- <View
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@id/timePart"
             android:layout_marginTop="45dp"
             android:layout_marginBottom="-2dp"
-            android:background="@drawable/ic_rec_record_wave_strips" />
+            android:background="@drawable/ic_rec_record_wave_strips" /> -->
 
     <RelativeLayout
             android:id="@+id/record_pause_mask"

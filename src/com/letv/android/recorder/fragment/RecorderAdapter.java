@@ -1,6 +1,8 @@
 package com.letv.android.recorder.fragment;
 
 import android.content.Context;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,12 +10,14 @@ import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
 import com.letv.android.recorder.R;
+import com.letv.android.recorder.RecordApp;
 import com.letv.android.recorder.RecordEntry;
 import com.letv.android.recorder.provider.RecordDb;
+import com.letv.android.recorder.service.Recorder.MediaRecorderState;
 import com.letv.android.recorder.tool.RecordTool;
 import com.letv.leui.widget.LeCheckBox;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +29,9 @@ public class RecorderAdapter extends BaseAdapter implements ListView.DividerFilt
 	private List<Boolean> recordSelectFlag;
 	private boolean actionMode = false;
     private boolean isShowCallRecord = false;
-
+    
+    private RecordEntry playRecordEntry;
+    
     private ListView mListView;
 
     private boolean isScroll = false;
@@ -52,6 +58,12 @@ public class RecorderAdapter extends BaseAdapter implements ListView.DividerFilt
 
     public void setHasCall(boolean isHasCall) {
         this.isHasCall = isHasCall;
+    }
+    public boolean isSelected(int position){
+    	if(recordSelectFlag==null||recordSelectFlag.size()<=position)
+    		return false;
+    	
+    	return recordSelectFlag.get(position);
     }
 
     public void setActionMode(boolean actionMode) {
@@ -107,11 +119,18 @@ public class RecorderAdapter extends BaseAdapter implements ListView.DividerFilt
 
     public RecordedFragment fragment;
 
+    private static  RecorderAdapter instance;
+    
+    public static RecorderAdapter getInstance(){
+    	return instance;
+    }
+    
     public RecorderAdapter(Context context, List<RecordEntry> recordList,RecordedFragment fragment) {
 		super();
 		this.context = context;
 		this.recordList = recordList;
         this.fragment = fragment;
+        instance = this;
 	}
 
 
@@ -168,6 +187,13 @@ public class RecorderAdapter extends BaseAdapter implements ListView.DividerFilt
 		return arg0;
 	}
 
+	
+	public void notifyDataSetChanged(RecordEntry mRecordEntry) {
+		playRecordEntry = mRecordEntry;
+		Log.e("------------------------------", "notifyDataSetChanged:"+mRecordEntry.toString());
+		super.notifyDataSetChanged();
+	}
+	
 	@Override
 	public View getView(int position , View arg1, ViewGroup arg2) {
 		ViewHolder holder = null;
@@ -212,10 +238,42 @@ public class RecorderAdapter extends BaseAdapter implements ListView.DividerFilt
                 holder.box.setChecked(false,false);
             }
         }
+		MediaRecorderState state = RecordApp.getInstance().getmState();
+    	if (MediaRecorderState.PLAYING == state || MediaRecorderState.PLAYING_PAUSED == state ) {
+    		if(playRecordEntry!=null){
+    			if(TextUtils.equals(getItem(position).getFilePath(), playRecordEntry.getFilePath())){
+    				holder.recordName.setTextColor(getColor(R.color.title__color_play));
+            		holder.recordTime.setTextColor(getColor(R.color.sumary_color_play));
+            		holder.recordLength.setTextColor(getColor(R.color.sumary_color_play));
+    			}else{
+    				holder.recordName.setTextColor(getColor(R.color.title_color_a30));
+            		holder.recordTime.setTextColor(getColor(R.color.sumary_color_a30));
+            		holder.recordLength.setTextColor(getColor(R.color.sumary_color_a30));
+    			}
+    		}
+    	}else if(actionMode){
+    		if(isSelected(position)){
+    			holder.recordName.setTextColor(getColor(R.color.title_color));
+        		holder.recordTime.setTextColor(getColor(R.color.summary_color));
+        		holder.recordLength.setTextColor(getColor(R.color.summary_color));
+    		}else{
+    			holder.recordName.setTextColor(getColor(R.color.title_color_a30));
+        		holder.recordTime.setTextColor(getColor(R.color.sumary_color_a30));
+        		holder.recordLength.setTextColor(getColor(R.color.sumary_color_a30));
+    		}
+    	}else{
+    		holder.recordName.setTextColor(getColor(R.color.title_color));
+    		holder.recordTime.setTextColor(getColor(R.color.summary_color));
+    		holder.recordLength.setTextColor(getColor(R.color.summary_color));
+    	}
 		
 		return arg1;
 	}
-
+	
+	private int getColor(int res){
+		return context.getResources().getColor(res); 
+	}
+	
     @Override
     public boolean topDividerEnabled() {
         return false;

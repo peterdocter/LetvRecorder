@@ -2,8 +2,7 @@
     xmlns:leui="http://schemas.android.com/apk/prv/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/activityBackground">
+    android:orientation="vertical">
     
 
     <!--<View-->
@@ -47,7 +46,8 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="@dimen/ctrl_margin"
                 android:scaleType="center"
-                android:visibility="invisible" />
+                android:visibility="invisible" 
+                android:background="@drawable/ic_small_circle"/>
 
 
             <ImageView
@@ -55,7 +55,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:src="@drawable/ic_rec_record_start" />
+                android:scaleType="center"
+                android:src="@drawable/ic_rec_record_start" 
+                android:background="@drawable/ic_big_circle"/>
 
 
             <ImageView
@@ -67,7 +69,8 @@
                 android:layout_marginRight="@dimen/ctrl_margin"
                 android:scaleType="center"
                 android:src="@drawable/record_done_selector"
-                android:visibility="invisible" />
+                android:visibility="invisible" 
+                android:background="@drawable/ic_small_circle"/>
     </RelativeLayout>
 
 </LinearLayout>

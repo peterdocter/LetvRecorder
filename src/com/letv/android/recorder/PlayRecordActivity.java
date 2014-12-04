@@ -1,10 +1,16 @@
 package com.letv.android.recorder;
 
+import java.io.File;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothProfile;
-import android.content.*;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -17,7 +23,8 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.letv.android.recorder.fragment.RecorderAdapter;
 import com.letv.android.recorder.provider.ProviderTool;
 import com.letv.android.recorder.provider.RecordDb;
 import com.letv.android.recorder.service.PlayEngineImp;
@@ -30,14 +37,11 @@ import com.letv.android.recorder.tool.SettingTool;
 import com.letv.android.recorder.widget.EditRecordNameDialog;
 import com.letv.android.recorder.widget.FlagSeekBar;
 
-import java.io.File;
-
 public class PlayRecordActivity extends Activity implements OnClickListener, SensorEventListener {
 
 	public static final String RECORD_ENTRY = "record_entry";
 	private RecordEntry mEntry;
 
-	private TextView recordTitle;
 	private TextView curTime, totalTime;
 	private FlagSeekBar mSeekBar;
 	private ImageView shareBtn, playBtn, editBtn;
@@ -54,7 +58,6 @@ public class PlayRecordActivity extends Activity implements OnClickListener, Sen
 		mEntry = (RecordEntry) getIntent().getSerializableExtra(RECORD_ENTRY);
 		setContentView(R.layout.activity_play);
 
-		recordTitle = (TextView) findViewById(R.id.record_title);
 		curTime = (TextView) findViewById(R.id.current_time);
 		totalTime = (TextView) findViewById(R.id.total_time);
 		mSeekBar = (FlagSeekBar) findViewById(R.id.play_seekbar);
@@ -102,11 +105,9 @@ public class PlayRecordActivity extends Activity implements OnClickListener, Sen
 
 	@Override
 	protected void onResume() {
-		recordTitle.setText(mEntry.getRecordName());
 		shareBtn.setOnClickListener(this);
 		playBtn.setOnClickListener(this);
 		editBtn.setOnClickListener(this);
-		recordTitle.setOnClickListener(this);
 		mSeekBar.setOnSeekBarChangeListener(getChangeListener());
 		if(RecordApp.getInstance().getmState()
 				==MediaRecorderState.PLAYING_PAUSED){
@@ -275,6 +276,10 @@ public class PlayRecordActivity extends Activity implements OnClickListener, Sen
 				PlayRecordActivity.this.totalTime.setText(RecordTool.timeFormat(totalTime, "mm:ss"));
 				registerHeadsetPlugReceiver();
 				setPlayMode();
+				RecorderAdapter instance = RecorderAdapter.getInstance();
+				if(instance!=null){
+					instance.notifyDataSetChanged(mEntry);
+				}
 			}
 
 			@Override

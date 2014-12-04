@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="RecordingView">
-        <attr name="timeColor" format="color"></attr>
-        <attr name="timeSize" format="dimension"></attr>
-        <attr name="ruleDrawable" format="reference"></attr>
-        <attr name="ruleHight" format="dimension"></attr>
-        <attr name="bottomLineMarginBottom" format="dimension"></attr>
-        <attr name="midLineColor" format="color"></attr>
-        <attr name="soundWaveColor" format="color"></attr>
+        <attr name="timeColor" format="color"/>
+        <attr name="timeSize" format="dimension"/>
+        <attr name="ruleDrawable" format="reference"/>
+        <attr name="ruleHight" format="dimension"/>
+        <attr name="bottomLineMarginBottom" format="dimension"/>
+        <attr name="midLineColor" format="color"/>
+        <attr name="soundWaveColor" format="color"/>
+        <attr name="timeLineWidth" format="dimension"/>
+        <attr name="timePreLength" format="dimension"/>
     </declare-styleable>
     
-    <attr name="recordViewStyle" format="reference"></attr>
+    <attr name="recordViewStyle" format="reference"/>
 </resources>

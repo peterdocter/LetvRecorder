@@ -25,7 +25,7 @@ public class SoundRecorder extends AbsRecorderActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-        topWidget.setCenterTitle(R.string.record_note);
+//        topWidget.setCenterTitle(R.string.record_note);
 
         recordedFragment = new RecordedFragment();
         recordedFragment.setCallRecordUI(true);

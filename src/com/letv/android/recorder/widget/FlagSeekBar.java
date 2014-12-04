@@ -7,9 +7,12 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.widget.SeekBar;
+
 import com.letv.android.recorder.R;
 import com.letv.android.recorder.tool.RecordTool;
+import com.letv.leui.util.LeReflectionUtils;
 
 import java.util.ArrayList;
 
@@ -74,6 +77,30 @@ public class FlagSeekBar extends SeekBar{
         }
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+    	switch (event.getAction()) {
+		case MotionEvent.ACTION_DOWN:
+			LeReflectionUtils.setFieldValue(this, "mMinHeight", 12);
+			LeReflectionUtils.setFieldValue(this, "mMaxHeight", 12);
+			setProgressDrawable(getContext().getDrawable(R.drawable.play_seekbar_touch));
+			requestLayout();
+			break;
+		case MotionEvent.ACTION_UP:
+		case MotionEvent.ACTION_CANCEL:
+			LeReflectionUtils.setFieldValue(this, "mMinHeight", 6);
+			LeReflectionUtils.setFieldValue(this, "mMaxHeight", 6);
+			setProgressDrawable(getContext().getDrawable(R.drawable.play_seekbar));
+			requestLayout();
+			break;
+		case MotionEvent.ACTION_MOVE:
+			
+			break;
+		default:
+			break;
+		}
+    	return super.onTouchEvent(event);
+    }
 
     public ArrayList<Long> getFlags() {
         return flags;
