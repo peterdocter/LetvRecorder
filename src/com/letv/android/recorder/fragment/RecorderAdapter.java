@@ -18,11 +18,11 @@ import com.letv.android.recorder.provider.RecordDb;
 import com.letv.android.recorder.service.Recorder.MediaRecorderState;
 import com.letv.android.recorder.tool.RecordTool;
 import com.letv.leui.widget.LeCheckBox;
-
+import com.letv.leui.widget.DividerFilter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RecorderAdapter extends BaseAdapter implements ListView.DividerFilter{
+public class RecorderAdapter extends BaseAdapter implements DividerFilter{
 
 	private Context context;
 	private List<RecordEntry> recordList;
