@@ -51,21 +51,6 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
         setContentView(R.layout.activity_recorder);
         isFistTime = RecordTool.isFirstLaunch(this);
 
-//        StatusBarTool.updateStausBar(this);
-//        StatusBarTool.updateStatusBarActionBackgroundAndTopMargin(this, new ColorDrawable(getResources().getColor(R.color.actionBarBackground)));
-
-//        topWidget = new LeTopWidget(this);
-
-//        getActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
-//        getActionBar().setCustomView(topWidget);
-//        topWidget.setCenterTitle(R.string.record_note);
-//        topWidget.setBackground(new ColorDrawable(getResources().getColor(R.color.actionBarBackground)));
-//        View leftView = getLayoutInflater().inflate(R.layout.action_bar_left,null);
-//        View rightView = getLayoutInflater().inflate(R.layout.action_bar_right, null);
-//        topWidget.setLeftView(leftView);
-//        topWidget.setRightView(rightView);
-//        topWidget.setCenterTvColor(getResources().getColor(R.color.actionBarActionColor));
-//        topWidget.setLeftMode(LeTopWidget.LEFT_ONLY_TITLE);
         getActionBar().setTitle(R.string.record_note);
         mReceiver = new RecorderReceiver();
         mRecorder = Recorder.getInstance();
@@ -168,15 +153,18 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
             stopBtn.setVisibility(View.VISIBLE);
             flagBtn.setVisibility(View.VISIBLE);
 //            topWidget.setCenterTitle(R.string.new_recorder);
+            getActionBar().hide();
         } else if (MediaRecorderState.PAUSED == mRecorderState) {
             recordBtn.setImageResource(R.drawable.start_selector);
             stopBtn.setVisibility(View.VISIBLE);
             flagBtn.setVisibility(View.VISIBLE);
 //            topWidget.setCenterTitle(R.string.new_recorder);
+            getActionBar().hide();
         } else if (MediaRecorderState.IDLE_STATE == mRecorderState) {
             recordBtn.setImageResource(R.drawable.start_selector);
             stopBtn.setVisibility(View.INVISIBLE);
             flagBtn.setVisibility(View.INVISIBLE);
+            getActionBar().show();
 //            topWidget.setCenterTitle(R.string.record_note);
             getActionBar().setTitle(R.string.record_note);
         } else if (MediaRecorderState.STOPPED == mRecorderState) {
@@ -185,16 +173,17 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
             stopBtn.setVisibility(View.INVISIBLE);
             flagBtn.setVisibility(View.INVISIBLE);
 //            topWidget.setCenterTitle(R.string.record_note)
-            getActionBar().setTitle(R.string.record_note);;
-        } else if (MediaRecorderState.PLAYING_PAUSED == mRecorderState) {
-            recordBtn.setImageResource(R.drawable.pause_selector);
-//            topWidget.setCenterTitle(R.string.record_note);
             getActionBar().setTitle(R.string.record_note);
-        } else if (MediaRecorderState.PLAYING == mRecorderState) {
-            recordBtn.setImageResource(R.drawable.start_selector);
-//            topWidget.setCenterTitle(R.string.record_note);
-            getActionBar().setTitle(R.string.record_note);
-        }
+        } 
+//        else if (MediaRecorderState.PLAYING_PAUSED == mRecorderState) {
+//            recordBtn.setImageResource(R.drawable.pause_selector);
+////            topWidget.setCenterTitle(R.string.record_note);
+//            getActionBar().setTitle(R.string.record_note);
+//        } else if (MediaRecorderState.PLAYING == mRecorderState) {
+//            recordBtn.setImageResource(R.drawable.start_selector);
+////            topWidget.setCenterTitle(R.string.record_note);
+//            getActionBar().setTitle(R.string.record_note);
+//        }
 
         if (recordedFragment!=null) {
             recordedFragment.refreshRecordList();

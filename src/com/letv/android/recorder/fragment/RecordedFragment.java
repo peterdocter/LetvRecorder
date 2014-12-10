@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -54,13 +55,15 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 	private List<Boolean> recordSelectFlag;
 	
 	private View cancelView,backView;
-	private MenuItem selectMenu,selectAllMenu,selectNoneMenu;
+	private MenuItem /*selectMenu,*/selectAllMenu,selectNoneMenu;
 
     private final int PAGE_NO_RECORD=0;
     private final int PAGE_SHOW_RECORD_LIST=1;
     private final int PAGE_SHOW_RECORDING=2;
 	
     protected LeBottomWidget leBottomWidget;
+    
+    private ActionMode mActionMode =null;
 
 //  other app record launch record UI
     private boolean callRecordUI = false;
@@ -178,77 +181,6 @@ public class RecordedFragment extends Fragment implements OnClickListener {
         }
     }
     
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-    	 MenuInflater menuInflater = getActivity().getMenuInflater();
-         menuInflater.inflate(R.menu.recorder_menu,menu);
-         selectMenu = menu.findItem(R.id.select_mode);
-         selectAllMenu = menu.findItem(R.id.select_all);
-         selectNoneMenu = menu.findItem(R.id.select_none);
-    	super.onCreateOptionsMenu(menu, inflater);
-    }
-    
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-    	if(recordedAdapter.isShowCallRecord()){
-//          backView.setVisibility(View.VISIBLE);
-    	}else{
-//          backView.setVisibility(View.GONE);
-    	}
-    	MediaRecorderState state = RecordApp.getInstance().getmState();
-    	if (MediaRecorderState.RECORDING == state || MediaRecorderState.PAUSED == state || MediaRecorderState.STOPPED == state) {
-    		getActivity().getActionBar().hide();
-    	}else{
-    	    getActivity().getActionBar().show();
-    		if (recordedAdapter.isActionMode()) {
-    			selectMenu.setVisible(false);
-    			 if(getSelectedCount()!=recordedAdapter.getCount()){
-    	            	selectAllMenu.setVisible(true);
-    	            	selectNoneMenu.setVisible(false);
-    	            }else{
-    	            	selectAllMenu.setVisible(false);
-    	            	selectNoneMenu.setVisible(true);
-    	            }
-    		} else {
-    			if (recordedAdapter.getCount()==0||(recordedAdapter.getCount()==1
-                    && recordedAdapter.getItemViewType(0)==RecorderAdapter.ITEM_TYPE_CALL_SET)) {
-//    				selectView.setVisibility(View.GONE);
-//    				cancelView.setVisibility(View.GONE);
-//                    selectAllView.setVisibility(View.GONE);
-    				getActivity().findViewById(R.id.bottom_widget).setVisibility(View.GONE);
-    				getActivity().findViewById(R.id.record_control_layout).setVisibility(View.VISIBLE);
-    			} else {
-//    				selectView.setVisibility(View.VISIBLE);
-//                    selectAllView.setVisibility(View.GONE);
-//    				cancelView.setVisibility(View.GONE);
-    			}
-    		}
-    	}
-    	
-    	super.onPrepareOptionsMenu(menu);
-    }
-    
-
-    
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-    	switch (item.getItemId()) {
-		case R.id.select_mode:
-			initSelectItem();
-			break;
-		case R.id.select_all:
-			recordedAdapter.selectAllFlag();
-			break;
-		case R.id.select_none:
-			recordedAdapter.clearSelectFlag();
-			break;
-		default:
-			break;
-		}
-    	getActivity().invalidateOptionsMenu();
-    	return super.onOptionsItemSelected(item);
-    }
-
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
         if(!isCallRecordUI()) {
@@ -265,25 +197,9 @@ public class RecordedFragment extends Fragment implements OnClickListener {
             }
             recordList.setOnItemClickListener(getRecordItemClickListener());
             recordList.setOnItemLongClickListener(longClickListener);
-//            selectView = getActivity().getActionBar().getCustomView().findViewById(R.id.select_mode);
-//            cancelView = getActivity().getActionBar().getCustomView().findViewById(R.id.select_cancel);
-//            selectAllView = getActivity().getActionBar().getCustomView().findViewById(R.id.select_all);
-//            backView = getActivity().getActionBar().getCustomView().findViewById(R.id.back);
-
-//            selectView.setOnClickListener(getSelectModeListener());
-//            cancelView.setOnClickListener(getCancelListener());
-//            selectAllView.setOnClickListener(getSelectAllListener());
-//            updateName.setOnClickListener(getUpdateRecordListener());
 
             recordVF.setInAnimation(getActivity(), android.R.anim.fade_in);
             recordVF.setOutAnimation(getActivity(), android.R.anim.fade_out);
-
-//            backView.setOnClickListener(new OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    onBackPressed();
-//                }
-//            });
 
             leBottomWidget = (LeBottomWidget)getActivity().findViewById(R.id.bottom_widget);
             intiBottomWidget();
@@ -291,8 +207,6 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 
 		super.onActivityCreated(savedInstanceState);
 	}
-
-
 
     private void intiBottomWidget() {
         if(leBottomWidget!=null){
@@ -330,7 +244,6 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                                     .setPositiveButton(getResources().getString(R.string.delete),new Dialog.OnClickListener(){
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            recordedAdapter.setActionMode(false);
                                             int[] selecteds = getSelectedIndexs();
                                             for (int i = 0; i < selecteds.length; i++) {
 
@@ -358,15 +271,22 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                                             }
                                             refreshRecordList();
                                             updateSherlockUI();
-
+                                            
+                                            if(recordedAdapter.isActionMode()){
+                                            	recordedAdapter.setActionMode(true);
+                                            }
+                                            
+                                            if(mActionMode!=null){
+                                            	mActionMode.invalidate();
+                                            }
                                         }
                                     })
                                     .setNegativeButton(getResources().getString(R.string.cancel), new Dialog.OnClickListener(){
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            recordedAdapter.setActionMode(false);
-                                            refreshRecordList();
-                                            updateSherlockUI();
+//                                            recordedAdapter.setActionMode(false);
+//                                            refreshRecordList();
+//                                            updateSherlockUI();
                                         }
                                     } )
                                     .create()
@@ -392,9 +312,10 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                                         file.renameTo(new File(newPath));
                                         recordDb.update(mEntry.getFilePath(), newPath);
                                         RecordDb.destroyInstance();
-                                        cancelEdit();
+//                                        cancelEdit();
                                         dialog.dismiss();
                                         FileSyncContentProvider.renameFile(getActivity(),oldPath,newPath);
+                                        refreshRecordList();
                                     }
 
                                 }
@@ -404,7 +325,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    cancelEdit();
+//                                    cancelEdit();
                                 }
                             });
 
@@ -424,7 +345,6 @@ public class RecordedFragment extends Fragment implements OnClickListener {
         }
     }
     
-    
     private OnItemLongClickListener longClickListener = new OnItemLongClickListener() {
 
 		@Override
@@ -434,17 +354,90 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 			if(recordedAdapter.isActionMode())
 				return false;
 			initSelectItem();
+			
+			getActivity().startActionMode(mCallback);
+			
 			if (recordedAdapter.isActionMode()) {
 				boolean flag = recordSelectFlag.get(position);
                 recordSelectFlag.set(position, !flag);
                 ((LeCheckBox)view.findViewById(R.id.item_select)).setChecked(!flag,true);
                 changeSelectStatus();
 				updateSherlockUI();
+				mActionMode.invalidate();
 			}
 			return true;
 		}
 	};
 
+	private ActionMode.Callback mCallback = new ActionMode.Callback() {
+		
+		@Override
+		public boolean onPrepareActionMode(ActionMode arg0, Menu arg1) {
+	    	
+			String itemXliff = getActivity().getResources().getString(R.string.select_item_xliff);
+    		mActionMode.setTitle(String.format(itemXliff, getSelectedCount()));
+			
+	    	if(recordedAdapter.isShowCallRecord()){
+//	          backView.setVisibility(View.VISIBLE);
+	    	}else{
+//	          backView.setVisibility(View.GONE);
+	    	}
+	    	MediaRecorderState state = RecordApp.getInstance().getmState();
+	    	if (MediaRecorderState.RECORDING == state || MediaRecorderState.PAUSED == state || MediaRecorderState.STOPPED == state) {
+	    		getActivity().getActionBar().hide();
+	    	}else{
+	    	    getActivity().getActionBar().show();
+	    		if (recordedAdapter.isActionMode()) {
+	    			 if(getSelectedCount()!=recordedAdapter.getCount()){
+	    	            	selectAllMenu.setVisible(true);
+	    	            	selectNoneMenu.setVisible(false);
+	    	            }else{
+	    	            	selectAllMenu.setVisible(false);
+	    	            	selectNoneMenu.setVisible(true);
+	    	            }
+	    		} else {
+	    			if (recordedAdapter.getCount()==0||(recordedAdapter.getCount()==1
+	                    && recordedAdapter.getItemViewType(0)==RecorderAdapter.ITEM_TYPE_CALL_SET)) {
+	    				getActivity().findViewById(R.id.bottom_widget).setVisibility(View.GONE);
+	    				getActivity().findViewById(R.id.record_control_layout).setVisibility(View.VISIBLE);
+	    			} 
+	    		}
+	    	}
+			return false;
+		}
+		
+		@Override
+		public void onDestroyActionMode(ActionMode arg0) {
+			cancelEdit();
+			mActionMode = null;
+		}
+		
+		@Override
+		public boolean onCreateActionMode(ActionMode arg0, Menu menu) {
+			mActionMode = arg0;
+			 MenuInflater menuInflater = getActivity().getMenuInflater();
+	         menuInflater.inflate(R.menu.recorder_menu,menu);
+	         selectAllMenu = menu.findItem(R.id.select_all);
+	         selectNoneMenu = menu.findItem(R.id.select_none);
+			return true;
+		}
+		
+		@Override
+		public boolean onActionItemClicked(ActionMode arg0, MenuItem item) {
+			switch (item.getItemId()) {
+			case R.id.select_all:
+				recordedAdapter.selectAllFlag();
+				break;
+			case R.id.select_none:
+				recordedAdapter.clearSelectFlag();
+				break;
+			default:
+				break;
+			}
+			arg0.invalidate();
+			return true;
+		}
+	};
 
     private OnClickListener getUpdateRecordListener(){
         return  new OnClickListener(){
@@ -468,11 +461,9 @@ public class RecordedFragment extends Fragment implements OnClickListener {
         };
     }
 
-
     private void cancelEdit(){
         refreshRecordList();
         recordedAdapter.setActionMode(false);
-        getActivity().invalidateOptionsMenu();
         getActivity().invalidateOptionsMenu();
         updateActionBarAndBottomLayout();
         updateSherlockUI();
@@ -509,15 +500,11 @@ public class RecordedFragment extends Fragment implements OnClickListener {
         recordSelectFlag = recordedAdapter.getRecordSelectFlag();
 		getActivity().invalidateOptionsMenu();
 		updateSherlockUI();
-//        backView.setVisibility(View.GONE);
 	}
 
     public void changeSelectStatus(){
     	getActivity().invalidateOptionsMenu();
-           
-
-            updateSherlockUI();
-//        }
+        updateSherlockUI();
     }
 
 	private OnItemClickListener getRecordItemClickListener() {
@@ -533,6 +520,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                     recordedAdapter.notifyDataSetChanged();
                     changeSelectStatus();
 					updateSherlockUI();
+		    		mActionMode.invalidate();
 				} else {
 
                     if(recordedAdapter.getItemViewType(position)== RecorderAdapter.ITEM_TYPE_CALL_SET){
@@ -564,7 +552,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
             leBottomWidget.setEnable(0,selectCount > 0);
             leBottomWidget.setEnable(1,selectCount > 0);
             leBottomWidget.setEnable(2,selectCount == 1);
-
+            
             getActivity().findViewById(R.id.bottom_widget).setVisibility(View.VISIBLE);
             getActivity().findViewById(R.id.record_control_layout).setVisibility(View.GONE);
         }else{
@@ -578,11 +566,10 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 	}
 
     protected void updateActionBarAndBottomLayout(){
+    	
         if(recordedAdapter.isShowCallRecord()){
             getActivity().findViewById(R.id.record_control_layout).setVisibility(View.GONE);
-//            getActivity().getActionBar().getCustomView().findViewById(R.id.back).setVisibility(View.VISIBLE);
         }else{
-//            getActivity().getActionBar().getCustomView().findViewById(R.id.back).setVisibility(View.GONE);
             if(recordedAdapter.isActionMode()) {
                 getActivity().findViewById(R.id.record_control_layout).setVisibility(View.GONE);
             }else{
@@ -709,15 +696,17 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 					recordVF.setDisplayedChild(PAGE_SHOW_RECORD_LIST);
 			    recordedAdapter.notifyDataSetChanged();
 			} else {
-				if (recordVF != null&&recordVF.getDisplayedChild()!=PAGE_NO_RECORD)
+				if (recordVF != null&&recordVF.getDisplayedChild()!=PAGE_NO_RECORD){
 					recordVF.setDisplayedChild(PAGE_NO_RECORD);
+					if(mActionMode!=null){
+						mActionMode.finish();
+					}
+				}
+				
 			}
             recordedAdapter.setHasCall(db.getCallRecordCounts() > 0);
 		}
         updateActionBarAndBottomLayout();
-		getActivity().invalidateOptionsMenu();
-
-
 	}
 
     public boolean onBackPressed() {
@@ -770,6 +759,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 	}
 
 	public int getSelectedCount() {
+		recordSelectFlag = recordedAdapter.getRecordSelectFlag();
         if(recordSelectFlag==null){
             return 0;
         }

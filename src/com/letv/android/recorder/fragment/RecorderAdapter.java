@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import com.letv.leui.widget.DividerFilter;
 import android.widget.TextView;
 
 import com.letv.android.recorder.R;
@@ -18,7 +19,7 @@ import com.letv.android.recorder.provider.RecordDb;
 import com.letv.android.recorder.service.Recorder.MediaRecorderState;
 import com.letv.android.recorder.tool.RecordTool;
 import com.letv.leui.widget.LeCheckBox;
-import com.letv.leui.widget.DividerFilter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -274,27 +275,27 @@ public class RecorderAdapter extends BaseAdapter implements DividerFilter{
 		return context.getResources().getColor(res); 
 	}
 	
-    @Override
+    
     public boolean topDividerEnabled() {
         return false;
     }
 
-    @Override
+    
     public boolean bottomDividerEnabled() {
         return false;
     }
 
-    @Override
+    
     public boolean dividerEnabled(int position) {
         return true;
     }
 
-    @Override
+    
     public int leftDividerMargin(int position) {
         return context.getResources().getDimensionPixelOffset(R.dimen.record_item_padding_left);
     }
 
-    @Override
+    
     public int rightDividerMargin(int position) {
         return leftDividerMargin(position);
     }

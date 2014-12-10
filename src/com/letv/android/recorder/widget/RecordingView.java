@@ -240,6 +240,7 @@ public class RecordingView extends View {
 
         canvas.save();
         canvas.translate(-offsetX, 0);
+        canvas.translate(-intercaterOffsetX, 0);
 
         ArrayList<Long> flag = RecordApp.getInstance().getFlags();
         if(flag!=null&&flag.size()>0){

@@ -36,6 +36,7 @@ import com.letv.android.recorder.tool.RecordTool;
 import com.letv.android.recorder.tool.SettingTool;
 import com.letv.android.recorder.widget.EditRecordNameDialog;
 import com.letv.android.recorder.widget.FlagSeekBar;
+import com.letv.android.recorder.widget.RecorderSeekBar;
 
 public class PlayRecordActivity extends Activity implements OnClickListener, SensorEventListener {
 
@@ -43,7 +44,7 @@ public class PlayRecordActivity extends Activity implements OnClickListener, Sen
 	private RecordEntry mEntry;
 
 	private TextView curTime, totalTime;
-	private FlagSeekBar mSeekBar;
+	private RecorderSeekBar mSeekBar;
 	private ImageView shareBtn, playBtn, editBtn;
 
 	private HeadsetPlugReceiver mHeadset;
@@ -60,7 +61,7 @@ public class PlayRecordActivity extends Activity implements OnClickListener, Sen
 
 		curTime = (TextView) findViewById(R.id.current_time);
 		totalTime = (TextView) findViewById(R.id.total_time);
-		mSeekBar = (FlagSeekBar) findViewById(R.id.play_seekbar);
+		mSeekBar = (RecorderSeekBar) findViewById(R.id.play_seekbar);
 		shareBtn = (ImageView) findViewById(R.id.shareBtn);
 		playBtn = (ImageView) findViewById(R.id.playBtn);
 		editBtn = (ImageView) findViewById(R.id.editBtn);
