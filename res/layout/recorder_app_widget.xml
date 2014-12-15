@@ -49,28 +49,40 @@
         </LinearLayout>
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center">
+            android:layout_height="@dimen/activity_bottom">
         <ImageView
                 android:id="@+id/remote_record_flag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:scaleType="center"
                 android:src="@drawable/flag_selector"
-                android:focusable="true"/>
+                android:layout_marginLeft="@dimen/ctrl_margin"
+                android:focusable="true"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:background="@drawable/ic_small_circle"/>
         <ImageView
                 android:id="@+id/remote_record_action"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/start_selector"/>
+                android:scaleType="center"
+                android:layout_centerInParent="true"
+                android:src="@drawable/start_selector"
+                android:background="@drawable/ic_big_circle"/>
         <ImageView
                 android:id="@+id/remote_record_done"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/record_done_selector"/>
-    </LinearLayout>
+                android:scaleType="center"
+                android:layout_marginRight="@dimen/ctrl_margin"
+                android:src="@drawable/record_done_selector"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/ic_small_circle"/>
+    </RelativeLayout>
 
 
 </LinearLayout>

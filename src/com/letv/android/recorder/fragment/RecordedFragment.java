@@ -595,7 +595,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
             return;
         }
 
-		MediaRecorderState state = RecordApp.getInstance().getmState();
+		MediaRecorderState state = RecordTool.getRecordState(getActivity());
 
 		if (MediaRecorderState.RECORDING == state || MediaRecorderState.PAUSED == state /*|| MediaRecorderState.STOPPED == state*/) {
             if(recordVF.getDisplayedChild()!=PAGE_SHOW_RECORDING)

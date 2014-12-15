@@ -11,6 +11,8 @@ public class Constants {
 
     public static String TEST_TEMP_FILR_PATH=RECORD_PATH+File.separator+".temp";
 
+	public static String ERROR_LOG_DIR=RECORD_PATH+File.separator+".log";
+
 	public static String RECORD_FORMAT=".amr";
 
 
@@ -25,4 +27,7 @@ public class Constants {
 	public static int CREATE_FILE_FAIL=0x0003;
 //	public static int PERMISSION_DENY=0x0004;
     public static int SDCARD_FULL = 0x0004;
+
+
+
 }

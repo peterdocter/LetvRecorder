@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.letv.android.recorder.RecordApp;
+import com.letv.android.recorder.tool.RecordTool;
 
 public class Recorder{
 
@@ -103,6 +104,19 @@ public class Recorder{
 //		this.mContext = context;
 	}
 
+	public void checkRecorderState(){
+		MediaRecorderState state = state();
+		if(MediaRecorderState.PAUSED==state||
+				MediaRecorderState.STOPPED==state){
+			endUpdateTime();
+		}else if(MediaRecorderState.RECORDING==state){
+			beginUpdateTime();
+		}
+
+		RecordApp.getInstance().setmState(state);
+		signalStateChanged(state);
+	}
+
 	public OnStateChangedListener getmOnStateChangedListener() {
 		return mOnStateChangedListener;
 	}
@@ -137,12 +151,12 @@ public class Recorder{
 	}
 
 	public MediaRecorderState state() {
-		return RecordApp.getInstance().getmState();
+		return RecordTool.getRecordState(RecordApp.getInstance());
 	}
 
 	public void setState(MediaRecorderState state) {
-		if (state == state())
-			return;
+//		if (state == state())
+//			return;
 
 		if(MediaRecorderState.PAUSED==state||
 			MediaRecorderState.STOPPED==state){

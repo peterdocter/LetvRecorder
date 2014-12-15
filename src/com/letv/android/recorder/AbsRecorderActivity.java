@@ -20,6 +20,7 @@ import com.letv.android.recorder.service.RecorderService;
 import com.letv.android.recorder.service.Recorder.MediaRecorderState;
 import com.letv.android.recorder.service.Recorder.OnRecordTimeChangedListener;
 import com.letv.android.recorder.service.Recorder.OnStateChangedListener;
+import com.letv.android.recorder.tool.LockScreen;
 import com.letv.android.recorder.tool.RecordTool;
 import com.letv.android.recorder.tool.StatusBarTool;
 
@@ -65,15 +66,14 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
         IntentFilter filter = new IntentFilter();
         filter.addAction(RecorderService.RECORDER_SERVICE_BROADCAST_NAME);
         registerReceiver(mReceiver, filter);
-
-
     }
 
     @Override
     protected void onStart() {
-        mRecorderState = RecordApp.getInstance().getmState();
+        mRecorderState = RecordTool.getRecordState(this);
         mRecorder.setmOnStateChangedListener(this);
         mRecorder.setTimeChangedListener(this);
+        mRecorder.checkRecorderState();
         super.onResume();
     }
 

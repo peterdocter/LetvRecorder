@@ -15,6 +15,7 @@ import java.util.TimerTask;
 import android.annotation.SuppressLint;
 import android.app.ActivityThread;
 import android.app.AppOpsManager;
+import android.app.KeyguardManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -34,10 +35,7 @@ import com.letv.android.recorder.aidl.IRecorder;
 import com.letv.android.recorder.aidl.IRecorderCallBack;
 import com.letv.android.recorder.provider.RecordDb;
 import com.letv.android.recorder.service.Recorder.MediaRecorderState;
-import com.letv.android.recorder.tool.FileSyncContentProvider;
-import com.letv.android.recorder.tool.RecordTool;
-import com.letv.android.recorder.tool.RemainingTimeCalculator;
-import com.letv.android.recorder.tool.SettingTool;
+import com.letv.android.recorder.tool.*;
 import com.letv.android.recorder.widget.RecorderAppWidget;
 import com.letv.leui.widget.ScreenRecordingView;
 
@@ -113,7 +111,7 @@ public class RecorderService extends Service implements RecorderInterface {
 
     private final Handler mHandler = new Handler();
 
-
+	private KeyguardManager keyguardManager;
 
 
     RemoteCallbackList<IRecorderCallBack> rc=new RemoteCallbackList<IRecorderCallBack>();
@@ -142,7 +140,7 @@ public class RecorderService extends Service implements RecorderInterface {
         }
     };
 
-
+	int i=0;
 	private void timerStart() {
 		mTimer = new Timer();
 		mTimer.schedule(new TimerTask() {
@@ -167,8 +165,10 @@ public class RecorderService extends Service implements RecorderInterface {
                     }
                     return;
                 }
+				i++;
+				boolean locked = keyguardManager.isKeyguardLocked();
 
-                if(RecorderAppWidget.hasAppWidget(getApplicationContext())){
+                if(LockScreen.isShowing(RecorderService.this)&& 0==i%5 &&locked){
                     Intent intent = new Intent(RecorderAppWidget.ACTION_UPDATE);
                     intent.putExtra(ScreenRecordingView.RECORD_TIME_KEY,recordRealDuring);
                     intent.putExtra(ScreenRecordingView.RECORD_DB_KEY,getDB());
@@ -193,6 +193,8 @@ public class RecorderService extends Service implements RecorderInterface {
 		mTempPath = mSdCardRecodPath + File.separator + ".temp";
 		mFileFormat = getResources().getString(R.string.record_file_name_format);
         mRemainingTimeCalculator = new RemainingTimeCalculator();
+
+		keyguardManager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
 		super.onCreate();
 	}
 
@@ -576,6 +578,15 @@ public class RecorderService extends Service implements RecorderInterface {
 		intent.putExtra(RecordTool.RECORDER_SERVICE_STATE, MediaRecorderState.getStateString(mRecorderState));
         intent.putExtra(RecordTool.RECORDER_CALL_RECORDING,isRemoteRecord);
 		sendBroadcast(intent);
+		if(MediaRecorderState.RECORDING == mRecorderState||
+				MediaRecorderState.PAUSED == mRecorderState){
+			if(SettingTool.isShowScreenWidget(this)&&
+					!LockScreen.isShowing(this)){
+				LockScreen.showLockScreenWidght(this);
+			}
+		}else{
+			LockScreen.hideLockScreenWidget(this);
+		}
         if(isRemoteRecord) {
             RecordApp.getInstance().setmState(mRecorderState);
         }
@@ -587,7 +598,14 @@ public class RecorderService extends Service implements RecorderInterface {
         }
 	}
 
-    /**
+	@Override
+	public void onDestroy() {
+		LockScreen.hideLockScreenWidget(this);
+		timerStop();
+		super.onDestroy();
+	}
+
+	/**
      * record everything change
      */
     private void saveRecorderData(){

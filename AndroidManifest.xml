@@ -56,7 +56,8 @@
             android:theme="@style/TranslucentTheme" >
         </activity>
 
-        <activity android:name="com.letv.android.recorder.settings.RecorderSetting"/>
+        <activity android:name="com.letv.android.recorder.settings.RecorderSetting"
+                android:theme="@style/recordSettingTheme"/>
 
         <!-- record service -->
         <!-- other app need  permission "com.letv.permission.RECORDER" -->

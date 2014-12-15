@@ -16,7 +16,7 @@
 
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:minWidth="294dip"
-    android:minHeight="72dip"
+    android:minHeight="172dip"
     android:updatePeriodMillis="20"
     android:initialLayout="@layout/recorder_app_widget"
     >

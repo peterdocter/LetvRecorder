@@ -1,5 +1,6 @@
 package com.letv.android.recorder;
 
+import com.letv.android.recorder.exception.CrashHandler;
 import com.letv.android.recorder.service.Recorder.MediaRecorderState;
 
 import android.app.Application;
@@ -77,6 +78,7 @@ public class RecordApp extends Application {
 	public void onCreate() {
 		instance = this;
         flags = new ArrayList<Long>();
+		CrashHandler.getInstance().init(this);
 		super.onCreate();
 	}
 

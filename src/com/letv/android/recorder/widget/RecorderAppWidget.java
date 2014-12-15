@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 import com.letv.android.recorder.Constants;
@@ -66,15 +67,23 @@ public class RecorderAppWidget extends AppWidgetProvider{
 
     }
 
-    private void updateUI(Context context,Recorder.MediaRecorderState mState,Intent intent){
-        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.recorder_app_widget);
+    private static RemoteViews remoteViews;
+    static int  i=0;
 
-        updateRemoteViews(context,remoteViews,mState,intent);
+    private void updateUI(Context context,Recorder.MediaRecorderState mState,Intent intent){
+        long preTime = System.currentTimeMillis();
+        i++;
+        if(remoteViews==null) {
+            remoteViews = new RemoteViews(context.getPackageName(), R.layout.recorder_app_widget);
+        }
+        Log.e("--------------- mtate", Recorder.MediaRecorderState.getStateString(mState));
+        updateRemoteViews(context, remoteViews,mState,intent);
 
         AppWidgetManager appwidget_manager = AppWidgetManager.getInstance(context);
         ComponentName component_name = new ComponentName(context, RecorderAppWidget.class);
         appwidget_manager.updateAppWidget(component_name, remoteViews);
-
+        long postTime = System.currentTimeMillis();
+        Log.e("----------------updateUI time "+i,(postTime-preTime)/1000f+"");
     }
 
 
@@ -94,11 +103,6 @@ public class RecorderAppWidget extends AppWidgetProvider{
             remoteViews.setImageViewResource(R.id.remote_record_action,R.drawable.start_selector);
             remoteViews.setTextViewText(R.id.remote_record_name, RecordTool.getNewRecordName(context));
             remoteViews.setTextViewText(R.id.remote_record_state,"准备就绪");
-
-            remoteViews.setViewVisibility(R.id.remote_record_flag, View.GONE);
-            remoteViews.setViewVisibility(R.id.remote_record_done,View.GONE);
-            remoteViews.setViewVisibility(R.id.remote_wave,View.GONE);
-
 
         }else if(mState == Recorder.MediaRecorderState.RECORDING){
 
@@ -139,7 +143,7 @@ public class RecorderAppWidget extends AppWidgetProvider{
                 Bundle bundle = new Bundle();
                 bundle.putLong(ScreenRecordingView.RECORD_TIME_KEY, extras.getLong(ScreenRecordingView.RECORD_TIME_KEY));
                 bundle.putFloat(ScreenRecordingView.RECORD_DB_KEY, extras.getFloat(ScreenRecordingView.RECORD_DB_KEY));
-                remoteViews.setBundle(R.id.remote_wave, "updateRecordUI", bundle);
+//                remoteViews.setBundle(R.id.remote_wave, "updateRecordUI", bundle);
             }
         }
     }
@@ -150,6 +154,7 @@ public class RecorderAppWidget extends AppWidgetProvider{
         if(appWidgetIds==null || appWidgetIds.length<=0){
             return;
         }
+        Log.e("-----------------","onUpdate");
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         String stateStr =  sp.getString(Recorder.MediaRecorderState.KEY, Recorder.MediaRecorderState.getStateString(Recorder.MediaRecorderState.IDLE_STATE));
