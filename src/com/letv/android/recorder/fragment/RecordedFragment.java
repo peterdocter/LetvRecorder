@@ -197,7 +197,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
             }
             recordList.setOnItemClickListener(getRecordItemClickListener());
             recordList.setOnItemLongClickListener(longClickListener);
-
+            updateName.setOnClickListener(getUpdateRecordListener());
             recordVF.setInAnimation(getActivity(), android.R.anim.fade_in);
             recordVF.setOutAnimation(getActivity(), android.R.anim.fade_out);
 

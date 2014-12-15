@@ -24,7 +24,7 @@ public class RecordingView extends View {
 
 //    private ArrayList<WavePoint> wavePoints = new ArrayList<WavePoint>();
 
-	private static final boolean DEBUG=true;
+	private static final boolean DEBUG=false;
 
 
 	public RecordingView(Context context, AttributeSet attrs, int defStyleAttr) {
