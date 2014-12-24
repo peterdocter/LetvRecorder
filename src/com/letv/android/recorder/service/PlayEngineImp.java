@@ -15,6 +15,7 @@ import android.util.Log;
 
 import com.letv.android.recorder.RecordApp;
 import com.letv.android.recorder.service.Recorder.MediaRecorderState;
+import com.letv.android.recorder.tool.AudioManagerUtil;
 
 @SuppressLint("HandlerLeak")
 public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorListener, OnPreparedListener {
@@ -69,7 +70,7 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
                 recordPath = path;
 			}
 
-            int result = initPrePlayingAudioFocus();
+            int result = AudioManagerUtil.initPrePlayingAudioFocus(afChangeListener);
             if(result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED){
 			    player.start();
             }
@@ -92,16 +93,16 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
 	}
 
 
-    public  int initPrePlayingAudioFocus(){
-        AudioManager am = (AudioManager) RecordApp.getInstance().getSystemService(Context.AUDIO_SERVICE);
-        int result = am.requestAudioFocus(afChangeListener,AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
-        return result;
-    }
-
-    private void destroyAudioFocus(){
-        AudioManager am = (AudioManager) RecordApp.getInstance().getSystemService(Context.AUDIO_SERVICE);
-        am.abandonAudioFocus(afChangeListener);
-    }
+//    public static int initPrePlayingAudioFocus(){
+//        AudioManager am = (AudioManager) RecordApp.getInstance().getSystemService(Context.AUDIO_SERVICE);
+//        int result = am.requestAudioFocus(afChangeListener,AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
+//        return result;
+//    }
+//
+//    public static void destroyAudioFocus(){
+//        AudioManager am = (AudioManager) RecordApp.getInstance().getSystemService(Context.AUDIO_SERVICE);
+//        am.abandonAudioFocus(afChangeListener);
+//    }
 
     private AudioManager.OnAudioFocusChangeListener afChangeListener = new AudioManager.OnAudioFocusChangeListener() {
         public void onAudioFocusChange(int focusChange) {
@@ -144,7 +145,7 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
 		// mSampleStart = 0;
 		PlayService.stopPlay(RecordApp.getInstance());
 		RecordApp.getInstance().setmState(MediaRecorderState.IDLE_STATE);
-        destroyAudioFocus();
+        AudioManagerUtil.destroyAudioFocus(afChangeListener);
 	}
 
 	@Override

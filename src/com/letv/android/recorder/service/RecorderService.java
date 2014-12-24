@@ -393,6 +393,7 @@ public class RecorderService extends Service implements RecorderInterface {
 			recordStartTime = System.currentTimeMillis();
 			timerStart();
 		    sendStateBroadcast();
+			AudioManagerUtil.initPrePlayingAudioFocus(null);
 		} catch (Exception e) {
 //			e.printStackTrace();
             Toast.makeText(getApplicationContext(),"error",Toast.LENGTH_SHORT).show();
@@ -455,6 +456,7 @@ public class RecorderService extends Service implements RecorderInterface {
 		showNotification = false;
 		sendAlertBroadcast();
         RecordTool.loge(LOG_TAG,"stopRecording");
+		AudioManagerUtil.destroyAudioFocus(null);
 		return true;
 	}
 
