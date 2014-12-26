@@ -65,6 +65,10 @@
     <string name="record_silence_title">录音时来电静音</string>
     <string name="scene_title">场景设置</string>
     <string name="voice_recording">通话录音</string>
+
+    <string name="play_record_playing">正在播放</string>
+    <string name="play_record_pause">暂停</string>
+
     <string-array name="scene_entries">
         <item>录人声</item>
         <item>录音乐</item>

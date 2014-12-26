@@ -2,6 +2,7 @@ package com.letv.android.recorder;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import com.letv.android.recorder.fragment.RecordedFragment;
 import com.letv.android.recorder.service.Recorder.MediaRecorderState;
 
@@ -14,7 +15,9 @@ public class RecorderActivity extends AbsRecorderActivity {
 
         recordedFragment = new RecordedFragment();
         recordedFragment.setCallRecordUI(false);
-        getFragmentManager().beginTransaction().add(R.id.container, recordedFragment).commit();
+        getFragmentManager().beginTransaction().replace(R.id.container, recordedFragment).commit();
+
+		Log.e(this.getClass().getName(),"onCreate");
 
 	}
 

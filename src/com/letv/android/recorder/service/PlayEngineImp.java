@@ -140,11 +140,11 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
 
 		handler.removeMessages(0);
 		if (pEngineListener != null) {
-			pEngineListener.onStop();
+			pEngineListener.onTrackStop();
 		}
 		// mSampleStart = 0;
 		PlayService.stopPlay(RecordApp.getInstance());
-		RecordApp.getInstance().setmState(MediaRecorderState.IDLE_STATE);
+		RecordApp.getInstance().setmState(MediaRecorderState.PLAY_STOP);
         AudioManagerUtil.destroyAudioFocus(afChangeListener);
 	}
 

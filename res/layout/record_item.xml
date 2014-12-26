@@ -63,6 +63,8 @@
         android:layout_marginLeft="8dp"
         android:clickable="false"
         leui:leBoxOnColor="#ff0000"
+        leui:leBoxTrackColor="#181819"
+        leui:leBoxBorderColor="@color/sumary_color_a30"
         android:focusable="false"
         android:visibility="gone" />
 

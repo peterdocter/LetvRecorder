@@ -38,7 +38,8 @@ import com.letv.android.recorder.widget.EditRecordNameDialog;
 import com.letv.android.recorder.widget.FlagSeekBar;
 import com.letv.android.recorder.widget.RecorderSeekBar;
 
-public class PlayRecordActivity extends Activity implements OnClickListener, SensorEventListener {
+public class PlayRecordActivity extends Activity implements
+		OnClickListener, SensorEventListener,PlayEngineListener {
 
 	public static final String RECORD_ENTRY = "record_entry";
 	private RecordEntry mEntry;
@@ -52,6 +53,8 @@ public class PlayRecordActivity extends Activity implements OnClickListener, Sen
 	private AudioManager audioManager;
 	private SensorManager sensorManager;
 	private Sensor sensor;
+
+	private RecorderAdapter instance = RecorderAdapter.getInstance();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +78,7 @@ public class PlayRecordActivity extends Activity implements OnClickListener, Sen
 		sensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
 		mSeekBar.setMax((int) mEntry.getRecordDuring());
 		mSeekBar.setFlags(mEntry.getFlags());
-		PlayEngineImp.getInstance().setpEngineListener(getPlayListener());
+		PlayEngineImp.getInstance().setpEngineListener(this);
 		PlayService.startPlay(this, mEntry.getFilePath());
 
 		findViewById(R.id.empty_part).setOnClickListener(new OnClickListener(){
@@ -99,8 +102,10 @@ public class PlayRecordActivity extends Activity implements OnClickListener, Sen
 	protected void onDestroy() {
 		unregisterHeadsetPlugReceiver();
 //		unregisterSensorListener();
-		PlayEngineImp.getInstance().setpEngineListener(null);
-		PlayEngineImp.getInstance().stop();
+//		PlayEngineImp.getInstance().setpEngineListener(null);
+//		PlayEngineImp.getInstance().stop();
+
+
 		super.onDestroy();
 	}
 
@@ -217,6 +222,10 @@ public class PlayRecordActivity extends Activity implements OnClickListener, Sen
 	public void finish() {
 		PlayEngineImp.getInstance().stop();
 		PlayEngineImp.getInstance().setpEngineListener(null);
+		RecordApp.getInstance().setmState(MediaRecorderState.IDLE_STATE);
+		if(instance!=null){
+			instance.notifyDataSetChanged(null);
+		}
 		super.finish();
 		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 	}
@@ -266,8 +275,8 @@ public class PlayRecordActivity extends Activity implements OnClickListener, Sen
 		}
 	}
 
-	private PlayEngineListener getPlayListener() {
-		return new PlayEngineListener() {
+//	private PlayEngineListener getPlayListener() {
+//		return new PlayEngineListener() {
 
 			@Override
 			public void onTrackStart(int miTime, int totalTime) {
@@ -277,10 +286,11 @@ public class PlayRecordActivity extends Activity implements OnClickListener, Sen
 				PlayRecordActivity.this.totalTime.setText(RecordTool.timeFormat(totalTime, "mm:ss"));
 				registerHeadsetPlugReceiver();
 				setPlayMode();
-				RecorderAdapter instance = RecorderAdapter.getInstance();
+//				RecorderAdapter instance = RecorderAdapter.getInstance();
 				if(instance!=null){
 					instance.notifyDataSetChanged(mEntry);
 				}
+
 			}
 
 			@Override
@@ -294,6 +304,9 @@ public class PlayRecordActivity extends Activity implements OnClickListener, Sen
 				speakerMode();
 				unregisterHeadsetPlugReceiver();
 				playBtn.setImageResource(R.drawable.play_selector);
+				if(instance!=null){
+					instance.notifyDataSetChanged(mEntry);
+				}
 			}
 
 			@Override
@@ -302,19 +315,22 @@ public class PlayRecordActivity extends Activity implements OnClickListener, Sen
 			}
 
 			@Override
-			public void onStop() {
+			public void onTrackStop() {
 				speakerMode();
 				unregisterHeadsetPlugReceiver();
 				mSeekBar.setProgress(mSeekBar.getMax());
 				playBtn.setImageResource(R.drawable.play_selector);
+				if(instance!=null){
+					instance.notifyDataSetChanged(mEntry);
+				}
 			}
 
 			@Override
-			public void onError() {
+			public void onTrackError() {
 
 			}
-		};
-	}
+//		};
+//	}
 
 
 

@@ -4,6 +4,7 @@ import com.letv.android.recorder.exception.CrashHandler;
 import com.letv.android.recorder.service.Recorder.MediaRecorderState;
 
 import android.app.Application;
+import com.letv.android.recorder.tool.RecordTool;
 
 import java.util.ArrayList;
 
@@ -67,11 +68,14 @@ public class RecordApp extends Application {
 	}
 	
 	public MediaRecorderState getmState() {
-		return mState;
+//		return mState;
+		return RecordTool.getRecordState(this);
 	}
+
 
 	public void setmState(MediaRecorderState mState) {
 		this.mState = mState;
+		RecordTool.saveRecordState(this,mState);
 	}
 
 	@Override

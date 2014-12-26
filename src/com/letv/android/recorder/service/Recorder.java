@@ -33,7 +33,7 @@ public class Recorder{
 	}
 
 	public enum MediaRecorderState {
-		STOPPED, RECORDING, PAUSED, PLAYING, PLAYING_PAUSED, IDLE_STATE;
+		STOPPED, RECORDING, PAUSED, PLAYING, PLAYING_PAUSED,PLAY_STOP, IDLE_STATE;
 
         public static final String KEY="MediaRecorderState";
 
@@ -50,7 +50,9 @@ public class Recorder{
 				return PLAYING;
 			} else if (state.equalsIgnoreCase("PLAYING_PAUSED")) {
 				return PLAYING_PAUSED;
-			} else {
+			} else if (state.equalsIgnoreCase("PLAY_STOP")){
+				return PLAY_STOP;
+			}else{
 				return IDLE_STATE;
 			}
 		}
@@ -70,7 +72,9 @@ public class Recorder{
 				return "PLAYING";
 			} else if (state == PLAYING_PAUSED) {
 				return "PLAYING_PAUSED";
-			} else {
+			} else if (state == PLAY_STOP) {
+				return "PLAY_STOP";
+			}else{
 				return null;
 			}
 		}

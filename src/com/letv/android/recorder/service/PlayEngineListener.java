@@ -5,6 +5,6 @@ public interface PlayEngineListener {
 	public void onTrackChange();
 	public void onTrackProgressChange(int miTime);
 	public void onTrackPause();
-	public void onError();
-	public void onStop();
+	public void onTrackError();
+	public void onTrackStop();
 }

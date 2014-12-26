@@ -89,7 +89,7 @@ public class RecorderService extends Service implements RecorderInterface {
 
 	public final static String ACTION_NAME = "action_type";
 
-	private MediaRecorderState mRecorderState = MediaRecorderState.STOPPED;
+	private MediaRecorderState mRecorderState = MediaRecorderState.IDLE_STATE;
 
 	private static long recordedDuring = 0;
 
@@ -116,14 +116,13 @@ public class RecorderService extends Service implements RecorderInterface {
 
     RemoteCallbackList<IRecorderCallBack> rc=new RemoteCallbackList<IRecorderCallBack>();
 
-	public static float getDB() {
-		float db = 0;// 分贝
+	public static int getDB() {
+		int db = 0;// 分贝
 		if (mRecorder != null) {
 			int ratio = mRecorder.getMaxAmplitude();
 			if (ratio > 1) {
                 db = ratio;
 			}
-//            RecordTool.loge(RecorderService.class.getSimpleName(),"-------------"+ratio+"\t\t"+db);
 		}
 
 		return db;
@@ -165,15 +164,25 @@ public class RecorderService extends Service implements RecorderInterface {
                     }
                     return;
                 }
-				i++;
+//				i++;
 				boolean locked = keyguardManager.isKeyguardLocked();
 
                 if(LockScreen.isShowing(RecorderService.this)&& 0==i%5 &&locked){
-                    Intent intent = new Intent(RecorderAppWidget.ACTION_UPDATE);
-                    intent.putExtra(ScreenRecordingView.RECORD_TIME_KEY,recordRealDuring);
-                    intent.putExtra(ScreenRecordingView.RECORD_DB_KEY,getDB());
-                    intent.putExtra(ScreenRecordingView.RECORD_NAME,RecordTool.getRecordName(getApplicationContext()));
-                    sendBroadcast(intent);
+
+					int count=rc.beginBroadcast();
+					for (int i=0;i<count;i++){
+						try {
+							rc.getBroadcastItem(i).updateMaxAmplitude(recordRealDuring,getDB());
+						} catch (RemoteException e) {
+							e.printStackTrace();
+						}
+					}
+					rc.finishBroadcast();
+//                    Intent intent = new Intent(RecorderAppWidget.ACTION_UPDATE);
+//                    intent.putExtra(ScreenRecordingView.RECORD_TIME_KEY,recordRealDuring);
+//                    intent.putExtra(ScreenRecordingView.RECORD_DB_KEY,getDB());
+//                    intent.putExtra(ScreenRecordingView.RECORD_NAME,RecordTool.getRecordName(getApplicationContext()));
+//                    sendBroadcast(intent);
                 }
 
 			}

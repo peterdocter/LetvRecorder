@@ -189,7 +189,11 @@ public class RecordedFragment extends Fragment implements OnClickListener {
         	});  
         	
         	int h =(int) actionbarSizeTypedArray.getDimension(0, 0);  
-			recordList.setPadding(0, h, 0, 0);
+//			recordList.setPadding(0, 0, 0, 0);
+
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) recordList.getLayoutParams();
+            params.topMargin = h;
+            recordList.setLayoutParams(params);
             recordList.setAdapter(recordedAdapter);
             recordedAdapter.setListView(recordList);
             if(!((AbsRecorderActivity)getActivity()).isFistTime()){
@@ -454,6 +458,12 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                         }else{
                             Toast.makeText(getActivity(),R.string.create_file_fail,Toast.LENGTH_SHORT).show();
                         }
+                    }
+                });
+                mdialog.setNegativeButton(new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
                     }
                 });
                 mdialog.show(null,false);

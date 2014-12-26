@@ -191,7 +191,6 @@ public class RecorderAdapter extends BaseAdapter implements DividerFilter{
 	
 	public void notifyDataSetChanged(RecordEntry mRecordEntry) {
 		playRecordEntry = mRecordEntry;
-		Log.e("------------------------------", "notifyDataSetChanged:"+mRecordEntry.toString());
 		super.notifyDataSetChanged();
 	}
 	
@@ -240,12 +239,22 @@ public class RecorderAdapter extends BaseAdapter implements DividerFilter{
             }
         }
 		MediaRecorderState state = RecordApp.getInstance().getmState();
-    	if (MediaRecorderState.PLAYING == state || MediaRecorderState.PLAYING_PAUSED == state ) {
+    	if (MediaRecorderState.PLAYING == state || MediaRecorderState.PLAYING_PAUSED == state ||
+                MediaRecorderState.PLAY_STOP == state) {
     		if(playRecordEntry!=null){
     			if(TextUtils.equals(getItem(position).getFilePath(), playRecordEntry.getFilePath())){
     				holder.recordName.setTextColor(getColor(R.color.title__color_play));
             		holder.recordTime.setTextColor(getColor(R.color.sumary_color_play));
             		holder.recordLength.setTextColor(getColor(R.color.sumary_color_play));
+
+                    if(MediaRecorderState.PLAYING == state){
+                        String playStr = context.getResources().getString(R.string.play_record_playing);
+                        holder.recordLength.setText(playStr);
+                    }else if(MediaRecorderState.PLAYING_PAUSED == state){
+                        String pauseStr = context.getResources().getString(R.string.play_record_pause);
+                        holder.recordLength.setText(pauseStr);
+                    }
+
     			}else{
     				holder.recordName.setTextColor(getColor(R.color.title_color_a30));
             		holder.recordTime.setTextColor(getColor(R.color.sumary_color_a30));

@@ -125,7 +125,7 @@ public class RecorderAppWidget extends AppWidgetProvider{
 
             remoteViews.setViewVisibility(R.id.remote_record_flag, View.VISIBLE);
             remoteViews.setViewVisibility(R.id.remote_record_done,View.VISIBLE);
-            remoteViews.setViewVisibility(R.id.remote_wave,View.VISIBLE);
+//            remoteViews.setViewVisibility(R.id.remote_wave,View.VISIBLE);
         }else if(mState == Recorder.MediaRecorderState.STOPPED){
             remoteViews.setTextViewText(R.id.remote_record_state,"正在保存...");
         }

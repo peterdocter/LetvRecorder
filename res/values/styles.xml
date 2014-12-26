@@ -13,7 +13,8 @@
     <style name="AppTheme" parent="@style/AppBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
         <item name="recordViewStyle">@style/recordView</item>
-        <item name="android:actionBarStyle">@style/actionbar_style</item> 
+        <item name="android:actionBarStyle">@style/actionbar_style</item>
+        <item name="android:actionModeStyle">@style/recordActionModeStyle</item>
         <item name="android:actionMenuTextColor">@color/actionBarTitleColor</item>
         <item name="android:actionMenuTextAppearance">@style/textAppearanceMenu</item>
         <item name="android:windowActionBarOverlay">true</item>
@@ -71,6 +72,14 @@
         parent="@*android:style/TextAppearance.Material.Widget.ActionBar.Menu">
         <item name="android:textColor">@color/actionBarTitleColor</item>
         <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="recordActionModeStyle" parent="@android:style/Widget.Material.ActionMode">
+        <item name="android:titleTextStyle">@style/recordActionModeTitleStyle</item>
+    </style>
+
+    <style name="recordActionModeTitleStyle" parent="@android:style/TextAppearance.Material.Widget.ActionMode.Title">
+        <item name="android:textColor">@color/actionBarTitleColor</item>
     </style>
     
 
