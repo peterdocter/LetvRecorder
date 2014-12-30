@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.Bundle;
+import android.transition.TransitionManager;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -358,7 +359,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 			if(recordedAdapter.isActionMode())
 				return false;
 			initSelectItem();
-			
+            TransitionManager.beginDelayedTransition(parent);
 			getActivity().startActionMode(mCallback);
 			
 			if (recordedAdapter.isActionMode()) {
