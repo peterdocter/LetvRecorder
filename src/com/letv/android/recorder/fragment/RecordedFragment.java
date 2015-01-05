@@ -34,6 +34,7 @@ import com.letv.android.recorder.service.Recorder.MediaRecorderState;
 import com.letv.android.recorder.tool.FileSyncContentProvider;
 import com.letv.android.recorder.tool.FileTool;
 import com.letv.android.recorder.tool.RecordTool;
+import com.letv.android.recorder.widget.ActionBarTool;
 import com.letv.android.recorder.widget.EditRecordNameDialog;
 import com.letv.android.recorder.widget.RecordingView;
 import com.letv.leui.widget.LeBottomWidget;
@@ -141,13 +142,6 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                 if(!recordTime.getText().toString().equals(newStr))
 				    recordTime.setText(newStr);
 			}
-
-//			if(recordStartTime!=null){
-//                String newStr = RecordTool.getStartTimeStr();
-//                if(!recordStartTime.getText().toString().equals(newStr)){
-//				    recordStartTime.setText(RecordTool.getStartTimeStr());
-//                }
-//			}
 
 			if(recordName!=null){
                 String newStr = RecordApp.getInstance().getRecordName();
@@ -359,7 +353,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 			if(recordedAdapter.isActionMode())
 				return false;
 			initSelectItem();
-            TransitionManager.beginDelayedTransition(parent);
+            TransitionManager.beginDelayedTransition(parent,ActionBarTool.autoTransition);
 			getActivity().startActionMode(mCallback);
 			
 			if (recordedAdapter.isActionMode()) {
@@ -538,6 +532,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                         recordedAdapter.setShowCallRecord(true);
                         recordedAdapter.setRecordList(RecordDb.getInstance(getActivity()).getCallRecords());
                         recordedAdapter.notifyDataSetChanged();
+                        ActionBarTool.changeActionBar(getActivity(),true);
                         getActivity().invalidateOptionsMenu();
                         updateActionBarAndBottomLayout();
                         return;
@@ -556,7 +551,19 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 		};
 	}
 
-	protected void updateSherlockUI() {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+
+                onBackPressed();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    protected void updateSherlockUI() {
 		int selectCount = getSelectedCount();
         if(recordedAdapter.isActionMode()) {
 
@@ -731,6 +738,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
             recordedAdapter.setShowCallRecord(false);
             recordedAdapter.setRecordList(RecordDb.getInstance(getActivity()).getNormalRecords());
             recordedAdapter.notifyDataSetChanged();
+            ActionBarTool.changeActionBar(getActivity(),false);
             updateSherlockUI();
             updateActionBarAndBottomLayout();
             getActivity().invalidateOptionsMenu();

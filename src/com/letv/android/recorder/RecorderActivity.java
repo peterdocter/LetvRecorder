@@ -39,6 +39,7 @@ public class RecorderActivity extends AbsRecorderActivity {
                 return;
             }
         }
+		finish();
         super.onBackPressed();
 
 	}

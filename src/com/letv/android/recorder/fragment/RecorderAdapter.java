@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import com.letv.android.recorder.widget.ActionBarTool;
 import com.letv.leui.widget.DividerFilter;
 import android.widget.TextView;
 
@@ -116,7 +117,7 @@ public class RecorderAdapter extends BaseAdapter implements DividerFilter{
     }
 
     public void setRecordList(List<RecordEntry> recordList) {
-        TransitionManager.beginDelayedTransition(mListView);
+        TransitionManager.beginDelayedTransition(mListView, ActionBarTool.autoTransition);
         this.recordList = recordList;
     }
 

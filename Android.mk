@@ -9,6 +9,8 @@ LOCAL_SRC_FILES := \
 	src/com/letv/android/recorder/aidl/IRecorder.aidl \
 	src/com/letv/android/recorder/aidl/IRecorderCallBack.aidl
 
+LOCAL_STATIC_JAVA_LIBRARIES := android-support-v4
+
 LOCAL_PACKAGE_NAME := LetvRecorder
 LOCAL_CERTIFICATE := platform
 LOCAL_PRIVILEGED_MODULE := true

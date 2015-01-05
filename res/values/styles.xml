@@ -26,6 +26,7 @@
        <!--   <item name="android:colorPrimary">@color/calculator_accent_color</item> -->
         <!-- <item name="android:navigationBarColor">@color/actionBarBackground</item> -->
         <item name="android:windowContentOverlay">@null</item>
+        <item name="android:homeAsUpIndicator">@android:drawable/le_actionbar_menuitem_white_back</item>
     </style>
 
     <style name="recordSettingTheme" parent="@style/AppBaseTheme">
