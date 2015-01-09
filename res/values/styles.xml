@@ -30,8 +30,8 @@
     </style>
 
     <style name="recordSettingTheme" parent="@style/AppBaseTheme">
-
-
+        <item name="android:homeAsUpIndicator">@android:drawable/le_actionbar_menuitem_black_back</item>
+        <item name="android:actionBarStyle">@style/setting_actionbar_style</item>
     </style>
     
     <style name="recordView">
@@ -67,6 +67,11 @@
     
     <style name="AcBar_titleStyle"  parent="@*android:style/TextAppearance.Material.Widget.ActionBar.Title">   
         <item name="android:textColor">@color/actionBarTitleColor</item>  
+    </style>
+    
+    <style name="setting_actionbar_style" parent="@android:style/Widget.Material.ActionBar">
+        <item name="android:displayOptions">homeAsUp|showTitle</item>
+
     </style>
     
     <style name="textAppearanceMenu"  

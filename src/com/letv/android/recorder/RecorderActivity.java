@@ -12,12 +12,9 @@ public class RecorderActivity extends AbsRecorderActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
         recordedFragment = new RecordedFragment();
         recordedFragment.setCallRecordUI(false);
         getFragmentManager().beginTransaction().replace(R.id.container, recordedFragment).commit();
-
-		Log.e(this.getClass().getName(),"onCreate");
 
 	}
 

@@ -52,7 +52,6 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
         setContentView(R.layout.activity_recorder);
         isFistTime = RecordTool.isFirstLaunch(this);
 
-        getActionBar().setTitle(R.string.record_note);
         mReceiver = new RecorderReceiver();
         mRecorder = Recorder.getInstance();
         recordBtn = (ImageView) findViewById(R.id.recordBtn);
@@ -166,14 +165,14 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
             flagBtn.setVisibility(View.INVISIBLE);
             getActionBar().show();
 //            topWidget.setCenterTitle(R.string.record_note);
-            getActionBar().setTitle(R.string.record_note);
+//            getActionBar().setTitle(R.string.record_note);
         } else if (MediaRecorderState.STOPPED == mRecorderState) {
             recordBtn.setImageResource(R.drawable.start_selector);
             recordedFragment.stopRecording();
             stopBtn.setVisibility(View.INVISIBLE);
             flagBtn.setVisibility(View.INVISIBLE);
 //            topWidget.setCenterTitle(R.string.record_note)
-            getActionBar().setTitle(R.string.record_note);
+//            getActionBar().setTitle(R.string.record_note);
         } 
 //        else if (MediaRecorderState.PLAYING_PAUSED == mRecorderState) {
 //            recordBtn.setImageResource(R.drawable.pause_selector);
@@ -219,7 +218,6 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
             if (intent.hasExtra(RecordTool.RECORDER_SERVICE_STATE)) {
                 String stateStr = intent.getStringExtra(RecordTool.RECORDER_SERVICE_STATE);
                 MediaRecorderState state = MediaRecorderState.getState(stateStr);
-                Log.i("state", stateStr);
                 mRecorder.setState(state);
             }
         }

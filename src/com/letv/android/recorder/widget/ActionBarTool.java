@@ -35,9 +35,15 @@ public class ActionBarTool {
     }
 
     public static AutoTransition autoTransition = new AutoTransition(){
+
         @Override
         public TransitionSet setDuration(long duration) {
             return super.setDuration(200);
+        }
+
+        @Override
+        public TransitionSet setOrdering(int ordering) {
+            return super.setOrdering(ORDERING_TOGETHER);
         }
     };
 
