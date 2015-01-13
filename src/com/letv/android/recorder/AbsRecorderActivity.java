@@ -23,10 +23,12 @@ import com.letv.android.recorder.service.Recorder.OnStateChangedListener;
 import com.letv.android.recorder.tool.LockScreen;
 import com.letv.android.recorder.tool.RecordTool;
 import com.letv.android.recorder.tool.StatusBarTool;
+import com.letv.android.recorder.widget.FlagImageView;
 
 public class AbsRecorderActivity extends Activity implements OnClickListener, OnStateChangedListener, OnRecordTimeChangedListener {
 
-    protected ImageView recordBtn, stopBtn,flagBtn;
+    protected ImageView recordBtn, stopBtn;
+    protected FlagImageView flagBtn;
     protected MediaRecorderState mRecorderState ;
     protected RecorderReceiver mReceiver;
     protected Recorder mRecorder;
@@ -56,7 +58,7 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
         mRecorder = Recorder.getInstance();
         recordBtn = (ImageView) findViewById(R.id.recordBtn);
         stopBtn = (ImageView) findViewById(R.id.stopBtn);
-        flagBtn = (ImageView) findViewById(R.id.flagBtn);
+        flagBtn = (FlagImageView) findViewById(R.id.flagBtn);
         recordBtn.setOnClickListener(this);
         stopBtn.setOnClickListener(this);
         flagBtn.setOnClickListener(this);
@@ -228,6 +230,7 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
         if(recordedFragment!=null){
             recordedFragment.updateRecordTimeUI(timeMillils,db);
         }
+        flagBtn.setFlagCount(RecordApp.getInstance().getFlags().size());
     }
 
 }

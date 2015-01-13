@@ -10,6 +10,7 @@
         <attr name="soundWaveColor" format="color"/>
         <attr name="timeLineWidth" format="dimension"/>
         <attr name="timePreLength" format="dimension"/>
+        <attr name="timeTextOffset" format="dimension"/>
     </declare-styleable>
     
     <attr name="recordViewStyle" format="reference"/>

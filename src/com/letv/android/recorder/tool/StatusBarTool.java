@@ -10,29 +10,35 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.*;
 import android.widget.FrameLayout;
+import com.letv.android.recorder.R;
 
 /**
  * Created by snile on 14-9-1.
  */
 public class StatusBarTool {
+    private static View statusBar;
 
-    public static void updateStausBar(Activity activity){
+    public static void updateStausBar(Activity activity,boolean isShow){
 
         Window win = activity.getWindow();
-        WindowManager.LayoutParams params = win.getAttributes();
-        final int bits = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
-        params.flags |= bits;
-        win.setAttributes(params);
+//        WindowManager.LayoutParams params = win.getAttributes();
+//        final int bits = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+//        params.flags |= bits;
+//        win.setAttributes(params);
 
         // Create a view of status bar
         int statusBarHeight = getInternalDimensionSize(activity.getApplicationContext().getResources(), "status_bar_height");
 
         FrameLayout.LayoutParams params2 = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, statusBarHeight);
         params2.gravity = Gravity.TOP;
-        View statusBar = new View(activity);
-        statusBar.setLayoutParams(params2);
-        ((ViewGroup) win.getDecorView()).addView(statusBar);
+        if(null == statusBar) {
+            statusBar = new View(activity);
+            statusBar.setLayoutParams(params2);
+            ((ViewGroup) win.getDecorView()).addView(statusBar);
+        }
 
+        statusBar.setBackgroundColor(isShow? R.color.actionBarPauseColor:Color.parseColor("#00000000"));
+        statusBar.bringToFront();
     }
 
     public static int getInternalDimensionSize(Resources res, String key) {

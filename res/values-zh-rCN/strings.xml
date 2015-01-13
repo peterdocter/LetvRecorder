@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="record_note">录音备忘录</string>
+    <string name="record_note">录音列表</string>
     <string name="no_recorder">暂无录音记录</string>
     <string name="new_recorder">新录音</string>
 

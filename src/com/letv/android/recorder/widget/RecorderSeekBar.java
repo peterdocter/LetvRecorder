@@ -2,17 +2,15 @@ package com.letv.android.recorder.widget;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
+import android.graphics.*;
 import android.graphics.Paint.Align;
-import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RoundRectShape;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -49,6 +47,8 @@ public class RecorderSeekBar extends View{
     int progressHeight = 2*3;
     int progressHeightTouch = 4*3;
     boolean isTouch = false;
+    int ThumbTextSize;
+    int thumbTextOffset;
     int progressRealHeight = progressHeight;
 
     ShapeDrawable thumbDrawable;
@@ -78,6 +78,11 @@ public class RecorderSeekBar extends View{
         animator.addUpdateListener(updateListener);
         
         flagDrawable = getContext().getResources().getDrawable(R.drawable.play_flag);
+        ThumbTextSize = getContext().getResources().getDimensionPixelSize(R.dimen.ThumbTextSize);
+        thumbTextOffset = getContext().getResources().getDimensionPixelSize(R.dimen.ThumbTextOffset);
+
+        mPaint.setAntiAlias(true);
+
 //        flagHeight = flagDrawable.getIntrinsicHeight();
 //        flagWidth = flagDrawable.getIntrinsicWidth();
     }
@@ -141,8 +146,9 @@ public class RecorderSeekBar extends View{
         }
         if(isTouch){
         	mPaint.setColor(Color.WHITE);
-        	mPaint.setTextSize(48);
+        	mPaint.setTextSize(ThumbTextSize);
         	mPaint.setTextAlign(Align.CENTER);
+            mPaint.setTypeface(Typeface.create("sans-serif-light",0));
         	String time = RecordTool.recordTimeFormat(progress);
         	Rect bounds = new Rect();
         	mPaint.getTextBounds(time, 0, time.length(), bounds);
@@ -152,7 +158,7 @@ public class RecorderSeekBar extends View{
         	}else if(textX>getWidth()-bounds.width()/2-9){
         		textX = getWidth() -bounds.width()/2-9;
         	}
-        	canvas.drawText(time,textX , getHeight()/2-15, mPaint);
+        	canvas.drawText(time,textX , getHeight()/2-thumbTextOffset, mPaint);
         }
     }
 

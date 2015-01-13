@@ -44,7 +44,8 @@
                             android:includeFontPadding="false"
                             android:singleLine="true"
                             android:textColor="@android:color/white"
-                            android:textSize="20sp" />
+                            android:textSize="20sp"
+                            android:fontFamily="hans-sans-light"/>
                     <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -67,13 +68,14 @@
                 <!--android:layout_weight="1"/>-->
 
         <TextView
-            android:id="@+id/record_time"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="right|center_vertical"
-            android:includeFontPadding="false"
-            android:textColor="@android:color/white"
-            android:textSize="41sp" />
+                android:id="@+id/record_time"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="right|center_vertical"
+                android:includeFontPadding="false"
+                android:textColor="@android:color/white"
+                android:textSize="40sp"
+                android:fontFamily="sans-serif-thin"/>
     </LinearLayout>
 
 
@@ -87,7 +89,8 @@
                 android:id="@+id/recording_view"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:timeSize="12sp" />
+                app:timeSize="8sp"
+                app:timeTextOffset="6dp"/>
     </RelativeLayout>
 
 
@@ -103,7 +106,7 @@
             android:id="@+id/record_pause_mask"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#D9191821"
+            android:background="@color/actionBarPauseColor"
             android:visibility="gone">
         <LinearLayout
                 android:layout_width="wrap_content"
@@ -122,7 +125,8 @@
                     android:layout_height="wrap_content"
                     android:textColor="#ffffff"
                     android:textSize="@dimen/textSizeSmall"
-                    android:text="@string/record_paused"/>
+                    android:text="@string/record_paused"
+                    android:fontFamily="hans-sans"/>
         </LinearLayout>
 
     </RelativeLayout>

@@ -69,6 +69,7 @@ public class RecordingView extends View {
         timePaint.setFakeBoldText(true);
         int timeLineWidth = typedArray.getDimensionPixelSize(R.styleable.RecordingView_timeLineWidth, 2);
         int timePreLength = typedArray.getDimensionPixelSize(R.styleable.RecordingView_timePreLength, 27 * 3);
+        int timeTextOffset = typedArray.getDimensionPixelSize(R.styleable.RecordingView_timeTextOffset,0);
         ruleBmpWidth = (timeLineWidth + timePreLength) << 1;
         ruleBmpHeight = tallHeight * 3;
         markItemWidth = ruleBmpWidth >> 1;
@@ -78,8 +79,10 @@ public class RecordingView extends View {
         typedArray.recycle();
 
         Rect rect = new Rect();
+        timePaint.setTypeface(Typeface.create("sans-serif",0));
         timePaint.getTextBounds("00:00", 0, 5, rect);
-        textHeight = ruleItemHeight - ruleBmpHeight;
+        timePaint.setAntiAlias(true);
+        textHeight = ruleItemHeight - tallHeight-timeTextOffset;
         if (DEBUG) {
             framePaint = new Paint();
             framePaint.setTextSize(28);

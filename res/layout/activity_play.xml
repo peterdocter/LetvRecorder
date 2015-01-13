@@ -54,7 +54,7 @@
                 android:layout_marginLeft="@dimen/ctrl_margin"
                 android:scaleType="center"
                 android:src="@drawable/play_share_selector" 
-                android:background="@drawable/ic_small_circle"/>
+                android:background="@drawable/ic_small_circle_play_selector"/>
 
             <ImageView
                 android:id="@+id/playBtn"
@@ -63,7 +63,7 @@
                 android:layout_centerInParent="true"
                 android:scaleType="center"
                 android:src="@drawable/start_selector" 
-                android:background="@drawable/ic_big_circle"/>
+                android:background="@drawable/ic_big_circle_play_selector"/>
 
             <ImageView
                 android:id="@+id/editBtn"
@@ -74,7 +74,7 @@
                 android:layout_marginRight="@dimen/ctrl_margin"
                 android:scaleType="center"
                 android:src="@drawable/play_edit_selector" 
-                android:background="@drawable/ic_small_circle"/>
+                android:background="@drawable/ic_small_circle_play_selector"/>
         </RelativeLayout>
         
          <com.letv.android.recorder.widget.RecorderSeekBar

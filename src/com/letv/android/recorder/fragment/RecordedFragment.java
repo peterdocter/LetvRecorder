@@ -34,6 +34,7 @@ import com.letv.android.recorder.service.Recorder.MediaRecorderState;
 import com.letv.android.recorder.tool.FileSyncContentProvider;
 import com.letv.android.recorder.tool.FileTool;
 import com.letv.android.recorder.tool.RecordTool;
+import com.letv.android.recorder.tool.StatusBarTool;
 import com.letv.android.recorder.widget.ActionBarTool;
 import com.letv.android.recorder.widget.EditRecordNameDialog;
 import com.letv.android.recorder.widget.RecordingView;
@@ -627,6 +628,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                     @Override
                     public void onAnimationStart(Animator animation) {
                         recordViewMask.setVisibility(View.VISIBLE);
+                        StatusBarTool.updateStausBar(getActivity(),true);
                         recordViewMask.setOnClickListener(new OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -654,7 +656,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
             }else{
                 final ObjectAnimator animator = ObjectAnimator.ofFloat(recordViewMask, "alpha", 1, 0);
                 animator.setDuration(400);
-
+                StatusBarTool.updateStausBar(getActivity(),false);
                 animator.addListener(new Animator.AnimatorListener() {
                     @Override
                     public void onAnimationStart(Animator animation) {
@@ -682,6 +684,8 @@ public class RecordedFragment extends Fragment implements OnClickListener {
             }
 
 		} else {
+
+            StatusBarTool.updateStausBar(getActivity(),false);
 
             boolean isShowList = false;
 

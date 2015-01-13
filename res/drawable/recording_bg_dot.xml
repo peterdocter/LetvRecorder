@@ -9,6 +9,4 @@
 
     <solid android:color="#232226"/>
 
-    <!--<stroke android:width="0dp"-->
-            <!--android:color="#ff000000"/>-->
 </shape>

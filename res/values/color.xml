@@ -7,6 +7,7 @@
     <color name="actionBarLine">#27272d</color>
     <color name="actionBarColor">#dadada</color>
     <color name="actionBarActionColor">#dadada</color>
+    <color name="actionBarPauseColor">#D9000000</color>
     
 
     <color name="recordControlTopLine">#3e3e42</color>
@@ -15,6 +16,10 @@
     
     <color name="summary_color">#606060</color>
     <color name="title_color">#e9e9e9</color>
+
+    <color name="summary_color_selected">#fff</color>
+    <color name="title_color_selected">#fff</color>
+
     <color name="sumary_color_a30">#4d606060</color>
     <color name="title_color_a30">#4de9e9e9</color>
     <color name="sumary_color_play">#ff2f0d</color>
@@ -27,5 +32,7 @@
 
     <color name="bgDotColor">#232226</color>
     <color name="activeDotColor">#ff5a2d</color>
+
+    <color name="flag_text_color">#141419</color>
 
 </resources>

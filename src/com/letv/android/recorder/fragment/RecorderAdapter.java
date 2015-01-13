@@ -119,6 +119,11 @@ public class RecorderAdapter extends BaseAdapter implements DividerFilter{
     public void setRecordList(List<RecordEntry> recordList) {
         TransitionManager.beginDelayedTransition(mListView, ActionBarTool.autoTransition);
         this.recordList = recordList;
+        recordSelectFlag = new ArrayList<Boolean>();
+
+        for(int i=0;i<getCount();i++){
+            recordSelectFlag.add(new Boolean(Boolean.FALSE));
+        }
     }
 
     public RecordedFragment fragment;
@@ -266,9 +271,9 @@ public class RecorderAdapter extends BaseAdapter implements DividerFilter{
     		}
     	}else if(actionMode){
     		if(isSelected(position)){
-    			holder.recordName.setTextColor(getColor(R.color.title_color));
-        		holder.recordTime.setTextColor(getColor(R.color.summary_color));
-        		holder.recordLength.setTextColor(getColor(R.color.summary_color));
+    			holder.recordName.setTextColor(getColor(R.color.title_color_selected));
+        		holder.recordTime.setTextColor(getColor(R.color.summary_color_selected));
+        		holder.recordLength.setTextColor(getColor(R.color.summary_color_selected));
     		}else{
     			holder.recordName.setTextColor(getColor(R.color.title_color_a30));
         		holder.recordTime.setTextColor(getColor(R.color.sumary_color_a30));

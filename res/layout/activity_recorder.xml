@@ -37,7 +37,7 @@
         android:baselineAligned="false" >
 
 
-            <ImageView
+            <com.letv.android.recorder.widget.FlagImageView
                 android:id="@+id/flagBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -46,8 +46,8 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="@dimen/ctrl_margin"
                 android:scaleType="center"
-                android:visibility="invisible" 
-                android:background="@drawable/ic_small_circle"/>
+                android:visibility="invisible"
+                android:background="@drawable/ic_small_circle_record_selector"/>
 
 
             <ImageView
@@ -57,7 +57,7 @@
                 android:layout_centerInParent="true"
                 android:scaleType="center"
                 android:src="@drawable/ic_rec_record_start" 
-                android:background="@drawable/ic_big_circle"/>
+                android:background="@drawable/ic_big_circle_record_selector"/>
 
 
             <ImageView
@@ -70,7 +70,7 @@
                 android:scaleType="center"
                 android:src="@drawable/record_done_selector"
                 android:visibility="invisible" 
-                android:background="@drawable/ic_small_circle"/>
+                android:background="@drawable/ic_small_circle_record_selector"/>
     </RelativeLayout>
 
 </LinearLayout>
