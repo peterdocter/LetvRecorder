@@ -13,7 +13,7 @@ public class Constants {
 
 	public static String ERROR_LOG_DIR=RECORD_PATH+File.separator+".log";
 
-	public static String RECORD_FORMAT=".amr";
+	public static String RECORD_FORMAT[]={".3gp",".amr"};
 
 
 	public static String ALERT_ACTION="com.leui.record.alert";

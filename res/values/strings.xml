@@ -59,6 +59,7 @@
     <string name="screen_widget_summary">锁屏时是否显示锁屏录音控制插件</string>
     <string name="record_silence_title">录音时来电静音</string>
     <string name="scene_title">场景设置</string>
+    <string name="audio_qulity_title">录音质量</string>
     <string name="voice_recording">Voice Recording</string>
 
     <string name="play_record_playing">正在播放</string>
@@ -74,4 +75,19 @@
         <item>2</item>
     </string-array>
 
+    <string-array name="audio_qulity_entries">
+        <item>低等品质</item>
+        <item>中等品质</item>
+        <item>高等品质</item>
+    </string-array>
+    <string-array name="audio_qulity_entries_des">
+        <item>低等品质保存为amr格式</item>
+        <item>中等品质保存为acc格式</item>
+        <item>高等品质保存为acc格式</item>
+    </string-array>
+    <string-array name="audio_qulity_value">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
 </resources>

@@ -27,14 +27,12 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import android.widget.Toast;
-import com.letv.android.recorder.Constants;
-import com.letv.android.recorder.R;
-import com.letv.android.recorder.RecordApp;
-import com.letv.android.recorder.RecordEntry;
+import com.letv.android.recorder.*;
 import com.letv.android.recorder.aidl.IRecorder;
 import com.letv.android.recorder.aidl.IRecorderCallBack;
 import com.letv.android.recorder.provider.RecordDb;
 import com.letv.android.recorder.service.Recorder.MediaRecorderState;
+import com.letv.android.recorder.settings.AudioQulityPram;
 import com.letv.android.recorder.tool.*;
 import com.letv.android.recorder.widget.RecorderAppWidget;
 import com.letv.leui.widget.ScreenRecordingView;
@@ -114,6 +112,8 @@ public class RecorderService extends Service implements RecorderInterface {
 	private KeyguardManager keyguardManager;
 
 
+	private AudioQulityPram audioQulityPram;
+	private static Context whichContext;
     RemoteCallbackList<IRecorderCallBack> rc=new RemoteCallbackList<IRecorderCallBack>();
 
 	public static int getDB() {
@@ -164,10 +164,10 @@ public class RecorderService extends Service implements RecorderInterface {
                     }
                     return;
                 }
-//				i++;
+				i++;
 				boolean locked = keyguardManager.isKeyguardLocked();
 
-                if(LockScreen.isShowing(RecorderService.this)&& 0==i%5 &&locked){
+                if(LockScreen.isShowing(RecorderService.this)&& 0==i%50 &&locked){
 
 					int count=rc.beginBroadcast();
 					for (int i=0;i<count;i++){
@@ -178,11 +178,11 @@ public class RecorderService extends Service implements RecorderInterface {
 						}
 					}
 					rc.finishBroadcast();
-//                    Intent intent = new Intent(RecorderAppWidget.ACTION_UPDATE);
-//                    intent.putExtra(ScreenRecordingView.RECORD_TIME_KEY,recordRealDuring);
-//                    intent.putExtra(ScreenRecordingView.RECORD_DB_KEY,getDB());
-//                    intent.putExtra(ScreenRecordingView.RECORD_NAME,RecordTool.getRecordName(getApplicationContext()));
-//                    sendBroadcast(intent);
+                    Intent intent = new Intent(RecorderAppWidget.ACTION_UPDATE);
+                    intent.putExtra(ScreenRecordingView.RECORD_TIME_KEY,recordRealDuring);
+                    intent.putExtra(ScreenRecordingView.RECORD_DB_KEY,getDB());
+                    intent.putExtra(ScreenRecordingView.RECORD_NAME,RecordTool.getRecordName(getApplicationContext()));
+                    sendBroadcast(intent);
                 }
 
 			}
@@ -232,6 +232,7 @@ public class RecorderService extends Service implements RecorderInterface {
 				pauseRecording();
 			} else if (action == ACTION_START_RECORDING) {
 				startRecording();
+				Log.e(LOG_TAG,"onStartCommand startRecording");
 			} else if (action == ACTION_STOP_RECORDING) {
 				stopRecording();
 			} else if (action == ACTION_DELE_RECORDING) {
@@ -313,7 +314,11 @@ public class RecorderService extends Service implements RecorderInterface {
 
 	@Override
 	public int startRecording() {
-
+		if(whichContext instanceof  SoundRecorder){
+			audioQulityPram=SettingTool.getAudioQulity(whichContext);
+		}else {
+			audioQulityPram=SettingTool.getAudioQulity(this);
+		}
 		if (!RecordTool.isMounted()) {
 			Log.e(this.getClass().getName(), "sdcard is unmounted");
 
@@ -351,7 +356,7 @@ public class RecorderService extends Service implements RecorderInterface {
 				rName = recordName;
 			}
 		}
-		rName = rName + "_" + mSegments + Constants.RECORD_FORMAT;
+		rName = rName + "_" + mSegments + Constants.RECORD_FORMAT[audioQulityPram.OutputFormat/3];
 
 		mRecorderState = MediaRecorderState.RECORDING;
 		File file = getFile(mTempPath, rName);
@@ -378,12 +383,16 @@ public class RecorderService extends Service implements RecorderInterface {
 		if (mTmpFiles.size() <= 0) {
 			return Constants.CREATE_FILE_FAIL;
 		}
-		mRecorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB);
+		mRecorder.setOutputFormat(audioQulityPram.OutputFormat);
 		mRecorder.setOutputFile(file.getAbsolutePath());
-        mRecorder.setAudioSamplingRate(16000);
-        mRemainingTimeCalculator.reset();
+		mRecorder.setAudioSamplingRate(audioQulityPram.SampleRate);
+		mRemainingTimeCalculator.reset();
 
-		mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+		mRecorder.setAudioEncodingBitRate(audioQulityPram.EncodeBitrate);
+		mRecorder.setAudioChannels(audioQulityPram.AudioChannel);
+		mRecorder.setAudioEncoder(audioQulityPram.EncodeType);
+
+		Log.e(LOG_TAG,audioQulityPram.AudioChannel+"-"+audioQulityPram.EncodeBitrate+"-"+audioQulityPram.EncodeType+"-"+audioQulityPram.OutputFormat+"-"+audioQulityPram.SampleRate);
 		mRecorder.setOnErrorListener(new OnErrorListener() {
 			@Override
 			public void onError(MediaRecorder mr, int what, int extra) {
@@ -393,6 +402,7 @@ public class RecorderService extends Service implements RecorderInterface {
                 mRecorder=null;
                 mRecorderState = MediaRecorderState.IDLE_STATE;
                 sendStateBroadcast();
+				Toast.makeText(getApplicationContext(),"error",Toast.LENGTH_SHORT).show();
 			}
 		});
 		try {
@@ -404,8 +414,8 @@ public class RecorderService extends Service implements RecorderInterface {
 		    sendStateBroadcast();
 			AudioManagerUtil.initPrePlayingAudioFocus(null);
 		} catch (Exception e) {
-//			e.printStackTrace();
-            Toast.makeText(getApplicationContext(),"error",Toast.LENGTH_SHORT).show();
+			e.printStackTrace();
+            Toast.makeText(getApplicationContext(),"Exception",Toast.LENGTH_SHORT).show();
 			mRecorder.release();
 			mRecorder = null;
             timerStop();
@@ -493,7 +503,7 @@ public class RecorderService extends Service implements RecorderInterface {
 			return false;
 		}
 
-        resumeRecorderData();
+//        resumeRecorderData();
 
         RecordTool.loge(LOG_TAG,"saveRecording");
 
@@ -502,7 +512,7 @@ public class RecorderService extends Service implements RecorderInterface {
 		if (TextUtils.isEmpty(recordName)) {
 			SimpleDateFormat dateFormat = new SimpleDateFormat(mFileFormat);
 			Date date = new Date(System.currentTimeMillis());
-			tempPath = dateFormat.format(date) + Constants.RECORD_FORMAT;
+			tempPath = dateFormat.format(date) + Constants.RECORD_FORMAT[audioQulityPram.OutputFormat/3];
 		} else {
             tempPath = recordName;
 		}
@@ -545,14 +555,15 @@ public class RecorderService extends Service implements RecorderInterface {
 					entry.setFilePath(finalFile.getAbsolutePath());
 					String fileName = finalFile.getName();
 					if(!TextUtils.isEmpty(fileName)){
-						if(fileName.endsWith(Constants.RECORD_FORMAT)){
-							entry.setRecordName(fileName.replace(Constants.RECORD_FORMAT, ""));
+						if(fileName.endsWith(Constants.RECORD_FORMAT[audioQulityPram.OutputFormat/3])){
+							entry.setRecordName(fileName.replace(Constants.RECORD_FORMAT[audioQulityPram.OutputFormat/3], ""));
 						}
 					}else{
 						entry.setRecordName(finalFile.getName());
 					}
 					entry.setRecordTime(finalFile.lastModified());
 					entry.setRecordDuring(RecordDb.getFileDuring(finalFile));
+					Log.e(LOG_TAG,"during"+RecordDb.getFileDuring(finalFile));
 					entry.setCall(isRemoteRecord);
                     entry.setFlags(RecordApp.getInstance().getFlags());
 					RecordDb recordDb = RecordDb.getInstance(getApplicationContext());
@@ -591,8 +602,7 @@ public class RecorderService extends Service implements RecorderInterface {
 		sendBroadcast(intent);
 		if(MediaRecorderState.RECORDING == mRecorderState||
 				MediaRecorderState.PAUSED == mRecorderState){
-			if(SettingTool.isShowScreenWidget(this)&&
-					!LockScreen.isShowing(this)){
+			if(SettingTool.isShowScreenWidget(this)&&!LockScreen.isShowing(this)){
 				LockScreen.showLockScreenWidght(this);
 			}
 		}else{
@@ -675,7 +685,7 @@ public class RecorderService extends Service implements RecorderInterface {
             String tempName = fileName;
             while(true) {
 
-                File temp = new File(dir, tempName + Constants.RECORD_FORMAT);
+                File temp = new File(dir, tempName + Constants.RECORD_FORMAT[audioQulityPram.OutputFormat/3]);
 
                 if(temp.exists()){
                     String countStr = getResources().getString(R.string.call_record_filename_xliff);
@@ -689,7 +699,7 @@ public class RecorderService extends Service implements RecorderInterface {
             }
         }
 
-        fileName = fileName + Constants.RECORD_FORMAT;
+        fileName = fileName + Constants.RECORD_FORMAT[audioQulityPram.OutputFormat/3];
 
 
 		File dirFile = new File(dir);
@@ -726,6 +736,7 @@ public class RecorderService extends Service implements RecorderInterface {
 
 	public static void startRecording(Context context) {
 		Intent intent = new Intent(context, RecorderService.class);
+		whichContext=context;
 		intent.putExtra(ACTION_NAME, ACTION_START_RECORDING);
 		context.startService(intent);
 		isRemoteRecord = false;

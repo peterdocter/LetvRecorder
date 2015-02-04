@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <permission
         android:name="com.letv.leui.permission.RECORDER"
@@ -26,7 +27,7 @@
 
         <activity
             android:name="com.letv.android.recorder.RecorderActivity"
-            android:label="@string/record_note"
+            android:label="@string/app_name"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" >
             <intent-filter>
@@ -57,7 +58,14 @@
         </activity>
 
         <activity android:name="com.letv.android.recorder.settings.RecorderSetting"
-                android:theme="@style/recordSettingTheme"/>
+                android:theme="@style/recordSettingTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.APPLICATION_SETTINGS"/>
+            </intent-filter>
+            <meta-data android:name="android.application.settings.TYPE"
+                       android:value="android.application.settings.TYPE_MEDIA"/>
+        </activity>
 
         <!-- record service -->
         <!-- other app need  permission "com.letv.permission.RECORDER" -->

@@ -1,0 +1,13 @@
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <translate
+            android:fromYDelta="0"
+            android:toYDelta="-30"
+            android:duration="210"
+            android:interpolator="@android:interpolator/linear_out_slow_in" />
+    <translate
+            android:fromYDelta="-30"
+            android:toYDelta="330"
+            android:duration="210"
+            android:startOffset="210"
+            android:interpolator="@android:interpolator/accelerate_cubic" />
+</set>

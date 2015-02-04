@@ -3,6 +3,10 @@ package com.letv.android.recorder.tool;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
+import com.letv.android.recorder.R;
+import com.letv.android.recorder.SoundRecorder;
+import com.letv.android.recorder.settings.AudioQulityPram;
 
 /**
  * Created by snile on 14/11/27.
@@ -13,6 +17,7 @@ public class SettingTool {
     public static final String SCREEN_WIDGET="screen_widget";
     public static final String RECORD_SILENCE="record_silence";
     public static final String SCENE_MODE="scene_mode";
+    public static final String AUDIO_QULITY_MODE="audio_qulity";
 
     public static final String SCENE_VOICE_MODE="1";
     public static final String SCENE_MUSIC_MODE="2";
@@ -54,5 +59,21 @@ public class SettingTool {
         }else{
             return SceneMode.VOICES;
         }
+    }
+    public static AudioQulityPram getAudioQulity(Context context){
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        String qulityLevel=sp.getString(AUDIO_QULITY_MODE,String.valueOf(1));
+        if(context instanceof SoundRecorder){
+            qulityLevel="1";
+        }
+        int[] pram=null;
+        Log.e("SettingTool", qulityLevel);
+        switch(qulityLevel){
+            case "1":    pram = context.getResources().getIntArray(R.array.low); break;
+            case "2":pram = context.getResources().getIntArray(R.array.standard); break;
+            case "3":     pram = context.getResources().getIntArray(R.array.high); break;
+        }
+        return new AudioQulityPram(pram);
     }
 }

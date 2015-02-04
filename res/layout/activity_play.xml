@@ -62,7 +62,6 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:scaleType="center"
-                android:src="@drawable/start_selector" 
                 android:background="@drawable/ic_big_circle_play_selector"/>
 
             <ImageView

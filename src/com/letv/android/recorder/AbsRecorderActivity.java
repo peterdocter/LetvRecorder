@@ -1,8 +1,12 @@
 package com.letv.android.recorder;
 
+import android.animation.ObjectAnimator;
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.*;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,8 +15,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.view.WindowManager;
+import android.animation.ObjectAnimator;
 
 import com.letv.android.recorder.fragment.RecordedFragment;
 import com.letv.android.recorder.service.Recorder;
@@ -149,27 +158,52 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
     protected void updateUI() {
         Log.i("state", "updateUI");
         if (MediaRecorderState.RECORDING == mRecorderState) {
-            recordBtn.setImageResource(R.drawable.pause_selector);
+            recordBtn.setImageResource(R.drawable.frame_record_pause);
+            AnimationDrawable am_record=(AnimationDrawable)recordBtn.getDrawable();
+            am_record.start();
+            if(stopBtn.getVisibility()==View.INVISIBLE){
+                Animation am_stop = AnimationUtils.loadAnimation(AbsRecorderActivity.this, R.anim.anim_in_bottom);
+                stopBtn.startAnimation(am_stop);
+
+                Animation am_flag = AnimationUtils.loadAnimation(AbsRecorderActivity.this, R.anim.anim_in_bottom);
+                am_flag.setStartOffset(70);
+                flagBtn.startAnimation(am_flag);
+            }
+
             recordedFragment.startRecording();
             stopBtn.setVisibility(View.VISIBLE);
             flagBtn.setVisibility(View.VISIBLE);
 //            topWidget.setCenterTitle(R.string.new_recorder);
             getActionBar().hide();
         } else if (MediaRecorderState.PAUSED == mRecorderState) {
-            recordBtn.setImageResource(R.drawable.start_selector);
+            recordBtn.setImageResource(R.drawable.frame_pause_record);
+            AnimationDrawable am_record=(AnimationDrawable)recordBtn.getDrawable();
+            am_record.start();
             stopBtn.setVisibility(View.VISIBLE);
             flagBtn.setVisibility(View.VISIBLE);
 //            topWidget.setCenterTitle(R.string.new_recorder);
             getActionBar().hide();
         } else if (MediaRecorderState.IDLE_STATE == mRecorderState) {
-            recordBtn.setImageResource(R.drawable.start_selector);
+            if(stopBtn.getVisibility()==View.VISIBLE){
+            	Animation am_stop = AnimationUtils.loadAnimation(AbsRecorderActivity.this, R.anim.anim_out_bottom);
+            	stopBtn.startAnimation(am_stop);
+            	
+            	Animation am_flag = AnimationUtils.loadAnimation(AbsRecorderActivity.this, R.anim.anim_out_bottom);
+            	am_flag.setStartOffset(70);
+                flagBtn.startAnimation(am_flag);
+            }
+            recordBtn.setImageResource(R.drawable.frame_pause_record);
+            AnimationDrawable am_record=(AnimationDrawable)recordBtn.getDrawable();
+            am_record.start();
             stopBtn.setVisibility(View.INVISIBLE);
             flagBtn.setVisibility(View.INVISIBLE);
             getActionBar().show();
 //            topWidget.setCenterTitle(R.string.record_note);
 //            getActionBar().setTitle(R.string.record_note);
         } else if (MediaRecorderState.STOPPED == mRecorderState) {
-            recordBtn.setImageResource(R.drawable.start_selector);
+             recordBtn.setImageResource(R.drawable.frame_play_record);
+            AnimationDrawable am_record=(AnimationDrawable)recordBtn.getDrawable();
+            am_record.start();
             recordedFragment.stopRecording();
             stopBtn.setVisibility(View.INVISIBLE);
             flagBtn.setVisibility(View.INVISIBLE);

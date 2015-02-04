@@ -18,4 +18,10 @@
             <!--android:entries="@array/scene_entries"-->
             <!--android:entryValues="@array/scene_entries_value"-->
             <!--/>-->
+    <com.letv.leui.preference.LeListPreference
+            android:key="audio_qulity"
+            android:title="@string/audio_qulity_title"
+            android:entries="@array/audio_qulity_entries"
+            android:entryValues="@array/audio_qulity_value"
+            />
 </PreferenceScreen>

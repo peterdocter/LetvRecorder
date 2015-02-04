@@ -13,8 +13,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
 import android.text.TextUtils;
 
+import android.util.Log;
 import com.letv.android.recorder.Constants;
 import com.letv.android.recorder.RecordEntry;
 import com.letv.android.recorder.tool.RecordTool;
@@ -199,20 +202,22 @@ public class RecordDb extends SQLiteOpenHelper {
             if (files != null && files.length > 0) {
                 for (int i = 0; i < files.length; i++) {
                     File temp = files[i];
-                    if (temp.isFile() && temp.length() > 6 && temp.getName().endsWith(Constants.RECORD_FORMAT)
+                    if (temp.isFile() && temp.length() > 6 && (temp.getName().endsWith(Constants.RECORD_FORMAT[0])||temp.getName().endsWith(Constants.RECORD_FORMAT[1]))
                             && !savedPath.contains(temp.getAbsolutePath())) {
                         FileInputStream fis = null;
                         try {
-                            byte[] header = new byte[6];
+                            byte[] header = new byte[11];
                             fis = new FileInputStream(temp);
                             fis.read(header);
 
-                            if (header[2] == 0x41 && header[3] == 0x4D && header[4] == 0x52) {//AMR
+                            if (    (header[2] == 0x41 && header[3] == 0x4D && header[4] == 0x52)  ||
+                                    (header[8] == 0x33 && header[9] == 0x67 && header[10] == 0x70)) {//AMR  3GP
 
                                 String recordName = temp.getName();
-                                recordName = recordName.replace(Constants.RECORD_FORMAT, "");
-                                long during = (temp.length() - 6) / 32 * 20;
-
+                                recordName = recordName.replace(Constants.RECORD_FORMAT[0], "");
+                                recordName = recordName.replace(Constants.RECORD_FORMAT[1], "");
+//                                long during = (temp.length() - 6) / 32 * 20;
+                                long during =getFileDuring(temp);
                                 RecordEntry mEntry = new RecordEntry();
                                 mEntry.setRecordName(recordName);
                                 mEntry.setFilePath(temp.getAbsolutePath());
@@ -242,32 +247,24 @@ public class RecordDb extends SQLiteOpenHelper {
     }
 
     public static long getFileDuring(File file){
+        int audioDuration;
 
         FileInputStream fis = null;
+        String strDuration=null;
 
-        byte[] header = new byte[6];
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(file.getPath());
+        strDuration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+
         try {
-            fis = new FileInputStream(file);
-            fis.read(header);
-
-
-        if (header[2] == 0x41 && header[3] == 0x4D && header[4] == 0x52) {//AMR
-
-            long during = (file.length() - 6) / 32 * 20;
-            return  during;
-        }
-        } catch (IOException e) {
-            e.printStackTrace();
+            audioDuration=Integer.parseInt(strDuration);
+            return audioDuration;
+        }catch (NumberFormatException num){
+            num.printStackTrace();
         }finally {
-            if(fis!=null){
-                try {
-                    fis.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            retriever.release();
         }
-        return 0;
+        return  0;
     }
 
 

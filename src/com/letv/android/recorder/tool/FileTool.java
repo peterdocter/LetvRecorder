@@ -17,12 +17,15 @@ public class FileTool {
             testFileDir.mkdirs();
         }
 
-        File testFile = new File(Constants.TEST_TEMP_FILR_PATH,newFileName+Constants.RECORD_FORMAT);
+        File testFile = new File(Constants.TEST_TEMP_FILR_PATH,newFileName+Constants.RECORD_FORMAT[0]);
 
         if(testFile.exists()){
            testFile.delete();
         }
-
+        testFile = new File(Constants.TEST_TEMP_FILR_PATH,newFileName+Constants.RECORD_FORMAT[1]);
+        if(testFile.exists()){
+            testFile.delete();
+        }
         try {
             testFile.createNewFile();
             return true;

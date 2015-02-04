@@ -12,6 +12,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
@@ -101,7 +102,11 @@ public class RecordTool {
         SharedPreferences sp = getSharedPreferences(context);
         long recordedTime = sp.getLong(RECORDER_RECORDED_TIME,0);
         long startTime = sp.getLong(RECORDER_START_TIME,0);
+        Log.e("RecordTool--time",""+startTime);
         if(startTime!=0) {
+            SharedPreferences.Editor editor= sp.edit();
+            editor.putLong(RECORDER_START_TIME,startTime);
+            editor.commit();
             return recordedTime + System.currentTimeMillis() - startTime;
         }else{
             return recordedTime;
@@ -170,9 +175,9 @@ public class RecordTool {
         }else{
             for(File tmp:listFile){
                 String fileName = tmp.getName();
-                if(!TextUtils.isEmpty(fileName)&&fileName.endsWith(Constants.RECORD_FORMAT)&&
-                        fileName.length()>(Constants.RECORD_FORMAT.length()+3)){
-                    String indexStr = fileName.substring(3,fileName.length()-Constants.RECORD_FORMAT.length());
+                if(!TextUtils.isEmpty(fileName)&&(fileName.endsWith(Constants.RECORD_FORMAT[0])||fileName.endsWith(Constants.RECORD_FORMAT[1]))&&
+                        fileName.length()>(4+3)){
+                    String indexStr = fileName.substring(3,fileName.length()-4);
                     try {
                         int index = Integer.parseInt(indexStr);
 
@@ -266,7 +271,7 @@ public class RecordTool {
 		if (fileList != null && fileList.length > 0) {
 			for (File tmp : fileList) {
 				if (tmp.isFile()) {
-					if (tmp.getName().equalsIgnoreCase(recordNewName+Constants.RECORD_FORMAT)) {
+					if (tmp.getName().equalsIgnoreCase(recordNewName+Constants.RECORD_FORMAT[0])||tmp.getName().equalsIgnoreCase(recordNewName+Constants.RECORD_FORMAT[1])) {
 						Toast.makeText(context, R.string.record_existed, Toast.LENGTH_LONG).show();
 						return false;
 					}

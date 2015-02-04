@@ -11,14 +11,20 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.drawable.AnimationDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
@@ -35,7 +41,6 @@ import com.letv.android.recorder.tool.FileSyncContentProvider;
 import com.letv.android.recorder.tool.RecordTool;
 import com.letv.android.recorder.tool.SettingTool;
 import com.letv.android.recorder.widget.EditRecordNameDialog;
-import com.letv.android.recorder.widget.FlagSeekBar;
 import com.letv.android.recorder.widget.RecorderSeekBar;
 
 public class PlayRecordActivity extends Activity implements
@@ -56,6 +61,8 @@ public class PlayRecordActivity extends Activity implements
 
 	private RecorderAdapter instance = RecorderAdapter.getInstance();
 
+	private  Handler mHandler;
+	private  boolean restart=false;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -81,12 +88,27 @@ public class PlayRecordActivity extends Activity implements
 		PlayEngineImp.getInstance().setpEngineListener(this);
 		PlayService.startPlay(this, mEntry.getFilePath());
 
+		Animation an_edit=AnimationUtils.loadAnimation(PlayRecordActivity.this, R.anim.anim_in_bottom);
+		an_edit.setStartOffset(70);
+		shareBtn.startAnimation(AnimationUtils.loadAnimation(PlayRecordActivity.this,R.anim.anim_in_bottom));
+		editBtn.startAnimation(an_edit);
+
 		findViewById(R.id.empty_part).setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				finish();
+				stopPlay();
+
 			}
 		});
+		mHandler=new Handler(){
+			@Override
+			public void handleMessage(Message msg) {
+				if(msg.what==1){
+					PlayRecordActivity.this.finish();
+				}
+				super.handleMessage(msg);
+			}
+		};
 	}
 
 	@Override
@@ -206,6 +228,11 @@ public class PlayRecordActivity extends Activity implements
 	}
 
 	@Override
+	public void onBackPressed() {
+		stopPlay();
+	}
+
+	@Override
 	protected void onActivityResult(int arg0, int arg1, Intent arg2) {
 		if (arg0 == 12345 && arg1 == RESULT_OK) {
 			if (arg2 != null && arg2.hasExtra(SaveRecordActivity.DATA_CHANGED)) {
@@ -220,12 +247,7 @@ public class PlayRecordActivity extends Activity implements
 
 	@Override
 	public void finish() {
-		PlayEngineImp.getInstance().stop();
-		PlayEngineImp.getInstance().setpEngineListener(null);
-		RecordApp.getInstance().setmState(MediaRecorderState.IDLE_STATE);
-		if(instance!=null){
-			instance.notifyDataSetChanged(null);
-		}
+
 		super.finish();
 		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 	}
@@ -280,7 +302,17 @@ public class PlayRecordActivity extends Activity implements
 
 			@Override
 			public void onTrackStart(int miTime, int totalTime) {
-				playBtn.setImageResource(R.drawable.pause_selector);
+
+				if(!restart){
+					playBtn.setImageResource(R.drawable.frame_record_pause);
+					AnimationDrawable am_record=(AnimationDrawable)playBtn.getDrawable();
+					am_record.start();
+					restart=true;
+				}else{
+					playBtn.setImageResource(R.drawable.frame_play_pause);
+					AnimationDrawable am_record=(AnimationDrawable)playBtn.getDrawable();
+					am_record.start();
+				}
 				mSeekBar.setMax(totalTime);
 				curTime.setText(RecordTool.timeFormat(miTime, "mm:ss"));
 				PlayRecordActivity.this.totalTime.setText(RecordTool.timeFormat(totalTime, "mm:ss"));
@@ -303,7 +335,9 @@ public class PlayRecordActivity extends Activity implements
 			public void onTrackPause() {
 				speakerMode();
 				unregisterHeadsetPlugReceiver();
-				playBtn.setImageResource(R.drawable.play_selector);
+				playBtn.setImageResource(R.drawable.frame_pause_play);
+				AnimationDrawable am_record=(AnimationDrawable)playBtn.getDrawable();
+				am_record.start();
 				if(instance!=null){
 					instance.notifyDataSetChanged(mEntry);
 				}
@@ -318,8 +352,10 @@ public class PlayRecordActivity extends Activity implements
 			public void onTrackStop() {
 				speakerMode();
 				unregisterHeadsetPlugReceiver();
+				playBtn.setImageResource(R.drawable.frame_pause_play);
+				AnimationDrawable am_record=(AnimationDrawable)playBtn.getDrawable();
+				am_record.start();
 				mSeekBar.setProgress(mSeekBar.getMax());
-				playBtn.setImageResource(R.drawable.play_selector);
 				if(instance!=null){
 					instance.notifyDataSetChanged(mEntry);
 				}
@@ -400,5 +436,33 @@ public class PlayRecordActivity extends Activity implements
 		setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
 		audioManager.setMode(AudioManager.MODE_IN_CALL);
 	}
+	public void stopPlay(){
+		PlayEngineImp.getInstance().stop();
+		PlayEngineImp.getInstance().setpEngineListener(null);
+		if(instance!=null){
+			instance.notifyDataSetChanged(null);
+		}
 
+		Animation am_share = AnimationUtils.loadAnimation(PlayRecordActivity.this, R.anim.anim_out_bottom);
+		shareBtn.startAnimation(am_share);
+
+		Animation am_edit = AnimationUtils.loadAnimation(PlayRecordActivity.this, R.anim.anim_out_bottom);
+		am_edit.setStartOffset(70);
+		editBtn.startAnimation(am_edit);
+
+		if(RecordApp.getInstance().getmState()==MediaRecorderState.PLAYING){
+			playBtn.setImageResource(R.drawable.frame_pause_record);
+		}else if(RecordApp.getInstance().getmState()==MediaRecorderState.PLAY_STOP){
+			playBtn.setImageResource(R.drawable.frame_play_record);
+		}
+
+		RecordApp.getInstance().setmState(MediaRecorderState.IDLE_STATE);
+		AnimationDrawable am_record=(AnimationDrawable)playBtn.getDrawable();
+		am_record.start();
+
+
+		shareBtn.setVisibility(View.INVISIBLE);
+		editBtn.setVisibility(View.INVISIBLE);
+		mHandler.sendEmptyMessageDelayed(1,590);
+	}
 }

@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import com.letv.android.recorder.fragment.RecordedFragment;
 import com.letv.android.recorder.provider.ProviderTool;
@@ -62,6 +63,7 @@ public class SoundRecorder extends AbsRecorderActivity {
 	}
 
     String recordName;
+    boolean hasRecord = false;
 
 	@Override
 	public void onStateChanged(MediaRecorderState state) {
@@ -70,7 +72,8 @@ public class SoundRecorder extends AbsRecorderActivity {
 
 		if (MediaRecorderState.RECORDING == mRecorderState) {
             recordName = RecordTool.getRecordName(this);
-		} else if (MediaRecorderState.IDLE_STATE == mRecorderState) {
+            hasRecord = true;
+		} else if (MediaRecorderState.IDLE_STATE == mRecorderState && hasRecord) {
 			RecorderService.saveRecording(this, recordName);
 			Intent data = new Intent();
 

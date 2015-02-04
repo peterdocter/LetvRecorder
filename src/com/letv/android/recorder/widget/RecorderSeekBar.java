@@ -65,6 +65,7 @@ public class RecorderSeekBar extends View{
     private Rect thumbRect = new Rect();
     private Rect thumbTouchRect = new Rect();
 
+    private Matrix rotatMatrix= new Matrix();
     private ValueAnimator animator ;
     int flagHeight ;
     int flagWidth=1*3 ;
@@ -101,12 +102,14 @@ public class RecorderSeekBar extends View{
         thumbRect.set(midThumbX-thumbR,getHeight()/2 - thumbR,midThumbX+thumbR,getHeight()/2 + thumbR);
     }
 
-    private void computeThumbTouchRect(){
+    private int computeThumbTouchRect(){
         int midThumbX = (int)((getWidth())*(1f*progress/max));
+        int left=thumbTouchRect.left;
         thumbTouchRect.set(midThumbX-thumbTouchDrawable.getIntrinsicWidth()/2,
                 getHeight()/2+progressRealHeight/2,
                            midThumbX+thumbTouchDrawable.getIntrinsicWidth()/2,
                 getHeight()/2+progressRealHeight/2+thumbTouchDrawable.getIntrinsicHeight());
+        return midThumbX-thumbTouchDrawable.getIntrinsicWidth()/2-left;
     }
 
     @Override
@@ -135,9 +138,18 @@ public class RecorderSeekBar extends View{
             canvas.restore();
         }
         if(isTouch){
-            computeThumbTouchRect();
+            int roationDir=computeThumbTouchRect();
             thumbTouchDrawable.setBounds(thumbTouchRect);
+            if(roationDir>0){
+                roationDir=-10;
+            }else {
+                roationDir=10;
+            }
+            rotatMatrix.setRotate(roationDir,thumbTouchRect.centerX(),thumbTouchRect.centerY()-thumbTouchRect.width()/2);
+            int saveCount =canvas.save();
+            canvas.concat(rotatMatrix);
             thumbTouchDrawable.draw(canvas);
+            canvas.restoreToCount(saveCount);
         }else{
             computeThumbRect();
             thumbDrawable.setBounds(thumbRect);
