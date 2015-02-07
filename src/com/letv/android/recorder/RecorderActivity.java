@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import com.letv.android.recorder.fragment.RecordedFragment;
 import com.letv.android.recorder.service.Recorder.MediaRecorderState;
+import android.app.Notification;
 
 public class RecorderActivity extends AbsRecorderActivity {
 

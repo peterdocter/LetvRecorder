@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 /**
+ *
  * Created by snile on 14/12/11.
  */
 public class LockScreen {

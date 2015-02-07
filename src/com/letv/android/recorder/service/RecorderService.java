@@ -456,7 +456,6 @@ public class RecorderService extends Service implements RecorderInterface {
 		if (MediaRecorderState.RECORDING == mRecorderState) {
 			recordRealDuring = recordedDuring + System.currentTimeMillis() - recordStartTime;
 		}
-
         AudioManager am=(AudioManager)getSystemService(Context.AUDIO_SERVICE);
 
         int currentRingerMode =am.getRingerMode();
@@ -508,7 +507,6 @@ public class RecorderService extends Service implements RecorderInterface {
         RecordTool.loge(LOG_TAG,"saveRecording");
 
 		String tempPath = null;
-		System.out.println("recordName:"+recordName);
 		if (TextUtils.isEmpty(recordName)) {
 			SimpleDateFormat dateFormat = new SimpleDateFormat(mFileFormat);
 			Date date = new Date(System.currentTimeMillis());

@@ -39,9 +39,10 @@ public class PhoneReceiver extends BroadcastReceiver {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         String stateStr =  sp.getString(Recorder.MediaRecorderState.KEY, Recorder.MediaRecorderState.getStateString(Recorder.MediaRecorderState.IDLE_STATE));
 
-        boolean isCallRecording = RecordTool.getRecordType(context);
-        Recorder.MediaRecorderState mState = Recorder.MediaRecorderState.getState(stateStr);
 
+        boolean isCallRecording = RecordTool.getRecordType(context);
+//        Recorder.MediaRecorderState mState = Recorder.MediaRecorderState.getState(stateStr);
+        Recorder.MediaRecorderState mState = RecordApp.getInstance().getmState();
         String state = bundle.getString("state");
 
         if(!TextUtils.isEmpty(state)){
@@ -57,9 +58,10 @@ public class PhoneReceiver extends BroadcastReceiver {
 
                 if(mState== Recorder.MediaRecorderState.PAUSED){
                     RecorderService.startRecording(context);
-                }else if(RecordApp.getInstance().getmState()== Recorder.MediaRecorderState.PLAYING_PAUSED){
-                    PlayService.play(context);
                 }
+//                else if(RecordApp.getInstance().getmState()== Recorder.MediaRecorderState.PLAYING_PAUSED){
+//                    PlayService.play(context);
+//                }
             }
         }
 

@@ -137,10 +137,10 @@ public class PlayRecordActivity extends Activity implements
 		playBtn.setOnClickListener(this);
 		editBtn.setOnClickListener(this);
 		mSeekBar.setOnSeekBarChangeListener(getChangeListener());
-		if(RecordApp.getInstance().getmState()
-				==MediaRecorderState.PLAYING_PAUSED){
-			PlayService.startPlay(this,mEntry.getFilePath());
-		}
+//		if(RecordApp.getInstance().getmState()
+//				==MediaRecorderState.PLAYING_PAUSED){
+//			PlayService.startPlay(this,mEntry.getFilePath());
+//		}
 		super.onResume();
 	}
 

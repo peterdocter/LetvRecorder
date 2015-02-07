@@ -2,9 +2,7 @@ package com.letv.android.recorder.tool;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -12,8 +10,11 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -221,10 +222,52 @@ public class RecordTool {
 		notification.flags = Notification.FLAG_ONGOING_EVENT;
 		manager.notify(Constants.NOTIFICATION_BACK_ID, notification);
 	}
-	
-	
+    private static boolean isLedOn=false;
+    private static NotificationManager notifiManager;
+    private static Notification ledNotifi;
+    private static Handler ledHandler=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+        }
+    };
+    private static Runnable runableLed = new Runnable() {
+
+        public void run() {
+            if (isLedOn) {
+                notifiManager.cancel(Constants.NOTIFICATION_BACK_LED_ID);
+                isLedOn=false;
+                ledHandler.postDelayed(this, 1000);
+            }else{
+                notifiManager.notify(Constants.NOTIFICATION_BACK_LED_ID, ledNotifi);
+                isLedOn=true;
+                ledHandler.postDelayed(this, 1000);
+            }
+        }
+    };
+    public static void showNotificationLedWhenBack(Context context){
+        notifiManager= (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        ledNotifi = new Notification();
+        ledNotifi.defaults = Notification.DEFAULT_ALL;
+        ledNotifi.defaults &= ~Notification.DEFAULT_LIGHTS;
+        ledNotifi.defaults &= ~Notification.DEFAULT_SOUND;
+        ledNotifi.defaults &= ~Notification.DEFAULT_VIBRATE;
+        ledNotifi.ledARGB = Color.GREEN;
+        ledNotifi.ledOffMS = 0;
+        ledNotifi.ledOnMS = 1000;
+        ledNotifi.flags |= Notification.FLAG_SHOW_LIGHTS;
+        ledNotifi.priority = Notification.PRIORITY_MAX;
+
+        ledHandler.post(runableLed);
+    }
+    public static void hintNotificationLedWhenBack(Context context){
+        if(notifiManager!=null){
+            notifiManager.cancel(Constants.NOTIFICATION_BACK_LED_ID);
+            ledHandler.removeCallbacks(runableLed);
+        }
+    }
+
 	public static void showNotificationAlert(Context context, int id){
-		
 		Intent intent = new Intent(context, RecorderActivity.class);
 		
 		PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, 0);

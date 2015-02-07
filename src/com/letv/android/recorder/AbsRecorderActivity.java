@@ -91,6 +91,7 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
     protected void onResume() {
 
         RecordTool.hideNotificationWhenBack(this);
+        RecordTool.hintNotificationLedWhenBack(this);
         if(!isFistTime()) {
             updateUI();
         }
@@ -98,8 +99,12 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
     }
 
     @Override
-    protected void onStop() {
+    protected void onPause() {
+        super.onPause();
+    }
 
+    @Override
+    protected void onStop() {
         if(mRecorder!=null){
             mRecorder.setmOnStateChangedListener(null);
             mRecorder.setTimeChangedListener(null);
@@ -108,9 +113,9 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
         if(RecordApp.getInstance().getmState()==MediaRecorderState.PAUSED||
                 RecordApp.getInstance().getmState()==MediaRecorderState.RECORDING){
             RecordTool.showNotificationWhenBack(this);
+            RecordTool.showNotificationLedWhenBack(this);
         }
-
-        super.onPause();
+        super.onStop();
     }
 
     @Override

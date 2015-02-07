@@ -19,6 +19,7 @@ public class Constants {
 	public static String ALERT_ACTION="com.leui.record.alert";
 	
 	public static int NOTIFICATION_BACK_ID=100001;
+	public static int NOTIFICATION_BACK_LED_ID=100002;
     public static final String NEXT_RECORD_INDEX="next_record_index";
 
 	
