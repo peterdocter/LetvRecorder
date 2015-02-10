@@ -80,16 +80,17 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
 
     @Override
     protected void onStart() {
+        RecordTool.e("reboot->","--------------------->Abs record onStart");
         mRecorderState = RecordTool.getRecordState(this);
         mRecorder.setmOnStateChangedListener(this);
         mRecorder.setTimeChangedListener(this);
         mRecorder.checkRecorderState();
-        super.onResume();
+        super.onStart();
     }
 
     @Override
     protected void onResume() {
-
+        RecordTool.e("reboot->","--------------------->Abs record onResume"+!isFistTime());
         RecordTool.hideNotificationWhenBack(this);
         RecordTool.hintNotificationLedWhenBack(this);
         if(!isFistTime()) {
@@ -105,6 +106,7 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
 
     @Override
     protected void onStop() {
+        RecordTool.e("reboot->","--------------------->Abs record onStop");
         if(mRecorder!=null){
             mRecorder.setmOnStateChangedListener(null);
             mRecorder.setTimeChangedListener(null);
@@ -120,6 +122,7 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
 
     @Override
     protected void onDestroy() {
+        RecordTool.e("reboot->","--------------------->Abs record onDestroy");
         if (mReceiver != null) {
             unregisterReceiver(mReceiver);
         }
@@ -129,6 +132,7 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
     @Override
     public void onClick(View arg0) {
 
+        RecordTool.e("reboot->", "Abs record before onClick:" +"click - in");
         if(!RecordTool.canClick(500))
             return;
 
@@ -136,6 +140,7 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
             recordedFragment.onClick(arg0);
         }
 
+        RecordTool.e("reboot->", "Abs record before onClick:" + mRecorderState.toString());
         switch (arg0.getId()) {
             case R.id.recordBtn:
                 if (mRecorderState == MediaRecorderState.IDLE_STATE || mRecorderState == MediaRecorderState.PAUSED) {
@@ -161,7 +166,8 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
     }
 
     protected void updateUI() {
-        Log.i("state", "updateUI");
+        mRecorderState=RecordApp.getInstance().getmState();
+        RecordTool.e("reboot->", "Abs record before updateUI:" + mRecorderState.toString());
         if (MediaRecorderState.RECORDING == mRecorderState) {
             recordBtn.setImageResource(R.drawable.frame_record_pause);
             AnimationDrawable am_record=(AnimationDrawable)recordBtn.getDrawable();
@@ -232,7 +238,7 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
 
     @Override
     public void onStateChanged(MediaRecorderState state) {
-
+        RecordTool.e("reboot->","Abs record call onStateChanged:"+state.toString());
         mRecorderState = state;
 
         if(mRecorderState == MediaRecorderState.STOPPED||

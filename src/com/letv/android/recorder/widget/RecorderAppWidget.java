@@ -76,14 +76,14 @@ public class RecorderAppWidget extends AppWidgetProvider{
         if(remoteViews==null) {
             remoteViews = new RemoteViews(context.getPackageName(), R.layout.recorder_app_widget);
         }
-        Log.e("--------------- mtate", Recorder.MediaRecorderState.getStateString(mState));
+        RecordTool.e("--------------- mtate", Recorder.MediaRecorderState.getStateString(mState));
         updateRemoteViews(context, remoteViews,mState,intent);
 
         AppWidgetManager appwidget_manager = AppWidgetManager.getInstance(context);
         ComponentName component_name = new ComponentName(context, RecorderAppWidget.class);
         appwidget_manager.updateAppWidget(component_name, remoteViews);
         long postTime = System.currentTimeMillis();
-        Log.e("----------------updateUI time "+i,(postTime-preTime)/1000f+"");
+        RecordTool.e("----------------updateUI time "+i,(postTime-preTime)/1000f+"");
     }
 
 
@@ -154,7 +154,7 @@ public class RecorderAppWidget extends AppWidgetProvider{
         if(appWidgetIds==null || appWidgetIds.length<=0){
             return;
         }
-        Log.e("-----------------","onUpdate");
+        RecordTool.e("-----------------","onUpdate");
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         String stateStr =  sp.getString(Recorder.MediaRecorderState.KEY, Recorder.MediaRecorderState.getStateString(Recorder.MediaRecorderState.IDLE_STATE));

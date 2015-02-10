@@ -232,7 +232,7 @@ public class RecorderService extends Service implements RecorderInterface {
 				pauseRecording();
 			} else if (action == ACTION_START_RECORDING) {
 				startRecording();
-				Log.e(LOG_TAG,"onStartCommand startRecording");
+				RecordTool.e(LOG_TAG,"onStartCommand startRecording");
 			} else if (action == ACTION_STOP_RECORDING) {
 				stopRecording();
 			} else if (action == ACTION_DELE_RECORDING) {
@@ -320,7 +320,7 @@ public class RecorderService extends Service implements RecorderInterface {
 			audioQulityPram=SettingTool.getAudioQulity(this);
 		}
 		if (!RecordTool.isMounted()) {
-			Log.e(this.getClass().getName(), "sdcard is unmounted");
+			RecordTool.e(this.getClass().getName(), "sdcard is unmounted");
 
 			return Constants.SDCARD_UNMOUNT;
 		}
@@ -392,7 +392,7 @@ public class RecorderService extends Service implements RecorderInterface {
 		mRecorder.setAudioChannels(audioQulityPram.AudioChannel);
 		mRecorder.setAudioEncoder(audioQulityPram.EncodeType);
 
-		Log.e(LOG_TAG,audioQulityPram.AudioChannel+"-"+audioQulityPram.EncodeBitrate+"-"+audioQulityPram.EncodeType+"-"+audioQulityPram.OutputFormat+"-"+audioQulityPram.SampleRate);
+		RecordTool.e(LOG_TAG,audioQulityPram.AudioChannel+"-"+audioQulityPram.EncodeBitrate+"-"+audioQulityPram.EncodeType+"-"+audioQulityPram.OutputFormat+"-"+audioQulityPram.SampleRate);
 		mRecorder.setOnErrorListener(new OnErrorListener() {
 			@Override
 			public void onError(MediaRecorder mr, int what, int extra) {
@@ -561,7 +561,7 @@ public class RecorderService extends Service implements RecorderInterface {
 					}
 					entry.setRecordTime(finalFile.lastModified());
 					entry.setRecordDuring(RecordDb.getFileDuring(finalFile));
-					Log.e(LOG_TAG,"during"+RecordDb.getFileDuring(finalFile));
+					RecordTool.e(LOG_TAG,"during"+RecordDb.getFileDuring(finalFile));
 					entry.setCall(isRemoteRecord);
                     entry.setFlags(RecordApp.getInstance().getFlags());
 					RecordDb recordDb = RecordDb.getInstance(getApplicationContext());

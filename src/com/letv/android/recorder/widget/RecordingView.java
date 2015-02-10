@@ -178,7 +178,7 @@ public class RecordingView extends View {
         }
 //        PointsBuffer buffer = queue.poll();
         if (currentBuffer != null) {
-            Log.e(LOG_TAG,"draw time:"+currentBuffer.bufferTime);
+            RecordTool.e(LOG_TAG,"draw time:"+currentBuffer.bufferTime);
             float offsetX = currentBuffer.offsetX;
             float indicatorOffsetX = currentBuffer.indicatorOffsetX;
 
@@ -350,7 +350,7 @@ public class RecordingView extends View {
 
     public void updateRecordUI(final long recordTimeMillis, float db) {
 
-        Log.e(LOG_TAG,"deal time:"+recordTimeMillis);
+        RecordTool.e(LOG_TAG,"deal time:"+recordTimeMillis);
 
         if (db > 0) {
 

@@ -16,6 +16,7 @@ import android.util.Log;
 import com.letv.android.recorder.RecordApp;
 import com.letv.android.recorder.service.Recorder.MediaRecorderState;
 import com.letv.android.recorder.tool.AudioManagerUtil;
+import com.letv.android.recorder.tool.RecordTool;
 
 @SuppressLint("HandlerLeak")
 public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorListener, OnPreparedListener {
@@ -131,6 +132,7 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
 
 	@Override
 	public void stop() {
+		RecordTool.e("reboot->", "--------------------->2 play engine 1 :" + "player:" + player + ",state:" + RecordApp.getInstance().getmState());
 		if (player != null) {
 			player.stop();
 			player.release();
@@ -145,6 +147,7 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
 		// mSampleStart = 0;
 		PlayService.stopPlay(RecordApp.getInstance());
 		RecordApp.getInstance().setmState(MediaRecorderState.PLAY_STOP);
+		RecordTool.e("reboot->","--------------------->3 play engine 2:" + RecordApp.getInstance().getmState());
         AudioManagerUtil.destroyAudioFocus(afChangeListener);
 	}
 

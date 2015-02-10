@@ -15,6 +15,7 @@ import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.Bundle;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -217,7 +218,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                     getResources().getString(R.string.delete));
             leBottomWidget.addTab(2,"rename",R.drawable.ic_rec_rename,R.drawable.ic_rec_rename_disable,
                     getResources().getString(R.string.rename));
-            leBottomWidget.setTitleTextColor(R.color.actionBarBackground);
+            leBottomWidget.setTitleTextColor(getResources().getColor(R.color.actionBarTitleColor));
             leBottomWidget.setOnClickAndLongClickListener(new LeBottomWidget.OnClickAndLongClickListener() {
                 @Override
                 public void onClick(int pos, String tag) {
@@ -225,7 +226,12 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                         case 0:
                             ArrayList<Uri> uris = ProviderTool.getShareUris(getSelectedPaths());
                             boolean multiple = uris.size() > 1;
-                            Intent share = new Intent(!multiple ? Intent.ACTION_SEND : Intent.ACTION_SEND_MULTIPLE);
+                            int  shareSelect = uris.size();
+                            if(shareSelect==0){
+                                Toast.makeText(getActivity(),R.string.no_selected_share,Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            Intent share = new Intent(shareSelect<1? Intent.ACTION_SEND : Intent.ACTION_SEND_MULTIPLE);
                             share.setType("audio/*");
                             share.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.share));
                             share.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.record_files));
@@ -240,11 +246,11 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                             break;
                         case 1:
                             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                            builder.setTitle(getResources().getString(R.string.delete_record_dialog_title))
+                            final int[] selecteds = getSelectedIndexs();
+                            builder.setTitle(String.format(getResources().getString(R.string.delete_record_dialog_title),selecteds.length))
                                     .setPositiveButton(getResources().getString(R.string.delete),new Dialog.OnClickListener(){
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            int[] selecteds = getSelectedIndexs();
                                             for (int i = 0; i < selecteds.length; i++) {
 
                                                 int type = recordedAdapter.getItemViewType(selecteds[i]);

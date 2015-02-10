@@ -113,6 +113,7 @@ public class PlayRecordActivity extends Activity implements
 
 	@Override
 	protected void onStop() {
+		RecordTool.e("reboot->","--------------------->Play record onStop");
 		if (RecordApp.getInstance().getmState()
 				== MediaRecorderState.PLAYING) {
 			PlayService.pausePlay(this);
@@ -122,6 +123,7 @@ public class PlayRecordActivity extends Activity implements
 
 	@Override
 	protected void onDestroy() {
+		RecordTool.e("reboot->","--------------------->Play record onDestroy");
 		unregisterHeadsetPlugReceiver();
 //		unregisterSensorListener();
 //		PlayEngineImp.getInstance().setpEngineListener(null);
@@ -133,6 +135,7 @@ public class PlayRecordActivity extends Activity implements
 
 	@Override
 	protected void onResume() {
+		RecordTool.e("reboot->","--------------------->Play record onResume");
 		shareBtn.setOnClickListener(this);
 		playBtn.setOnClickListener(this);
 		editBtn.setOnClickListener(this);
@@ -179,6 +182,7 @@ public class PlayRecordActivity extends Activity implements
 				startActivity(Intent.createChooser(share, getTitle()));
 				break;
 			case R.id.playBtn:
+				RecordTool.e("reboot->","--------------------->Play record before onClick:"+RecordApp.getInstance().getmState());
 				if (RecordApp.getInstance().getmState() == MediaRecorderState.PLAYING) {
 					PlayService.pausePlay(this);
 				} else if (RecordApp.getInstance().getmState() == MediaRecorderState.PLAYING_PAUSED) {
@@ -186,6 +190,7 @@ public class PlayRecordActivity extends Activity implements
 				} else {
 					PlayService.startPlay(this, mEntry.getFilePath());
 				}
+				RecordTool.e("reboot->","--------------------->Play record after onClick:"+RecordApp.getInstance().getmState());
 				break;
 			case R.id.editBtn:
 			case R.id.record_title:
@@ -229,6 +234,7 @@ public class PlayRecordActivity extends Activity implements
 
 	@Override
 	public void onBackPressed() {
+		RecordTool.e("reboot->","--------------------->Play record onBackPressed");
 		stopPlay();
 	}
 
@@ -247,7 +253,7 @@ public class PlayRecordActivity extends Activity implements
 
 	@Override
 	public void finish() {
-
+		RecordTool.e("reboot->","--------------------->Play record finish");
 		super.finish();
 		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 	}
@@ -437,6 +443,10 @@ public class PlayRecordActivity extends Activity implements
 		audioManager.setMode(AudioManager.MODE_IN_CALL);
 	}
 	public void stopPlay(){
+		RecordTool.e("reboot->","--------------------->1 Play record before stopPlay:"+RecordApp.getInstance().getmState());
+		shareBtn.setEnabled(false);
+		playBtn.setEnabled(false);
+		editBtn.setEnabled(false);
 		PlayEngineImp.getInstance().stop();
 		PlayEngineImp.getInstance().setpEngineListener(null);
 		if(instance!=null){
@@ -450,6 +460,7 @@ public class PlayRecordActivity extends Activity implements
 		am_edit.setStartOffset(70);
 		editBtn.startAnimation(am_edit);
 
+		RecordTool.e("reboot->","--------------------->4 in  stopPlay after play engine:"+RecordApp.getInstance().getmState());
 		if(RecordApp.getInstance().getmState()==MediaRecorderState.PLAYING){
 			playBtn.setImageResource(R.drawable.frame_pause_record);
 		}else if(RecordApp.getInstance().getmState()==MediaRecorderState.PLAY_STOP){
@@ -457,12 +468,14 @@ public class PlayRecordActivity extends Activity implements
 		}
 
 		RecordApp.getInstance().setmState(MediaRecorderState.IDLE_STATE);
+		RecordTool.e("reboot->","--------------------->5 in  stopPlay after play engine:"+RecordApp.getInstance().getmState());
 		AnimationDrawable am_record=(AnimationDrawable)playBtn.getDrawable();
 		am_record.start();
 
 
 		shareBtn.setVisibility(View.INVISIBLE);
 		editBtn.setVisibility(View.INVISIBLE);
+		mHandler.removeMessages(1);
 		mHandler.sendEmptyMessageDelayed(1,590);
 	}
 }

@@ -68,7 +68,7 @@ public class SettingTool {
             qulityLevel="1";
         }
         int[] pram=null;
-        Log.e("SettingTool", qulityLevel);
+        RecordTool.e("SettingTool", qulityLevel);
         switch(qulityLevel){
             case "1":    pram = context.getResources().getIntArray(R.array.low); break;
             case "2":pram = context.getResources().getIntArray(R.array.standard); break;

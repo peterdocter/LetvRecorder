@@ -16,7 +16,7 @@ public class ShutdownReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Recorder.MediaRecorderState state = RecordTool.getRecordState(context);
-        Log.e("--------","ShutdownReceiver");
+        RecordTool.e("--------","ShutdownReceiver");
         if(state == Recorder.MediaRecorderState.PAUSED||
                 state == Recorder.MediaRecorderState.RECORDING){
             RecorderService.stopRecording(context);

@@ -30,7 +30,7 @@ import com.letv.leui.util.LeDateTimeUtils;
 
 public class RecordTool {
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     public static void logi(String tag,String log){
         if(DEBUG)
@@ -39,9 +39,12 @@ public class RecordTool {
 
     public static void loge(String tag,String log){
         if(DEBUG)
+            Log.e(tag, log);
+    }
+    public static void e(String tag,String log){
+        if(DEBUG)
             Log.e(tag,log);
     }
-
     /* start save record data*/
 
     public final static String RECORDER_SERVICE_STATE = "recorder_state";
@@ -103,7 +106,7 @@ public class RecordTool {
         SharedPreferences sp = getSharedPreferences(context);
         long recordedTime = sp.getLong(RECORDER_RECORDED_TIME,0);
         long startTime = sp.getLong(RECORDER_START_TIME,0);
-        Log.e("RecordTool--time",""+startTime);
+        RecordTool.e("RecordTool--time",""+startTime);
         if(startTime!=0) {
             SharedPreferences.Editor editor= sp.edit();
             editor.putLong(RECORDER_START_TIME,startTime);

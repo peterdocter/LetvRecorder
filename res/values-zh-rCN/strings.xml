@@ -10,27 +10,19 @@
     <string name="call_record_count_xliff">(%d)</string>
     <string name="call_record_filename_xliff">(%d)</string>
 
-    <string name="input_new_recorder_name">输入新录音的名称</string>
     <string name="edit_recorder_name">编辑录音名称</string>
-    <string name="no_change_recordname">没有改变名称</string>
+    <string name="no_change_recordname">名称未编辑</string>
     <string name="share">分享</string>
     <string name="record_files">录音文件</string>
-    <string name="record">录音</string>
-    <string name="pause_record">暂停录音</string>
-    <string name="continue_record">继续录音</string>
     <string name="cancel">取消</string>
     <string name="back">返回</string>
     <string name="select_all">全选</string>
     <string name="select_none">全不选</string>
 
-    <string name="play">播放</string>
-    <string name="pause_play">暂停播放</string>
     <string name="edit">编辑</string>
-    <string name="choose">选择</string>
     <string name="save">保存</string>
-    <string name="send">发送</string>
     <string name="delete">删除</string>
-    <string name="rename">重命名</string>
+    <string name="rename">编辑</string>
     <string name="app_name">录音机</string>
     <string name="record_file_name_format">录音-yyMMdd-HH-mm-ss</string>
     <string name="start_time_format">yyyy-MM-dd</string>
@@ -44,18 +36,19 @@
     <string name="record_pase">录音已暂停</string>
     <string name="record_over_max_time">录音超过一小时</string>
     <string name="record_name_cannot_null">录音名不能为空</string>
-    <string name="record_existed">该录音已经存在</string>
+    <string name="record_existed">录音名已存在</string>
 
     <string name="storage_full">储存空间已满</string>
 
     <string name="record_paused">录音已暂停</string>
 
-    <string name="delete_record_dialog_title">你确定要删除该录音吗</string>
+    <string name="delete_record_dialog_title">刪除录音%d项</string>
 
     <string name="create_file_fail">名称含有特殊符号或文件名过长</string>
 
     <string name="audio_db_artist_name" >"您的录音"</string>
     <string name="audio_db_album_name" >"录音"</string>
+    <string name="no_selected_share" >"没有选中分享"</string>
 
     <!-- setting -->
     <string name="play_mode_title">听筒模式</string>
