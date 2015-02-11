@@ -61,6 +61,7 @@
 
     <string name="play_record_playing">正在播放</string>
     <string name="play_record_pause">暂停</string>
+    <string name="app_detail_sys_set">应用详情</string>
 
     <string-array name="scene_entries">
         <item>录人声</item>
