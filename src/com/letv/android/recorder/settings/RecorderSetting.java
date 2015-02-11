@@ -33,7 +33,7 @@ public class RecorderSetting extends PreferenceActivity{
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId()==R.id.app_datil){
+        if(item.getItemId()==R.id.app_detail){
             Intent in = new Intent().setAction("android.settings.APPLICATION_DETAILS_SETTINGS")
                     .setData(Uri.fromParts("package", "com.letv.android.recorder", null))
                     .addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
