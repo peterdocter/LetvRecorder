@@ -2,29 +2,33 @@
 <resources>
     <!-- High voice qulity related pramameters -->
     <integer-array name="high">
-        <!-- Encode type is MediaRecorder.AudioEncoder.AAC -->
-        <item >3</item>
+        <!-- Encode type is MediaRecorder.AudioEncoder.AMR_WB -->
+        <item >2</item>
         <!-- Audio channel is stereo  -->
         <item >2</item>
         <!-- Encode bitrate -->
         <item >128000</item>
         <!-- Sample rate -->
         <item >48000</item>
+        <!-- Recording file outputFormat is MediaRecorder.OutputFormat.AMR_WB -->
+        <item >4</item>
         <!-- Recording file outputFormat is MediaRecorder.OutputFormat.THREE_GPP -->
-        <item >1</item>
+        <!--<item >1</item>-->
     </integer-array>
     <!-- Standard voice qulity related pramameters -->
     <integer-array name="standard">
-        <!-- Encode type is MediaRecorder.AudioEncoder.AAC -->
-        <item >3</item>
+        <!-- Encode type is MediaRecorder.AudioEncoder.AMR_WB -->
+        <item >2</item>
         <!-- Audio channel is stereo  -->
         <item >2</item>
         <!-- Encode bitrate -->
         <item >48000</item>
         <!-- Sample rate -->
         <item >32000</item>
+        <!-- Recording file outputFormat is MediaRecorder.OutputFormat.AMR_WB -->
+        <item >4</item>
         <!-- Recording file outputFormat is MediaRecorder.OutputFormat.THREE_GPP -->
-        <item >1</item>
+        <!--<item >1</item>-->
     </integer-array>
     <!-- Low voice qulity related pramameters -->
     <integer-array name="low">

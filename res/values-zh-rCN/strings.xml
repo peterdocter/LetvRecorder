@@ -10,17 +10,25 @@
     <string name="call_record_count_xliff">(%d)</string>
     <string name="call_record_filename_xliff">(%d)</string>
 
+    <string name="input_new_recorder_name">输入新录音的名称</string>
     <string name="edit_recorder_name">编辑录音名称</string>
     <string name="no_change_recordname">名称未编辑</string>
     <string name="share">分享</string>
     <string name="record_files">录音文件</string>
+    <string name="record">录音</string>
+    <string name="pause_record">暂停录音</string>
+    <string name="continue_record">继续录音</string>
     <string name="cancel">取消</string>
     <string name="back">返回</string>
     <string name="select_all">全选</string>
     <string name="select_none">全不选</string>
 
+    <string name="play">播放</string>
+    <string name="pause_play">暂停</string>
     <string name="edit">编辑</string>
+    <string name="choose">选择</string>
     <string name="save">保存</string>
+    <string name="send">发送</string>
     <string name="delete">删除</string>
     <string name="rename">编辑</string>
     <string name="app_name">录音机</string>
@@ -57,7 +65,8 @@
     <string name="screen_widget_summary">锁屏时是否显示锁屏录音控制插件</string>
     <string name="record_silence_title">录音时来电静音</string>
     <string name="scene_title">场景设置</string>
-    <string name="voice_recording">通话录音</string>
+    <string name="audio_qulity_title">录音质量</string>
+    <string name="voice_recording">正在录音</string>
 
     <string name="play_record_playing">正在播放</string>
     <string name="play_record_pause">暂停</string>
@@ -72,5 +81,19 @@
         <item>1</item>
         <item>2</item>
     </string-array>
-
+    <string-array name="audio_qulity_entries">
+        <item>低等品质</item>
+        <item>中等品质</item>
+        <item>高等品质</item>
+    </string-array>
+    <string-array name="audio_qulity_entries_des">
+        <item>低等品质保存为amr格式</item>
+        <item>中等品质保存为acc格式</item>
+        <item>高等品质保存为acc格式</item>
+    </string-array>
+    <string-array name="audio_qulity_value">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
 </resources>
