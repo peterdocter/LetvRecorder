@@ -82,7 +82,7 @@ public class SaveRecordActivity extends Activity implements OnClickListener {
 				File file = new File(mEntry.getFilePath());
 				String fileName = RecordTool.getRecordName(mEntry.getFilePath());
 				if(fileName.equalsIgnoreCase(recordNameET.getText().toString())){
-					Toast.makeText(this, R.string.no_change_recordname, Toast.LENGTH_LONG).show();
+					Toast.makeText(this, R.string.no_change_recordname, Toast.LENGTH_SHORT).show();
 				}else if(RecordTool.canSave(this, recordNameET.getText().toString())){
 					String newPath = mEntry.getFilePath().replace(fileName, recordNameET.getText().toString());
 					file.renameTo(new File(newPath));

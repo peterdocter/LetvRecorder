@@ -30,6 +30,7 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
+import android.widget.Toast;
 import com.letv.android.recorder.fragment.RecorderAdapter;
 import com.letv.android.recorder.provider.ProviderTool;
 import com.letv.android.recorder.provider.RecordDb;
@@ -202,7 +203,7 @@ public class PlayRecordActivity extends Activity implements
 						File file = new File(mEntry.getFilePath());
 						String fileName = RecordTool.getRecordName(mEntry.getFilePath());
 						if (fileName.equalsIgnoreCase(mDialog.getText())) {
-//                        Toast.makeText(PlayRecordActivity.this, R.string.no_change_recordname, Toast.LENGTH_LONG).show();
+                        	Toast.makeText(PlayRecordActivity.this, R.string.no_change_recordname, Toast.LENGTH_LONG).show();
 						} else if (RecordTool.canSave(PlayRecordActivity.this, mDialog.getText())) {
 							String oldPath = mEntry.getFilePath();
 							String newPath = mEntry.getFilePath().replace(fileName, mDialog.getText());

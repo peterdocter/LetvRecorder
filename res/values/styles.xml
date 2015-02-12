@@ -29,9 +29,11 @@
         <item name="android:homeAsUpIndicator">@android:drawable/le_actionbar_menuitem_white_back</item>
     </style>
 
-    <style name="recordSettingTheme" parent="@style/AppBaseTheme">
+    <style name="recordSettingTheme" parent="@*android:style/Theme.Leui">
         <item name="android:homeAsUpIndicator">@android:drawable/le_actionbar_menuitem_black_back</item>
         <item name="android:actionBarStyle">@style/setting_actionbar_style</item>
+        <item name="android:statusBarColor">#FAFAFA</item>
+        <item name="android:leStatusBarIconColor">black</item>
     </style>
     
     <style name="recordView">

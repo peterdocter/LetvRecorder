@@ -27,19 +27,26 @@ public class RecorderSetting extends PreferenceActivity{
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        setActionBar=getActionBar();
         getMenuInflater().inflate(R.menu.menu_record_sys_set,menu);
+        setActionBar.setBottomLineDrawable(getResources().getDrawable(R.color.actionBarActionColor));
+        setActionBar.setBottomLineHight(1);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId()==R.id.app_detail){
-            Intent in = new Intent().setAction("android.settings.APPLICATION_DETAILS_SETTINGS")
-                    .setData(Uri.fromParts("package", "com.letv.android.recorder", null))
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-            startActivity(in);
+        switch (item.getItemId()){
+            case android.R.id.home:
+                finish();
+                break;
+            case R.id.app_detail:
+                Intent in = new Intent().setAction("android.settings.APPLICATION_DETAILS_SETTINGS")
+                        .setData(Uri.fromParts("package", "com.letv.android.recorder", null))
+                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+                startActivity(in);
+                break;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
