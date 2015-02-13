@@ -29,9 +29,10 @@ public class SoundRecorder extends AbsRecorderActivity {
 //        topWidget.setCenterTitle(R.string.record_note);
 
         recordedFragment = new RecordedFragment();
-        recordedFragment.setCallRecordUI(true);
+//        recordedFragment.setCallRecordUI(true);
+        recordedFragment.setCallRecordUI(false);
         getFragmentManager().beginTransaction().add(R.id.container, recordedFragment).commit();
-        mRecorder.startRecording(this);
+//        mRecorder.startRecording(this);
 	}
 
 

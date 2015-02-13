@@ -211,6 +211,7 @@ public class PlayRecordActivity extends Activity implements
 								RecordDb recordDb = RecordDb.getInstance(PlayRecordActivity.this);
 								recordDb.update(oldPath, newPath);
 								RecordDb.destroyInstance();
+								AbsRecorderActivity.recordedFragment.refreshRecordList();
 								FileSyncContentProvider.renameFile(PlayRecordActivity.this,oldPath,newPath);
 								mEntry.setFilePath(newPath);
 							}

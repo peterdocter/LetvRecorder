@@ -42,7 +42,7 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
     protected RecorderReceiver mReceiver;
     protected Recorder mRecorder;
 
-    protected RecordedFragment recordedFragment;
+    public static RecordedFragment  recordedFragment;
 
 //    protected LeTopWidget topWidget;
 

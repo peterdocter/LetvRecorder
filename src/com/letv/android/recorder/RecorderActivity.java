@@ -14,11 +14,15 @@ public class RecorderActivity extends AbsRecorderActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
         recordedFragment = new RecordedFragment();
-        recordedFragment.setCallRecordUI(false);
+		recordedFragment.setCallRecordUI(false);
         getFragmentManager().beginTransaction().replace(R.id.container, recordedFragment).commit();
 
 	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+	}
 
 	@Override
 	public void onBackPressed() {

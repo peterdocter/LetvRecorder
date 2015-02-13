@@ -180,6 +180,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
     
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
+        RecordTool.e("reboot->","onActivityCreated:"+isCallRecordUI());
         if(!isCallRecordUI()) {
         	TypedArray actionbarSizeTypedArray = getActivity().obtainStyledAttributes(new int[] {  
         	        android.R.attr.actionBarSize  
@@ -538,6 +539,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                     if(recordedAdapter.getItemViewType(position)== RecorderAdapter.ITEM_TYPE_CALL_SET){
                         recordedAdapter.setShowCallRecord(true);
                         recordedAdapter.setRecordList(RecordDb.getInstance(getActivity()).getCallRecords());
+                        RecordTool.e("rename","rename 1");
                         recordedAdapter.notifyDataSetChanged();
                         ActionBarTool.changeActionBar(getActivity(),true);
                         getActivity().invalidateOptionsMenu();
@@ -549,6 +551,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                         return;
                     }
 
+                    RecordTool.e("rename","rename 2");
 					Intent intent = new Intent(getActivity(), PlayRecordActivity.class);
 					intent.putExtra(PlayRecordActivity.RECORD_ENTRY, (RecordEntry) (parent.getItemAtPosition(position)));
 					getActivity().startActivity(intent);
