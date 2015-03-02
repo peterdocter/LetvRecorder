@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.telephony.PhoneStateListener;
@@ -15,6 +16,7 @@ import com.letv.android.recorder.service.PlayService;
 import com.letv.android.recorder.service.Recorder;
 import com.letv.android.recorder.service.RecorderService;
 import com.letv.android.recorder.tool.RecordTool;
+import com.letv.android.recorder.tool.SettingTool;
 
 import java.util.Set;
 
@@ -27,10 +29,11 @@ public class PhoneReceiver extends BroadcastReceiver {
 
     private Context context;
 
+    private AudioManager am;
     @Override
     public void onReceive(Context context, Intent intent) {
         this.context = context;
-
+        am=(AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
         RecordTool.loge(this.getClass().getSimpleName(),intent.getAction());
         RecordTool.loge(this.getClass().getSimpleName(),intent.toString());
 
@@ -49,6 +52,12 @@ public class PhoneReceiver extends BroadcastReceiver {
             if(state.equals("RINGING")||state.equals("OFFHOOK")){
                 if(mState == Recorder.MediaRecorderState.RECORDING){
                     if(!isCallRecording) {
+                        if(SettingTool.isSilence(context)) {
+                            RecordTool.e("phone_rec","1:"+am.getRingerMode());
+                            RecordTool.saveRingMode(context, am.getRingerMode());
+                            am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
+                            RecordTool.e("phone_rec", "2:" + am.getRingerMode());
+                        }
                         RecorderService.pauseRecoring(context);
                     }
                 }else if(RecordApp.getInstance().getmState()== Recorder.MediaRecorderState.PLAYING){
@@ -57,7 +66,10 @@ public class PhoneReceiver extends BroadcastReceiver {
             }else if(state.equals("IDLE")){
 
                 if(mState== Recorder.MediaRecorderState.PAUSED){
+                    RecordTool.e("phone_rec","3:"+am.getRingerMode());
+                    am.setRingerMode(RecordTool.getRingMode(context));
                     RecorderService.startRecording(context);
+                    RecordTool.e("phone_rec","4:"+am.getRingerMode());
                 }
 //                else if(RecordApp.getInstance().getmState()== Recorder.MediaRecorderState.PLAYING_PAUSED){
 //                    PlayService.play(context);

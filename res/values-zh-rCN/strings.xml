@@ -41,6 +41,7 @@
     <string name="week_ago">一周前</string>
 
     <string name="recording">正在录音...</string>
+    <string name="saving_record">正在保存...</string>
     <string name="record_pase">录音已暂停</string>
     <string name="record_over_max_time">录音超过一小时</string>
     <string name="record_name_cannot_null">录音名不能为空</string>
@@ -66,11 +67,13 @@
     <string name="record_silence_title">录音时来电静音</string>
     <string name="scene_title">场景设置</string>
     <string name="audio_qulity_title">录音质量</string>
-    <string name="voice_recording">正在录音</string>
+    <string name="voice_recording">通话录音</string>
 
     <string name="play_record_playing">正在播放</string>
     <string name="play_record_pause">暂停</string>
     <string name="app_detail_sys_set">应用详情</string>
+    <string name="ready_record">准备就绪</string>
+
 
     <string-array name="scene_entries">
         <item>录人声</item>

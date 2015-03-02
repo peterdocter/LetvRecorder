@@ -232,7 +232,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                                 Toast.makeText(getActivity(),R.string.no_selected_share,Toast.LENGTH_SHORT).show();
                                 return;
                             }
-                            Intent share = new Intent(shareSelect<1? Intent.ACTION_SEND : Intent.ACTION_SEND_MULTIPLE);
+                            Intent share = new Intent(shareSelect<=1? Intent.ACTION_SEND : Intent.ACTION_SEND_MULTIPLE);
                             share.setType("audio/*");
                             share.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.share));
                             share.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.record_files));
@@ -532,7 +532,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                     ((LeCheckBox)view.findViewById(R.id.item_select)).setChecked(!flag,true);
                     recordedAdapter.notifyDataSetChanged();
                     changeSelectStatus();
-					updateSherlockUI();
+//					updateSherlockUI();
 		    		mActionMode.invalidate();
 				} else {
 

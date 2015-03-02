@@ -387,7 +387,7 @@ public class PlayRecordActivity extends Activity implements
 	@Override
 	public void onSensorChanged(SensorEvent event) {
 
-		System.out.println("传感起变化");
+		RecordTool.e("paly mode","传感起变化");
 		if (RecordApp.getInstance().getmState() == MediaRecorderState.PLAYING ||
 				RecordApp.getInstance().getmState() == MediaRecorderState.PLAYING_PAUSED) {
 
@@ -423,26 +423,28 @@ public class PlayRecordActivity extends Activity implements
 	}
 
 	public void speakerMode(){
+		RecordTool.e("play mode","shouldChangePlayMode:"+shouldChangePlayMode());
 		if(!shouldChangePlayMode()){
 			return;
 		}
-		System.out.println("playing record mode 正常模式");
+		RecordTool.e("play mode", "正常模式");
 //		audioManager.setMicrophoneMute(false);
 		audioManager.setSpeakerphoneOn(true);// 使用扬声器外放，即使已经插入耳机
-		// setVolumeControlStream(AudioManager.STREAM_MUSIC);//控制声音的大小
+		setVolumeControlStream(AudioManager.STREAM_MUSIC);//控制声音的大小
 		audioManager.setMode(AudioManager.MODE_NORMAL);
 	}
 
 	public void receiverMode(){
-		if(!shouldChangePlayMode()){
+		RecordTool.e("play mode","shouldChangePlayMode:"+shouldChangePlayMode());
+		if(!shouldChangePlayMode()) {
 			return;
 		}
-		System.out.println("playing record mode 听筒模式");
+		RecordTool.e("play mode","听筒模式");
 //		audioManager.setMicrophoneMute(true);
-		audioManager.setSpeakerphoneOn(false);
-		audioManager.setRouting(AudioManager.MODE_NORMAL, AudioManager.ROUTE_EARPIECE, AudioManager.ROUTE_ALL);
+//		audioManager.setRouting(AudioManager.MODE_NORMAL, AudioManager.ROUTE_EARPIECE, AudioManager.ROUTE_ALL);
 		setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
 		audioManager.setMode(AudioManager.MODE_IN_CALL);
+		audioManager.setSpeakerphoneOn(false);
 	}
 	public void stopPlay(){
 		RecordTool.e("reboot->","--------------------->1 Play record before stopPlay:"+RecordApp.getInstance().getmState());

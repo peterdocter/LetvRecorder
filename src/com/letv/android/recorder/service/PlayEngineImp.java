@@ -17,6 +17,7 @@ import com.letv.android.recorder.RecordApp;
 import com.letv.android.recorder.service.Recorder.MediaRecorderState;
 import com.letv.android.recorder.tool.AudioManagerUtil;
 import com.letv.android.recorder.tool.RecordTool;
+import com.letv.android.recorder.tool.SettingTool;
 
 @SuppressLint("HandlerLeak")
 public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorListener, OnPreparedListener {
@@ -67,6 +68,9 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
 				player.setDataSource(path);
 				player.setOnCompletionListener(this);
 				player.setOnErrorListener(this);
+				if (SettingTool.getPlayMode(RecordApp.getInstance().getApplicationContext())== SettingTool.PlayMode.RECEIVER){
+					player.setAudioStreamType(AudioManager.STREAM_VOICE_CALL);
+				}
 				player.prepare();
                 recordPath = path;
 			}

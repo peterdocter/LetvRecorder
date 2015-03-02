@@ -59,10 +59,23 @@ public class RecordTool {
 
     public final static String RECORDER_IS_FIRST_LAUNCH="is_first_launch";
 
+    public static final String RECORD_SILENCE_RingerMode="record_silence_mode";
+
+
+
     public static SharedPreferences getSharedPreferences(Context context){
         return PreferenceManager.getDefaultSharedPreferences(context);
     }
+    public static int getRingMode(Context context){
+        return getSharedPreferences(context)
+                .getInt(RECORD_SILENCE_RingerMode,2);
+    }
 
+    public static void saveRingMode(Context context,int ringMode){
+        getSharedPreferences(context).edit()
+                .putInt(RECORD_SILENCE_RingerMode, ringMode)
+                .commit();
+    }
     public static boolean isFirstLaunch(Context context){
         boolean isFirst = getSharedPreferences(context).getBoolean(RECORDER_IS_FIRST_LAUNCH,true);
         getSharedPreferences(context).edit().putBoolean(RECORDER_IS_FIRST_LAUNCH,false).commit();

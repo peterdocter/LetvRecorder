@@ -111,6 +111,7 @@ public class RecorderService extends Service implements RecorderInterface {
 
 	private KeyguardManager keyguardManager;
 
+	//system Aduio when recording
 
 	private AudioQulityPram audioQulityPram;
 	private static Context whichContext;
@@ -314,6 +315,7 @@ public class RecorderService extends Service implements RecorderInterface {
 
 	@Override
 	public int startRecording() {
+		RecordTool.e("RecordSer","->startRecording");
 		if(whichContext instanceof  SoundRecorder){
 			audioQulityPram=SettingTool.getAudioQulity(whichContext);
 		}else {
@@ -422,11 +424,6 @@ public class RecorderService extends Service implements RecorderInterface {
             mRecorderState = MediaRecorderState.IDLE_STATE;
             sendStateBroadcast();
 		}
-		if(SettingTool.isSilence(this)) {
-			AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-			PRE_RECORD_RINGER_MODE = am.getRingerMode();
-			am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
-		}
         RecordTool.loge(LOG_TAG,"startRecording");
 		return  Constants.START_RECORD_SUCCESS;
 	}
@@ -435,6 +432,7 @@ public class RecorderService extends Service implements RecorderInterface {
 	@Override
 	public boolean pauseRecording() {
 
+		RecordTool.loge("RecordSer","->pauseRecording");
 		mRecorderState = MediaRecorderState.PAUSED;
 		recordedDuring += System.currentTimeMillis() - recordStartTime;
 		timerStop();
@@ -447,7 +445,6 @@ public class RecorderService extends Service implements RecorderInterface {
 //        if(!isRemoteRecord){
 //            RecordTool.showNotificationWhenBack(getApplicationContext());
 //        }
-        RecordTool.loge(LOG_TAG,"pauseRecording");
 		return true;
 	}
 
@@ -456,13 +453,6 @@ public class RecorderService extends Service implements RecorderInterface {
 		if (MediaRecorderState.RECORDING == mRecorderState) {
 			recordRealDuring = recordedDuring + System.currentTimeMillis() - recordStartTime;
 		}
-        AudioManager am=(AudioManager)getSystemService(Context.AUDIO_SERVICE);
-
-        int currentRingerMode =am.getRingerMode();
-        if(SettingTool.isSilence(this) && currentRingerMode==AudioManager.RINGER_MODE_SILENT) {
-            am.setRingerMode(PRE_RECORD_RINGER_MODE);
-        }
-
 		timerStop();
 		mRecorderState = MediaRecorderState.IDLE_STATE;
 		if (mRecorder != null) {

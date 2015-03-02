@@ -102,7 +102,7 @@ public class RecorderAppWidget extends AppWidgetProvider{
             remoteViews.setOnClickPendingIntent(R.id.remote_record_action, startPendingIntent);
             remoteViews.setImageViewResource(R.id.remote_record_action,R.drawable.start_selector);
             remoteViews.setTextViewText(R.id.remote_record_name, RecordTool.getNewRecordName(context));
-            remoteViews.setTextViewText(R.id.remote_record_state,"准备就绪");
+            remoteViews.setTextViewText(R.id.remote_record_state,mState== Recorder.MediaRecorderState.IDLE_STATE?context.getResources().getText(R.string.ready_record):context.getResources().getText(R.string.record_paused));
 
         }else if(mState == Recorder.MediaRecorderState.RECORDING){
 
@@ -121,13 +121,13 @@ public class RecorderAppWidget extends AppWidgetProvider{
 
             remoteViews.setImageViewResource(R.id.remote_record_action, R.drawable.pause_selector);
             remoteViews.setTextViewText(R.id.remote_record_name, RecordTool.getRecordName(context));
-            remoteViews.setTextViewText(R.id.remote_record_state,"正在录音...");
+            remoteViews.setTextViewText(R.id.remote_record_state,context.getResources().getText(R.string.recording));
 
             remoteViews.setViewVisibility(R.id.remote_record_flag, View.VISIBLE);
             remoteViews.setViewVisibility(R.id.remote_record_done,View.VISIBLE);
 //            remoteViews.setViewVisibility(R.id.remote_wave,View.VISIBLE);
         }else if(mState == Recorder.MediaRecorderState.STOPPED){
-            remoteViews.setTextViewText(R.id.remote_record_state,"正在保存...");
+            remoteViews.setTextViewText(R.id.remote_record_state,context.getResources().getText(R.string.saving_record));
         }
 
 
