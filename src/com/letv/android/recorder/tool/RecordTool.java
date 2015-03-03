@@ -27,6 +27,7 @@ import com.letv.android.recorder.RecorderActivity;
 import com.letv.android.recorder.R;
 import com.letv.android.recorder.service.Recorder.MediaRecorderState;
 import com.letv.leui.util.LeDateTimeUtils;
+import com.letv.android.recorder.AbsRecorderActivity;
 
 public class RecordTool {
 
@@ -60,6 +61,8 @@ public class RecordTool {
     public final static String RECORDER_IS_FIRST_LAUNCH="is_first_launch";
 
     public static final String RECORD_SILENCE_RingerMode="record_silence_mode";
+
+    public static boolean isRecordInBack=false;
 
 
 
@@ -216,27 +219,34 @@ public class RecordTool {
     }
 
 	
-	public static void showNotificationWhenBack(Context context){
-		Intent intent = new Intent(context, RecorderActivity.class);
+	public static void showNotificationWhenBack(Context context,MediaRecorderState mRecorderState){
+        RecordTool.e("showNotificationWhenBack","showNotificationWhenBack 1 :"+isRecordInBack);
+        RecordTool.e("showNotificationWhenBack","showNotificationWhenBack 2 :"+isRecordInBack);
+        if(isRecordInBack){
+            Intent intent = new Intent(context, RecorderActivity.class);
 
-		PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
+            PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
-		String title = context.getResources().getString(R.string.app_name);
-		String conStr;
+            String title = context.getResources().getString(R.string.app_name);
+            String conStr;
 
-		if(RecordApp.getInstance().getmState()==MediaRecorderState.RECORDING){
-			conStr = context.getResources().getString(R.string.recording);
-		}else if(RecordApp.getInstance().getmState()==MediaRecorderState.PAUSED){
-			conStr = context.getResources().getString(R.string.record_pase);
-		}else{
-			return;
-		}
+            RecordTool.e("showNotificationWhenBack","showNotificationWhenBack 2 :mRecorderState"+mRecorderState+"RecordApp:"+RecordApp.getInstance().getmState());
+            if(mRecorderState==MediaRecorderState.RECORDING){
+                conStr = context.getResources().getString(R.string.recording);
+            }else if(mRecorderState==MediaRecorderState.PAUSED){
+                conStr = context.getResources().getString(R.string.record_pase);
+            }else{
+                hideNotificationWhenBack(context);
+                return;
+            }
 
-		NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-		Notification notification = new Notification(R.drawable.ic_rec_status, conStr, System.currentTimeMillis());
-		notification.setLatestEventInfo(context, title, conStr, contentIntent);
-		notification.flags = Notification.FLAG_ONGOING_EVENT;
-		manager.notify(Constants.NOTIFICATION_BACK_ID, notification);
+            NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+            Notification notification = new Notification(R.drawable.ic_rec_status, conStr, System.currentTimeMillis());
+            notification.setLatestEventInfo(context, title, conStr, contentIntent);
+            notification.flags = Notification.FLAG_ONGOING_EVENT;
+            manager.notify(Constants.NOTIFICATION_BACK_ID, notification);
+        }
+
 	}
     private static boolean isLedOn=false;
     private static NotificationManager notifiManager;

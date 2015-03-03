@@ -96,6 +96,7 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
         if(!isFistTime()) {
             updateUI();
         }
+        RecordTool.isRecordInBack=false;
         super.onResume();
     }
 
@@ -112,9 +113,10 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
             mRecorder.setTimeChangedListener(null);
         }
 
+        RecordTool.isRecordInBack=true;
         if(RecordApp.getInstance().getmState()==MediaRecorderState.PAUSED||
                 RecordApp.getInstance().getmState()==MediaRecorderState.RECORDING){
-            RecordTool.showNotificationWhenBack(this);
+            RecordTool.showNotificationWhenBack(this,RecordApp.getInstance().getmState());
             RecordTool.showNotificationLedWhenBack(this);
         }
         super.onStop();

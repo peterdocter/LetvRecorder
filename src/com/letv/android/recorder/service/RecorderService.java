@@ -638,6 +638,8 @@ public class RecorderService extends Service implements RecorderInterface {
 		}else{
 			LockScreen.hideLockScreenWidget(this);
 		}
+
+		RecordTool.showNotificationWhenBack(this,mRecorderState);
         if(isRemoteRecord) {
             RecordApp.getInstance().setmState(mRecorderState);
         }
