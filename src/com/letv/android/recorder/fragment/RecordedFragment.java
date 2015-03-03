@@ -382,7 +382,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 		public boolean onPrepareActionMode(ActionMode arg0, Menu arg1) {
 	    	
 			String itemXliff = getActivity().getResources().getString(R.string.select_item_xliff);
-    		mActionMode.setTitle(String.format(itemXliff, getSelectedCount()));
+    		mActionMode.setTitle(getSelectedCount()==0?getActivity().getResources().getString(R.string.please_select_reoord):String.format(itemXliff, getSelectedCount()));
 			
 	    	if(recordedAdapter.isShowCallRecord()){
 //	          backView.setVisibility(View.VISIBLE);

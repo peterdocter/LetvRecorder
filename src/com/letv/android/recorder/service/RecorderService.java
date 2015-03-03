@@ -113,6 +113,10 @@ public class RecorderService extends Service implements RecorderInterface {
 
 	//system Aduio when recording
 
+	private volatile ServiceHandler mServiceHandler;
+	private volatile Looper mServiceLooper;
+	private String mName="RecorderService";
+
 	private AudioQulityPram audioQulityPram;
 	private static Context whichContext;
     RemoteCallbackList<IRecorderCallBack> rc=new RemoteCallbackList<IRecorderCallBack>();
@@ -205,6 +209,11 @@ public class RecorderService extends Service implements RecorderInterface {
         mRemainingTimeCalculator = new RemainingTimeCalculator();
 
 		keyguardManager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
+		HandlerThread thread = new HandlerThread("IntentService[" + mName + "]");
+		thread.start();
+
+		mServiceLooper = thread.getLooper();
+		mServiceHandler = new ServiceHandler(mServiceLooper);
 		super.onCreate();
 	}
 
@@ -217,15 +226,12 @@ public class RecorderService extends Service implements RecorderInterface {
 		return iRecorder;
 	}
 
-	@Override
-	public void onStart(Intent intent, int startId) {
-		super.onStart(intent, startId);
-	}
-	
-	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		if (intent == null)
-			return super.onStartCommand(intent, flags, startId);
+	protected void onHandleIntent(Intent intent) {
+		RecordTool.e(LOG_TAG,"onHandleIntent");
+		if (intent == null){
+			RecordTool.e("IntentService","onHandleIntent");
+			return;
+		}
 		Bundle bundle = intent.getExtras();
 		if (bundle != null && bundle.containsKey(ACTION_NAME)) {
 			int action = bundle.getInt(ACTION_NAME);
@@ -241,8 +247,44 @@ public class RecorderService extends Service implements RecorderInterface {
 			} else if (action == ACTION_SAVE_RECORDING) {
 				saveRecording(recordName);
 			}
-			return START_STICKY;
 		}
+
+
+	}
+
+	@Override
+	public void onStart(Intent intent, int startId) {
+		super.onStart(intent, startId);
+	}
+
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId) {
+
+//		RecordTool.e(LOG_TAG,"onStartCommand onStartCommand 1");
+//		if (intent == null)
+//			return super.onStartCommand(intent, flags, startId);
+//		Bundle bundle = intent.getExtras();
+//		if (bundle != null && bundle.containsKey(ACTION_NAME)) {
+//			int action = bundle.getInt(ACTION_NAME);
+//			if (action == ACTION_PAUSE_RECORDING) {
+//				pauseRecording();
+//			} else if (action == ACTION_START_RECORDING) {
+//				startRecording();
+//				RecordTool.e(LOG_TAG,"onStartCommand startRecording");
+//			} else if (action == ACTION_STOP_RECORDING) {
+//				stopRecording();
+//			} else if (action == ACTION_DELE_RECORDING) {
+//				deleRecording();
+//			} else if (action == ACTION_SAVE_RECORDING) {
+//				saveRecording(recordName);
+//			}
+//			return START_STICKY;
+//		}
+
+		Message msg = mServiceHandler.obtainMessage();
+		msg.arg1 = startId;
+		msg.obj = intent;
+		mServiceHandler.handleMessage(msg);
 
 		return super.onStartCommand(intent, flags, startId);
 	}
@@ -771,5 +813,14 @@ public class RecorderService extends Service implements RecorderInterface {
             return false;
     }
 
+	private final class ServiceHandler extends Handler {
+		public ServiceHandler(Looper looper) {
+			super(looper);
+		}
 
+		@Override
+		public void handleMessage(Message msg) {
+			onHandleIntent((Intent)msg.obj);
+		}
+	}
 }
