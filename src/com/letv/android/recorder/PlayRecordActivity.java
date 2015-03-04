@@ -43,6 +43,7 @@ import com.letv.android.recorder.tool.RecordTool;
 import com.letv.android.recorder.tool.SettingTool;
 import com.letv.android.recorder.widget.EditRecordNameDialog;
 import com.letv.android.recorder.widget.RecorderSeekBar;
+import com.letv.leui.widget.LeTopSlideToastHelper;
 
 public class PlayRecordActivity extends Activity implements
 		OnClickListener, SensorEventListener,PlayEngineListener {
@@ -203,7 +204,10 @@ public class PlayRecordActivity extends Activity implements
 						File file = new File(mEntry.getFilePath());
 						String fileName = RecordTool.getRecordName(mEntry.getFilePath());
 						if (fileName.equalsIgnoreCase(mDialog.getText())) {
-                        	Toast.makeText(PlayRecordActivity.this, R.string.no_change_recordname, Toast.LENGTH_LONG).show();
+							LeTopSlideToastHelper.getToastHelper(PlayRecordActivity.this, LeTopSlideToastHelper.LENGTH_SHORT,
+									getResources().getString(R.string.no_change_recordname), null,
+									null, null,
+									null).show();
 						} else if (RecordTool.canSave(PlayRecordActivity.this, mDialog.getText())) {
 							String oldPath = mEntry.getFilePath();
 							String newPath = mEntry.getFilePath().replace(fileName, mDialog.getText());

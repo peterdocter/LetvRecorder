@@ -41,6 +41,7 @@ import com.letv.android.recorder.widget.EditRecordNameDialog;
 import com.letv.android.recorder.widget.RecordingView;
 import com.letv.leui.widget.LeBottomWidget;
 import com.letv.leui.widget.LeCheckBox;
+import com.letv.leui.widget.LeTopSlideToastHelper;
 
 public class RecordedFragment extends Fragment implements OnClickListener {
 
@@ -229,7 +230,10 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                             boolean multiple = uris.size() > 1;
                             int  shareSelect = uris.size();
                             if(shareSelect==0){
-                                Toast.makeText(getActivity(),R.string.no_selected_share,Toast.LENGTH_SHORT).show();
+                                LeTopSlideToastHelper.getToastHelper(getActivity(), LeTopSlideToastHelper.LENGTH_SHORT,
+                                        getResources().getString(R.string.no_selected_share), null,
+                                        null, null,
+                                        null).show();
                                 return;
                             }
                             Intent share = new Intent(shareSelect<=1? Intent.ACTION_SEND : Intent.ACTION_SEND_MULTIPLE);
@@ -459,7 +463,10 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                                 RecordApp.getInstance().setRecordName(mdialog.getText());
                             }
                         }else{
-                            Toast.makeText(getActivity(),R.string.create_file_fail,Toast.LENGTH_SHORT).show();
+                            LeTopSlideToastHelper.getToastHelper(getActivity(), LeTopSlideToastHelper.LENGTH_SHORT,
+                                    getResources().getString(R.string.create_file_fail), null,
+                                    null, null,
+                                    null).show();
                         }
                     }
                 });
@@ -767,15 +774,29 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 	}
 
 	public String[] getSelectedPaths() {
-		String[] path = new String[getSelectedCount()];
+//		String[] path = new String[getSelectedCount()];
+        ArrayList<String> path=new ArrayList<String>();
         RecordTool.loge(this.getClass().getSimpleName(),"count:"+getSelectedCount());
 		int cursor = 0;
         int[] selecteds = getSelectedIndexs();
 		for (int i = 0; i < selecteds.length; i++) {
-            path[cursor++] = recordedAdapter.getItem(selecteds[i]).getFilePath();
+            int type = recordedAdapter.getItemViewType(selecteds[i]);
+            if(type == RecorderAdapter.ITEM_TYPE_CALL_SET){
+                RecordDb db = RecordDb.getInstance(getActivity());
+                List<RecordEntry> callRecords =db.getCallRecords();
+                if(callRecords!=null && callRecords.size()>0) {
+                    for (RecordEntry call : callRecords) {
+                        path.add(call.getFilePath());
+                    }
+                }
+            }else{
+//                path[cursor++] = recordedAdapter.getItem(selecteds[i]).getFilePath();
+                  path.add(recordedAdapter.getItem(selecteds[i]).getFilePath());
+            }
+//            path[cursor++] = recordedAdapter.getItem(selecteds[i]).getFilePath();
 		}
-
-		return path;
+		String[] pathArr = new String[path.size()];
+		return path.toArray(pathArr);
 	}
 
 	public int[] getSelectedIndexs() {

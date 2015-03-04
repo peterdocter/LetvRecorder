@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.letv.leui.widget.LeTopSlideToastHelper;
 
 import com.letv.android.recorder.provider.RecordDb;
 import com.letv.android.recorder.service.RecorderService;
@@ -82,7 +83,10 @@ public class SaveRecordActivity extends Activity implements OnClickListener {
 				File file = new File(mEntry.getFilePath());
 				String fileName = RecordTool.getRecordName(mEntry.getFilePath());
 				if(fileName.equalsIgnoreCase(recordNameET.getText().toString())){
-					Toast.makeText(this, R.string.no_change_recordname, Toast.LENGTH_SHORT).show();
+					LeTopSlideToastHelper.getToastHelper(this, LeTopSlideToastHelper.LENGTH_SHORT,
+							getResources().getString(R.string.no_change_recordname),null,
+							null,null,
+							null).show();
 				}else if(RecordTool.canSave(this, recordNameET.getText().toString())){
 					String newPath = mEntry.getFilePath().replace(fileName, recordNameET.getText().toString());
 					file.renameTo(new File(newPath));

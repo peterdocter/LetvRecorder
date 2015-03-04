@@ -26,7 +26,6 @@ import android.os.*;
 import android.text.TextUtils;
 import android.util.Log;
 
-import android.widget.Toast;
 import com.letv.android.recorder.*;
 import com.letv.android.recorder.aidl.IRecorder;
 import com.letv.android.recorder.aidl.IRecorderCallBack;
@@ -35,6 +34,7 @@ import com.letv.android.recorder.service.Recorder.MediaRecorderState;
 import com.letv.android.recorder.settings.AudioQulityPram;
 import com.letv.android.recorder.tool.*;
 import com.letv.android.recorder.widget.RecorderAppWidget;
+import com.letv.leui.widget.LeTopSlideToastHelper;
 import com.letv.leui.widget.ScreenRecordingView;
 
 
@@ -140,7 +140,7 @@ public class RecorderService extends Service implements RecorderInterface {
     private Runnable alertStorage = new Runnable() {
         @Override
         public void run() {
-            Toast.makeText(getApplicationContext(),R.string.storage_full,Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),R.string.storage_full,LeTopSlideToastHelper.LENGTH_SHORT).show();
         }
     };
 
@@ -446,7 +446,10 @@ public class RecorderService extends Service implements RecorderInterface {
                 mRecorder=null;
                 mRecorderState = MediaRecorderState.IDLE_STATE;
                 sendStateBroadcast();
-				Toast.makeText(getApplicationContext(),"error",Toast.LENGTH_SHORT).show();
+				LeTopSlideToastHelper.getToastHelper(getApplicationContext(), LeTopSlideToastHelper.LENGTH_SHORT,
+						getResources().getString(R.string.record_error), null,
+						null, null,
+						null).show();
 			}
 		});
 		try {
@@ -459,7 +462,10 @@ public class RecorderService extends Service implements RecorderInterface {
 			AudioManagerUtil.initPrePlayingAudioFocus(null);
 		} catch (Exception e) {
 			e.printStackTrace();
-            Toast.makeText(getApplicationContext(),"Exception",Toast.LENGTH_SHORT).show();
+			LeTopSlideToastHelper.getToastHelper(getApplicationContext(),LeTopSlideToastHelper.LENGTH_SHORT,
+					getResources().getString(R.string.record_exception),null,
+					null,null,
+					null).show();
 			mRecorder.release();
 			mRecorder = null;
             timerStop();

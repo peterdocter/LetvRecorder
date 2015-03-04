@@ -18,7 +18,6 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.letv.android.recorder.Constants;
 import com.letv.android.recorder.RecordApp;
@@ -28,6 +27,7 @@ import com.letv.android.recorder.R;
 import com.letv.android.recorder.service.Recorder.MediaRecorderState;
 import com.letv.leui.util.LeDateTimeUtils;
 import com.letv.android.recorder.AbsRecorderActivity;
+import com.letv.leui.widget.LeTopSlideToastHelper;
 
 public class RecordTool {
 
@@ -331,7 +331,10 @@ public class RecordTool {
 	
 	public static boolean canSave(Context context, String recordNewName) {
 		if (TextUtils.isEmpty(recordNewName)) {
-			Toast.makeText(context, R.string.record_name_cannot_null, Toast.LENGTH_LONG).show();
+            LeTopSlideToastHelper.getToastHelper(context, LeTopSlideToastHelper.LENGTH_LONG,
+                    context.getResources().getString(R.string.record_name_cannot_null), null,
+                    null, null,
+                    null).show();
 			return false;
 		}
 
@@ -341,7 +344,10 @@ public class RecordTool {
 			for (File tmp : fileList) {
 				if (tmp.isFile()) {
 					if (tmp.getName().equalsIgnoreCase(recordNewName+Constants.RECORD_FORMAT[0])||tmp.getName().equalsIgnoreCase(recordNewName+Constants.RECORD_FORMAT[1])) {
-						Toast.makeText(context, R.string.record_existed, Toast.LENGTH_LONG).show();
+                        LeTopSlideToastHelper.getToastHelper(context, LeTopSlideToastHelper.LENGTH_LONG,
+                                context.getResources().getString(R.string.record_existed), null,
+                                null, null,
+                                null).show();
 						return false;
 					}
 				}
