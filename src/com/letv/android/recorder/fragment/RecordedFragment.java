@@ -45,6 +45,7 @@ import com.letv.leui.widget.LeTopSlideToastHelper;
 
 public class RecordedFragment extends Fragment implements OnClickListener {
 
+    static String TAG="RecordedFragment";
 	private View rootView = null;
 	private ViewFlipper recordVF;
 	private ListView recordList;
@@ -54,7 +55,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
     private View updateName,recordViewMask;
 	private RecordingView recordingView;
 
-	private RecorderAdapter recordedAdapter;
+    private RecorderAdapter recordedAdapter;
 
 
 	private List<Boolean> recordSelectFlag;
@@ -92,7 +93,8 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 
 	@Override
 	public void onResume() {
-        if(!isCallRecordUI()&&!((AbsRecorderActivity)getActivity()).isFistTime()) {
+        RecordTool.e(TAG,"onResume");
+        if(!isCallRecordUI()&&!((AbsRecorderActivity)getActivity()).isFistTime()&&!recordedAdapter.isActionMode()) {
             refreshRecordList();
         }
 		super.onResume();
@@ -224,19 +226,19 @@ public class RecordedFragment extends Fragment implements OnClickListener {
             leBottomWidget.setOnClickAndLongClickListener(new LeBottomWidget.OnClickAndLongClickListener() {
                 @Override
                 public void onClick(int pos, String tag) {
-                    switch (pos){
+                    switch (pos) {
                         case 0:
                             ArrayList<Uri> uris = ProviderTool.getShareUris(getSelectedPaths());
                             boolean multiple = uris.size() > 1;
-                            int  shareSelect = uris.size();
-                            if(shareSelect==0){
+                            int shareSelect = uris.size();
+                            if (shareSelect == 0) {
                                 LeTopSlideToastHelper.getToastHelper(getActivity(), LeTopSlideToastHelper.LENGTH_SHORT,
                                         getResources().getString(R.string.no_selected_share), null,
                                         null, null,
                                         null).show();
                                 return;
                             }
-                            Intent share = new Intent(shareSelect<=1? Intent.ACTION_SEND : Intent.ACTION_SEND_MULTIPLE);
+                            Intent share = new Intent(shareSelect <= 1 ? Intent.ACTION_SEND : Intent.ACTION_SEND_MULTIPLE);
                             share.setType("audio/*");
                             share.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.share));
                             share.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.record_files));
@@ -252,18 +254,18 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                         case 1:
                             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                             final int[] selecteds = getSelectedIndexs();
-                            builder.setTitle(String.format(getResources().getString(R.string.delete_record_dialog_title),selecteds.length))
-                                    .setPositiveButton(getResources().getString(R.string.delete),new Dialog.OnClickListener(){
+                            builder.setTitle(String.format(getResources().getString(R.string.delete_record_dialog_title), selecteds.length))
+                                    .setPositiveButton(getResources().getString(R.string.delete), new Dialog.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             for (int i = 0; i < selecteds.length; i++) {
 
                                                 int type = recordedAdapter.getItemViewType(selecteds[i]);
 
-                                                if(type == RecorderAdapter.ITEM_TYPE_CALL_SET){
+                                                if (type == RecorderAdapter.ITEM_TYPE_CALL_SET) {
                                                     RecordDb db = RecordDb.getInstance(getActivity());
-                                                    List<RecordEntry> callRecords =db.getCallRecords();
-                                                    if(callRecords!=null && callRecords.size()>0) {
+                                                    List<RecordEntry> callRecords = db.getCallRecords();
+                                                    if (callRecords != null && callRecords.size() > 0) {
                                                         for (RecordEntry call : callRecords) {
                                                             String path = call.getFilePath();
                                                             File delFile = new File(path);
@@ -272,7 +274,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                                                                     path);
                                                         }
                                                     }
-                                                }else{
+                                                } else {
                                                     String path = recordedAdapter.getItem(selecteds[i]).getFilePath();
                                                     File delFile = new File(path);
                                                     delFile.delete();
@@ -282,24 +284,24 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                                             }
                                             refreshRecordList();
                                             updateSherlockUI();
-                                            
-                                            if(recordedAdapter.isActionMode()){
-                                            	recordedAdapter.setActionMode(true);
+
+                                            if (recordedAdapter.isActionMode()) {
+                                                recordedAdapter.setActionMode(true);
                                             }
-                                            
-                                            if(mActionMode!=null){
-                                            	mActionMode.invalidate();
+
+                                            if (mActionMode != null) {
+                                                mActionMode.invalidate();
                                             }
                                         }
                                     })
-                                    .setNegativeButton(getResources().getString(R.string.cancel), new Dialog.OnClickListener(){
+                                    .setNegativeButton(getResources().getString(R.string.cancel), new Dialog.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
 //                                            recordedAdapter.setActionMode(false);
 //                                            refreshRecordList();
 //                                            updateSherlockUI();
                                         }
-                                    } )
+                                    })
                                     .create()
                                     .show();
 
@@ -325,7 +327,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                                         RecordDb.destroyInstance();
 //                                        cancelEdit();
                                         dialog.dismiss();
-                                        FileSyncContentProvider.renameFile(getActivity(),oldPath,newPath);
+                                        FileSyncContentProvider.renameFile(getActivity(), oldPath, newPath);
                                         refreshRecordList();
                                     }
 
@@ -340,7 +342,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                                 }
                             });
 
-                            mDialog.show(recordedAdapter.getItem(getSelectedIndexs()[0]),true);
+                            mDialog.show(recordedAdapter.getItem(getSelectedIndexs()[0]), true);
 
                             break;
                         default:

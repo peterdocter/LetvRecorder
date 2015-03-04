@@ -84,7 +84,7 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
         mRecorderState = RecordTool.getRecordState(this);
         mRecorder.setmOnStateChangedListener(this);
         mRecorder.setTimeChangedListener(this);
-        mRecorder.checkRecorderState();
+//        mRecorder.checkRecorderState();
         super.onStart();
     }
 
@@ -93,9 +93,9 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
         RecordTool.e("reboot->","--------------------->Abs record onResume"+!isFistTime());
         RecordTool.hideNotificationWhenBack(this);
         RecordTool.hintNotificationLedWhenBack(this);
-        if(!isFistTime()) {
-            updateUI();
-        }
+//        if(!isFistTime()&&!recordedFragment.recordedAdapter.isActionMode()) {
+//            updateUI();
+//        }
         RecordTool.isRecordInBack=false;
         super.onResume();
     }
