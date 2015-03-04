@@ -140,7 +140,10 @@ public class RecorderService extends Service implements RecorderInterface {
     private Runnable alertStorage = new Runnable() {
         @Override
         public void run() {
-            Toast.makeText(getApplicationContext(),R.string.storage_full,LeTopSlideToastHelper.LENGTH_SHORT).show();
+			LeTopSlideToastHelper.getToastHelper(getApplicationContext(),LeTopSlideToastHelper.LENGTH_SHORT,
+					getResources().getString(R.string.storage_full),null,
+					null,null,
+					null).show();
         }
     };
 
