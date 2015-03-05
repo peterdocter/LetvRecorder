@@ -1,8 +1,11 @@
 package com.letv.android.recorder.tool;
 
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaScannerClient;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.provider.MediaStore;
 
@@ -29,10 +32,17 @@ public class FileSyncContentProvider {
         return resolver.delete(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, MediaStore.Images.Media.DATA + "=?", new String[]{filePath});
     }
 
-    public static void scanFile(Context context, File newFile) {
-        Intent intent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        intent.setData(Uri.fromFile(newFile));
-        context.sendBroadcast(intent);
+    public static void scanFile(final  Context context, File newFile) {
+        MediaScannerConnection.scanFile(context,new String[]{newFile.getAbsolutePath()},null,new MediaScannerConnection.OnScanCompletedListener(){
+            @Override
+            public void onScanCompleted(String path, Uri uri) {
+                if (uri!=null){
+                    ContentValues cv = new ContentValues();
+                    cv.put(MediaStore.Audio.Media.IS_MUSIC, "0");
+                    context.getContentResolver().update(uri, cv, "is_music = ?", new String[]{"1"});
+                }
+            }
+        });
     }
 
 }
