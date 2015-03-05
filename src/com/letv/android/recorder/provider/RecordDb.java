@@ -105,7 +105,7 @@ public class RecordDb extends SQLiteOpenHelper {
 	}
 
 	public synchronized void update(String oldpath, String path) {
-        RecordTool.loge(this.getClass().getSimpleName(),oldpath+"-----------"+path);
+        RecordTool.e(this.getClass().getSimpleName(),oldpath+"-----------"+path);
 		if (!TextUtils.isEmpty(path)) {
 			ContentValues values = new ContentValues();
 			values.put(RECORD_PATH, path);

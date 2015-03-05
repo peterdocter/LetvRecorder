@@ -211,10 +211,11 @@ public class PlayRecordActivity extends Activity implements
 						} else if (RecordTool.canSave(PlayRecordActivity.this, mDialog.getText())) {
 							String oldPath = mEntry.getFilePath();
 							String newPath = mEntry.getFilePath().replace(fileName, mDialog.getText());
+
+							RecordDb recordDb = RecordDb.getInstance(PlayRecordActivity.this);
+							recordDb.update(oldPath, newPath);
+							RecordDb.destroyInstance();
 							if(file.renameTo(new File(newPath))){
-								RecordDb recordDb = RecordDb.getInstance(PlayRecordActivity.this);
-								recordDb.update(oldPath, newPath);
-								RecordDb.destroyInstance();
 								AbsRecorderActivity.recordedFragment.refreshRecordList();
 								FileSyncContentProvider.renameFile(PlayRecordActivity.this,oldPath,newPath);
 								mEntry.setFilePath(newPath);
