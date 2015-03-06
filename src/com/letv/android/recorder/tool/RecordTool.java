@@ -271,27 +271,27 @@ public class RecordTool {
             }
         }
     };
-    public static void showNotificationLedWhenBack(Context context){
-        notifiManager= (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        ledNotifi = new Notification();
-        ledNotifi.defaults = Notification.DEFAULT_ALL;
-        ledNotifi.defaults &= ~Notification.DEFAULT_LIGHTS;
-        ledNotifi.defaults &= ~Notification.DEFAULT_SOUND;
-        ledNotifi.defaults &= ~Notification.DEFAULT_VIBRATE;
-        ledNotifi.ledARGB = Color.GREEN;
-        ledNotifi.ledOffMS = 0;
-        ledNotifi.ledOnMS = 1000;
-        ledNotifi.flags |= Notification.FLAG_SHOW_LIGHTS;
-        ledNotifi.priority = Notification.PRIORITY_MAX;
-
-        ledHandler.post(runableLed);
-    }
-    public static void hintNotificationLedWhenBack(Context context){
-        if(notifiManager!=null){
-            notifiManager.cancel(Constants.NOTIFICATION_BACK_LED_ID);
-            ledHandler.removeCallbacks(runableLed);
-        }
-    }
+//    public static void showNotificationLedWhenBack(Context context){
+//        notifiManager= (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+//        ledNotifi = new Notification();
+//        ledNotifi.defaults = Notification.DEFAULT_ALL;
+//        ledNotifi.defaults &= ~Notification.DEFAULT_LIGHTS;
+//        ledNotifi.defaults &= ~Notification.DEFAULT_SOUND;
+//        ledNotifi.defaults &= ~Notification.DEFAULT_VIBRATE;
+//        ledNotifi.ledARGB = Color.GREEN;
+//        ledNotifi.ledOffMS = 0;
+//        ledNotifi.ledOnMS = 1000;
+//        ledNotifi.flags |= Notification.FLAG_SHOW_LIGHTS;
+//        ledNotifi.priority = Notification.PRIORITY_MAX;
+//
+//        ledHandler.post(runableLed);
+//    }
+//    public static void hintNotificationLedWhenBack(Context context){
+//        if(notifiManager!=null){
+//            notifiManager.cancel(Constants.NOTIFICATION_BACK_LED_ID);
+//            ledHandler.removeCallbacks(runableLed);
+//        }
+//    }
 
 	public static void showNotificationAlert(Context context, int id){
 		Intent intent = new Intent(context, RecorderActivity.class);

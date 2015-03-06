@@ -45,7 +45,8 @@
 
     <string name="record_paused">录音已暂停</string>
 
-    <string name="delete_record_dialog_title">你确定要删除该录音吗</string>
+    <string name="delete_record_dialog_title">删除录音%d项</string>
+    <string name="please_select_reoord">please select</string>
 
     <string name="create_file_fail">名称含有特殊符号或文件名过长</string>
 

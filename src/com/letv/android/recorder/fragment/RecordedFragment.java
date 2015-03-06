@@ -29,6 +29,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 
 import com.letv.android.recorder.*;
+import com.letv.android.recorder.R;
 import com.letv.android.recorder.provider.ProviderTool;
 import com.letv.android.recorder.provider.RecordDb;
 import com.letv.android.recorder.service.Recorder.MediaRecorderState;
@@ -42,6 +43,7 @@ import com.letv.android.recorder.widget.RecordingView;
 import com.letv.leui.widget.LeBottomWidget;
 import com.letv.leui.widget.LeCheckBox;
 import com.letv.leui.widget.LeTopSlideToastHelper;
+import com.letv.leui.widget.LeBottomSheet;
 
 public class RecordedFragment extends Fragment implements OnClickListener {
 
@@ -252,58 +254,116 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                             startActivity(Intent.createChooser(share, getActivity().getTitle()));
                             break;
                         case 1:
-                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                             final int[] selecteds = getSelectedIndexs();
-                            builder.setTitle(String.format(getResources().getString(R.string.delete_record_dialog_title), selecteds.length))
-                                    .setPositiveButton(getResources().getString(R.string.delete), new Dialog.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            for (int i = 0; i < selecteds.length; i++) {
 
-                                                int type = recordedAdapter.getItemViewType(selecteds[i]);
-
-                                                if (type == RecorderAdapter.ITEM_TYPE_CALL_SET) {
-                                                    RecordDb db = RecordDb.getInstance(getActivity());
-                                                    List<RecordEntry> callRecords = db.getCallRecords();
-                                                    if (callRecords != null && callRecords.size() > 0) {
-                                                        for (RecordEntry call : callRecords) {
-                                                            String path = call.getFilePath();
-                                                            File delFile = new File(path);
-                                                            delFile.delete();
-                                                            FileSyncContentProvider.removeImageFromLib(getActivity(),
-                                                                    path);
-                                                        }
-                                                    }
-                                                } else {
-                                                    String path = recordedAdapter.getItem(selecteds[i]).getFilePath();
+                            final LeBottomSheet mBottomSheet = new LeBottomSheet(getActivity());
+                            View.OnClickListener delete_listener = new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    for (int i = 0; i < selecteds.length; i++) {
+                                        int type = recordedAdapter.getItemViewType(selecteds[i]);
+                                        if (type == RecorderAdapter.ITEM_TYPE_CALL_SET) {
+                                            RecordDb db = RecordDb.getInstance(getActivity());
+                                            List<RecordEntry> callRecords = db.getCallRecords();
+                                            if (callRecords != null && callRecords.size() > 0) {
+                                                for (RecordEntry call : callRecords) {
+                                                    String path = call.getFilePath();
                                                     File delFile = new File(path);
                                                     delFile.delete();
                                                     FileSyncContentProvider.removeImageFromLib(getActivity(),
                                                             path);
                                                 }
                                             }
-                                            refreshRecordList();
-                                            updateSherlockUI();
-
-                                            if (recordedAdapter.isActionMode()) {
-                                                recordedAdapter.setActionMode(true);
-                                            }
-
-                                            if (mActionMode != null) {
-                                                mActionMode.invalidate();
-                                            }
+                                        } else {
+                                            String path = recordedAdapter.getItem(selecteds[i]).getFilePath();
+                                            File delFile = new File(path);
+                                            delFile.delete();
+                                            FileSyncContentProvider.removeImageFromLib(getActivity(),
+                                                    path);
                                         }
-                                    })
-                                    .setNegativeButton(getResources().getString(R.string.cancel), new Dialog.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-//                                            recordedAdapter.setActionMode(false);
+                                    }
+                                    refreshRecordList();
+                                    updateSherlockUI();
+                                    if (recordedAdapter.isActionMode()) {
+                                        recordedAdapter.setActionMode(true);
+                                    }
+                                    if (mActionMode != null) {
+                                        mActionMode.invalidate();
+                                    }
+                                    mBottomSheet.disappear();
+                                }
+                            };
+                            View.OnClickListener cancel_listener = new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    mBottomSheet.disappear();
+                                }
+                            };
+                            mBottomSheet.setStyle(
+                                    LeBottomSheet.SWITCH_BUTTON_STYLE_DIY,
+                                    delete_listener,
+                                    cancel_listener,
+                                    null,
+                                    new String[]{"删除", "取消"},
+                                    String.format(getResources().getString(R.string.delete_record_dialog_title), selecteds.length),
+                                    null,
+                                    null,
+                                    getActivity().getResources().getColor(R.color.defalut_red),
+                                    false
+                            );
+                            mBottomSheet.appear();
+
+//                            builder.setTitle(String.format(getResources().getString(R.string.delete_record_dialog_title), selecteds.length))
+//                                    .setPositiveButton(getResources().getString(R.string.delete), new Dialog.OnClickListener() {
+//                                        @Override
+//                                        public void onClick(DialogInterface dialog, int which) {
+//                                            for (int i = 0; i < selecteds.length; i++) {
+//
+//                                                int type = recordedAdapter.getItemViewType(selecteds[i]);
+//
+//                                                if (type == RecorderAdapter.ITEM_TYPE_CALL_SET) {
+//                                                    RecordDb db = RecordDb.getInstance(getActivity());
+//                                                    List<RecordEntry> callRecords = db.getCallRecords();
+//                                                    if (callRecords != null && callRecords.size() > 0) {
+//                                                        for (RecordEntry call : callRecords) {
+//                                                            String path = call.getFilePath();
+//                                                            File delFile = new File(path);
+//                                                            delFile.delete();
+//                                                            FileSyncContentProvider.removeImageFromLib(getActivity(),
+//                                                                    path);
+//                                                        }
+//                                                    }
+//                                                } else {
+//                                                    String path = recordedAdapter.getItem(selecteds[i]).getFilePath();
+//                                                    File delFile = new File(path);
+//                                                    delFile.delete();
+//                                                    FileSyncContentProvider.removeImageFromLib(getActivity(),
+//                                                            path);
+//                                                }
+//                                            }
 //                                            refreshRecordList();
 //                                            updateSherlockUI();
-                                        }
-                                    })
-                                    .create()
-                                    .show();
+//
+//                                            if (recordedAdapter.isActionMode()) {
+//                                                recordedAdapter.setActionMode(true);
+//                                            }
+//
+//                                            if (mActionMode != null) {
+//                                                mActionMode.invalidate();
+//                                            }
+//                                        }
+//                                    })
+//                                    .setNegativeButton(getResources().getString(R.string.cancel), new Dialog.OnClickListener() {
+//                                        @Override
+//                                        public void onClick(DialogInterface dialog, int which) {
+////                                            recordedAdapter.setActionMode(false);
+////                                            refreshRecordList();
+////                                            updateSherlockUI();
+//                                        }
+//                                    })
+//                                    .create()
+//                                    .show();
 
                             break;
                         case 2:
@@ -367,7 +427,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 			if(recordedAdapter.isActionMode())
 				return false;
 			initSelectItem();
-            TransitionManager.beginDelayedTransition(parent,ActionBarTool.autoTransition);
+//            TransitionManager.beginDelayedTransition(parent,ActionBarTool.autoTransition);//引起长按listView后无法多选
 			getActivity().startActionMode(mCallback);
 			
 			if (recordedAdapter.isActionMode()) {
