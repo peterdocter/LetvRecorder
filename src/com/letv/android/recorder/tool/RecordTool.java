@@ -399,6 +399,8 @@ public class RecordTool {
 	public static String timeFormat(long time, String format) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat(format);
 		Date date = new Date(time);
+        RecordTool.e("formattime-> 1","1:time:"+time+"date:"+date.toString());
+        RecordTool.e("formattime-> 2","2:"+dateFormat.format(date));
 		return dateFormat.format(date);
 	}
 	

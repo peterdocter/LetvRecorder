@@ -78,8 +78,9 @@ public class PlayRecordActivity extends Activity implements
 		playBtn = (ImageView) findViewById(R.id.playBtn);
 		editBtn = (ImageView) findViewById(R.id.editBtn);
 
-		curTime.setText(RecordTool.timeFormat(0, "mm:ss"));
-		totalTime.setText(RecordTool.timeFormat(mEntry.getRecordDuring(), "mm:ss"));
+		curTime.setText(RecordTool.recordTimeFormat(0));
+		RecordTool.e("PlayRecordActivity total time",RecordTool.timeFormat(0, "mm:ss"));
+		totalTime.setText(RecordTool.recordTimeFormat(mEntry.getRecordDuring()));
 		mSeekBar.setMax((int) mEntry.getRecordDuring());
 
 		audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
@@ -327,8 +328,9 @@ public class PlayRecordActivity extends Activity implements
 					am_record.start();
 				}
 				mSeekBar.setMax(totalTime);
+				RecordTool.e("formattime-> 01", "1:onTrackStart:totalTime"+totalTime+":miTime:"+miTime);
 				curTime.setText(RecordTool.timeFormat(miTime, "mm:ss"));
-				PlayRecordActivity.this.totalTime.setText(RecordTool.timeFormat(totalTime, "mm:ss"));
+				PlayRecordActivity.this.totalTime.setText(RecordTool.recordTimeFormat(totalTime));
 				registerHeadsetPlugReceiver();
 				setPlayMode();
 //				RecorderAdapter instance = RecorderAdapter.getInstance();
@@ -340,8 +342,9 @@ public class PlayRecordActivity extends Activity implements
 
 			@Override
 			public void onTrackProgressChange(int miTime) {
+				RecordTool.e("formattime-> 01", "1:onTrackProgressChange"+miTime);
 				mSeekBar.setProgress(miTime);
-				curTime.setText(RecordTool.timeFormat(miTime, "mm:ss"));
+				curTime.setText(RecordTool.recordTimeFormat(miTime));
 			}
 
 			@Override
