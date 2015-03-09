@@ -26,7 +26,7 @@ import com.letv.leui.widget.ScreenRecordingView;
  */
 public class RecorderAppWidget extends AppWidgetProvider{
 
-    public String LOG_CAT = RecorderAppWidget.class.getSimpleName();
+    public String LOG_CAT = RecorderAppWidget.class.getSimpleName()+"widget";
 
     public static final String ACTION_FLAG="com.letv.android.recorder.AppWidget.ACTION_FLAG";
     public static final String ACTION_PAUSE="com.letv.android.recorder.AppWidget.ACTION_PAUSE";
@@ -45,7 +45,7 @@ public class RecorderAppWidget extends AppWidgetProvider{
         super.onReceive(context, intent);
         String action = intent.getAction();
 
-        RecordTool.e(LOG_CAT + "onReceive", "onReceive:"+action);
+        RecordTool.e(LOG_CAT + "->onReceive", "onReceive:--"+action);
 //        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 //        String stateStr =  sp.getString(RecordTool.getRecordState(context), Recorder.MediaRecorderState.getStateString(Recorder.MediaRecorderState.IDLE_STATE));
 
@@ -72,27 +72,27 @@ public class RecorderAppWidget extends AppWidgetProvider{
     static int  i=0;
 
     private void updateUI(Context context,Recorder.MediaRecorderState mState,Intent intent){
-        RecordTool.e("LOG_CAT"+"updateUI","updateUI");
+        RecordTool.e(LOG_CAT+"->updateUI","updateUI");
         long preTime = System.currentTimeMillis();
         i++;
         if(remoteViews==null) {
             remoteViews = new RemoteViews(context.getPackageName(), R.layout.recorder_app_widget);
         }
-        RecordTool.e("LOG_CAT"+"updateUI","update" +Recorder.MediaRecorderState.getStateString(mState));
+        RecordTool.e(LOG_CAT+"->updateUI","update" +Recorder.MediaRecorderState.getStateString(mState));
         updateRemoteViews(context, remoteViews,mState,intent);
 
         AppWidgetManager appwidget_manager = AppWidgetManager.getInstance(context);
         ComponentName component_name = new ComponentName(context, RecorderAppWidget.class);
         appwidget_manager.updateAppWidget(component_name, remoteViews);
         long postTime = System.currentTimeMillis();
-        RecordTool.e("----------------updateUI time "+i,(postTime-preTime)/1000f+"");
+        RecordTool.e(LOG_CAT+"->updateUI time "+i,(postTime-preTime)/1000f+"");
     }
 
 
     private void updateRemoteViews(Context context,RemoteViews remoteViews,Recorder.MediaRecorderState mState,
                                    Intent intent){
 
-        RecordTool.e(LOG_CAT+"updateRemoteViews","updateRemoteViews");
+        RecordTool.e(LOG_CAT+"->updateRemoteViews","updateRemoteViews");
 
         if(mState== Recorder.MediaRecorderState.IDLE_STATE||mState== Recorder.MediaRecorderState.PAUSED){
 
@@ -142,7 +142,7 @@ public class RecorderAppWidget extends AppWidgetProvider{
                     extras.containsKey(ScreenRecordingView.RECORD_DB_KEY)) {
 
                 Bundle bundle = new Bundle();
-                RecordTool.e(LOG_CAT+"updateRemoteViews","long:"+extras.getFloat(ScreenRecordingView.RECORD_TIME_KEY)+"float:"+extras.getFloat(ScreenRecordingView.RECORD_DB_KEY));
+                RecordTool.e(LOG_CAT+"->updateRemoteViews","long:"+extras.getLong(ScreenRecordingView.RECORD_TIME_KEY)+"float:"+extras.getFloat(ScreenRecordingView.RECORD_DB_KEY));
                 bundle.putLong(ScreenRecordingView.RECORD_TIME_KEY, extras.getLong(ScreenRecordingView.RECORD_TIME_KEY));
                 bundle.putFloat(ScreenRecordingView.RECORD_DB_KEY, extras.getFloat(ScreenRecordingView.RECORD_DB_KEY));
 //                remoteViews.setBundle(R.id.remote_wave, "updateRecordUI", bundle);
@@ -153,7 +153,7 @@ public class RecorderAppWidget extends AppWidgetProvider{
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 
-        RecordTool.e(LOG_CAT+"onUpdate","onUpdate");
+        RecordTool.e(LOG_CAT+"->onUpdate","onUpdate");
         if(appWidgetIds==null || appWidgetIds.length<=0){
             return;
         }

@@ -22,7 +22,7 @@ public class LockScreen {
         String pkg = "com.letv.android.recorder";
         String clss = "com.letv.android.recorder.widget.RecorderAppWidget";
         ComponentName mRecordWidget = new ComponentName(pkg, clss);  //ComponentName还可以通过其它方法new出来，这个无所谓。
-	Intent intent = new Intent(ACTION_KEYGUARD_INSTALL_WIDGET);
+	    Intent intent = new Intent(ACTION_KEYGUARD_INSTALL_WIDGET);
         intent.putExtra(EXTRA_KEYGUARD_APPWIDGET_COMPONENT, mRecordWidget);
         mContext.sendBroadcast(intent);
         saveShowScreenWidgetInfo(mContext,true);
@@ -32,7 +32,7 @@ public class LockScreen {
         String pkg = "com.letv.android.recorder";
         String clss = "com.letv.android.recorder.widget.RecorderAppWidget";
         ComponentName mRecordWidget = new ComponentName(pkg, clss);  //ComponentName还可以通过其它方法new出来，这个无所谓。
-	Intent intent = new Intent(ACTION_KEYGUARD_UNINSTALL_WIDGET);
+	    Intent intent = new Intent(ACTION_KEYGUARD_UNINSTALL_WIDGET);
         intent.putExtra(EXTRA_KEYGUARD_APPWIDGET_COMPONENT, mRecordWidget);
         mContext.sendBroadcast(intent);
         saveShowScreenWidgetInfo(mContext,false);

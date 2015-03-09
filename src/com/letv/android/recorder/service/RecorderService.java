@@ -173,10 +173,11 @@ public class RecorderService extends Service implements RecorderInterface {
                     return;
                 }
 				i++;
-				boolean locked = keyguardManager.isKeyguardLocked();
+//				boolean locked = keyguardManager.isKeyguardLocked();
 
-                if(LockScreen.isShowing(RecorderService.this)&& 0==i%50 &&locked){
+//                if(LockScreen.isShowing(RecorderService.this)&& 0==i%50 &&locked){
 
+				if(0==i%50){
 					int count=rc.beginBroadcast();
 					for (int i=0;i<count;i++){
 						try {
@@ -642,6 +643,7 @@ public class RecorderService extends Service implements RecorderInterface {
 		if(MediaRecorderState.RECORDING == mRecorderState||
 				MediaRecorderState.PAUSED == mRecorderState){
 			if(SettingTool.isShowScreenWidget(this)&&!LockScreen.isShowing(this)){
+				RecordTool.e(LOG_TAG+"sendStateBroadcast","state:"+MediaRecorderState.getStateString(mRecorderState)+":showLock");
 				LockScreen.showLockScreenWidght(this);
 			}
 		}else{
