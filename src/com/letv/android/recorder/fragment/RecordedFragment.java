@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.Bundle;
+import android.app.ActionBar;
 import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.ActionMode;
@@ -72,6 +73,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
     protected LeBottomWidget leBottomWidget;
     
     private ActionMode mActionMode =null;
+    private ActionBar actionBar;
 
 //  other app record launch record UI
     private boolean callRecordUI = false;
@@ -86,6 +88,8 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
+        actionBar=getActivity().getActionBar();
+        actionBar.setTitle(R.string.record_note);
         if(!isCallRecordUI()) {
             recordedAdapter = new RecorderAdapter(getActivity(), null,this);
         }
@@ -457,9 +461,9 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 	    	}
 	    	MediaRecorderState state = RecordApp.getInstance().getmState();
 	    	if (MediaRecorderState.RECORDING == state || MediaRecorderState.PAUSED == state || MediaRecorderState.STOPPED == state) {
-	    		getActivity().getActionBar().hide();
+	    		actionBar.hide();
 	    	}else{
-	    	    getActivity().getActionBar().show();
+                actionBar.show();
 	    		if (recordedAdapter.isActionMode()) {
 	    			 if(getSelectedCount()!=recordedAdapter.getCount()){
 	    	            	selectAllMenu.setVisible(true);

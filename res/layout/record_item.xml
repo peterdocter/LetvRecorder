@@ -7,7 +7,8 @@
     android:orientation="horizontal"
     android:paddingLeft="@dimen/record_item_padding_left"
     android:paddingRight="@dimen/record_item_padding_right"
-    android:minHeight="@dimen/record_item_height">
+    android:minHeight="@dimen/record_item_height"
+    android:background="@drawable/record_list_bgcolor_selector">
 
     <LinearLayout
         android:layout_width="0dp"

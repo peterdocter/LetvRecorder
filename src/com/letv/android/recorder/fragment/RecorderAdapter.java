@@ -271,15 +271,18 @@ public class RecorderAdapter extends BaseAdapter implements DividerFilter{
     		}
     	}else if(actionMode){
     		if(isSelected(position)){
+                arg1.setActivated(true);
     			holder.recordName.setTextColor(getColor(R.color.title_color_selected));
         		holder.recordTime.setTextColor(getColor(R.color.summary_color_selected));
         		holder.recordLength.setTextColor(getColor(R.color.summary_color_selected));
     		}else{
+                arg1.setActivated(false);
     			holder.recordName.setTextColor(getColor(R.color.title_color_a30));
         		holder.recordTime.setTextColor(getColor(R.color.sumary_color_a30));
         		holder.recordLength.setTextColor(getColor(R.color.sumary_color_a30));
     		}
     	}else{
+            arg1.setActivated(false);
     		holder.recordName.setTextColor(getColor(R.color.title_color));
     		holder.recordTime.setTextColor(getColor(R.color.summary_color));
     		holder.recordLength.setTextColor(getColor(R.color.summary_color));

@@ -27,7 +27,7 @@
 
         <activity
             android:name="com.letv.android.recorder.RecorderActivity"
-            android:label="@string/record_note"
+            android:label="@string/app_name"
             android:launchMode="singleTop"
             android:screenOrientation="portrait" >
             <intent-filter>
