@@ -116,6 +116,7 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
             mRecorder.setTimeChangedListener(null);
         }
 
+        RecordTool.e("reboot->","AbsRecorderStopState:"+RecordApp.getInstance().getmState());
         RecordTool.isRecordInBack=true;
         if(RecordApp.getInstance().getmState()==MediaRecorderState.PAUSED||
                 RecordApp.getInstance().getmState()==MediaRecorderState.RECORDING){
@@ -127,6 +128,7 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
 
     @Override
     protected void onDestroy() {
+        RecordTool.e("reboot->","AbsRecorderDestoryState:"+RecordApp.getInstance().getmState());
         RecordTool.e("reboot->","--------------------->Abs record onDestroy");
         if (mReceiver != null) {
             unregisterReceiver(mReceiver);
@@ -236,7 +238,7 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
 //            getActionBar().setTitle(R.string.record_note);
 //        }
 
-        if (recordedFragment!=null) {
+        if (recordedFragment!=null&&!RecordApp.getInstance().isActionMode()) {
             recordedFragment.refreshRecordList();
         }
     }

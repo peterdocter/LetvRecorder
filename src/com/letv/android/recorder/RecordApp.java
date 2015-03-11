@@ -86,4 +86,11 @@ public class RecordApp extends Application {
 		super.onCreate();
 	}
 
+	private static boolean isActionMode=false;
+	public void setActionMode(boolean isActionMode){
+		this.isActionMode=isActionMode;
+	}
+	public boolean isActionMode(){
+		return this.isActionMode;
+	}
 }

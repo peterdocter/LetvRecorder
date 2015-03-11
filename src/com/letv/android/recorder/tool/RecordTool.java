@@ -241,8 +241,15 @@ public class RecordTool {
             }
 
             NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            Notification notification = new Notification(R.drawable.ic_rec_status, conStr, System.currentTimeMillis());
-            notification.setLatestEventInfo(context, title, conStr, contentIntent);
+//            Notification notification = new Notification(R.drawable.ic_rec_status, conStr, System.currentTimeMillis());
+            Notification notification = new Notification.Builder(context)
+                    .setSmallIcon(R.drawable.ic_rec_status_44)
+                    .setNotificationIcon(R.drawable.ic_rec_status)
+                    .setContentTitle(conStr)
+                    .setTicker(conStr)
+                    .setWhen(System.currentTimeMillis())
+                    .build();
+//            notification.setLatestEventInfo(context, title, conStr, contentIntent);
             notification.flags = Notification.FLAG_ONGOING_EVENT;
             manager.notify(Constants.NOTIFICATION_BACK_ID, notification);
         }

@@ -101,6 +101,8 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 	public void onResume() {
         RecordTool.e(TAG,"onResume");
         if(!isCallRecordUI()&&!((AbsRecorderActivity)getActivity()).isFistTime()&&!recordedAdapter.isActionMode()) {
+
+            RecordTool.e(TAG,"onResumerefreshRecordList");
             refreshRecordList();
         }
 		super.onResume();
@@ -189,7 +191,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
     
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
-        RecordTool.e("reboot->","onActivityCreated:"+isCallRecordUI());
+        RecordTool.e(TAG,"onActivityCreated:"+isCallRecordUI());
         if(!isCallRecordUI()) {
         	TypedArray actionbarSizeTypedArray = getActivity().obtainStyledAttributes(new int[] {  
         	        android.R.attr.actionBarSize  
@@ -204,6 +206,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
             recordList.setAdapter(recordedAdapter);
             recordedAdapter.setListView(recordList);
             if(!((AbsRecorderActivity)getActivity()).isFistTime()){
+                RecordTool.e(TAG,"onActivityCreated:+refreshRecordList");
                 refreshRecordList();
             }
             recordList.setOnItemClickListener(getRecordItemClickListener());
@@ -433,7 +436,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 			initSelectItem();
 //            TransitionManager.beginDelayedTransition(parent,ActionBarTool.autoTransition);//引起长按listView后无法多选
 			getActivity().startActionMode(mCallback);
-			
+			RecordApp.getInstance().setActionMode(recordedAdapter.isActionMode());
 			if (recordedAdapter.isActionMode()) {
 				boolean flag = recordSelectFlag.get(position);
                 recordSelectFlag.set(position, !flag);
@@ -486,6 +489,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 		@Override
 		public void onDestroyActionMode(ActionMode arg0) {
 			cancelEdit();
+            RecordApp.getInstance().setActionMode(false);
 			mActionMode = null;
 		}
 		
@@ -691,7 +695,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 	}
 
 	public void refreshRecordList() {
-
+        RecordTool.e(TAG,"refreshRecordList");
         if(isCallRecordUI()){
             return;
         }

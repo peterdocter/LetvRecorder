@@ -45,12 +45,12 @@ public class RecorderAppWidget extends AppWidgetProvider{
         super.onReceive(context, intent);
         String action = intent.getAction();
 
-        RecordTool.e(LOG_CAT + "->onReceive", "onReceive:--"+action);
 //        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 //        String stateStr =  sp.getString(RecordTool.getRecordState(context), Recorder.MediaRecorderState.getStateString(Recorder.MediaRecorderState.IDLE_STATE));
 
 //        Recorder.MediaRecorderState mState = Recorder.MediaRecorderState.getState(stateStr);
         Recorder.MediaRecorderState mState = RecordTool.getRecordState(context);
+        RecordTool.e(LOG_CAT, "onReceive: mState:"+mState+"  action"+action);
         if(action.equals(ACTION_DONE)){
             RecorderService.stopRecording(context);
             RecorderService.saveRecording(context, RecordApp.getInstance().getRecordName());
@@ -72,15 +72,13 @@ public class RecorderAppWidget extends AppWidgetProvider{
     static int  i=0;
 
     private void updateUI(Context context,Recorder.MediaRecorderState mState,Intent intent){
-        RecordTool.e(LOG_CAT+"->updateUI","updateUI");
         long preTime = System.currentTimeMillis();
         i++;
         if(remoteViews==null) {
             remoteViews = new RemoteViews(context.getPackageName(), R.layout.recorder_app_widget);
         }
-        RecordTool.e(LOG_CAT+"->updateUI","update" +Recorder.MediaRecorderState.getStateString(mState));
+        RecordTool.e(LOG_CAT,"updateUI state :"+Recorder.MediaRecorderState.getStateString(mState));
         updateRemoteViews(context, remoteViews,mState,intent);
-
         AppWidgetManager appwidget_manager = AppWidgetManager.getInstance(context);
         ComponentName component_name = new ComponentName(context, RecorderAppWidget.class);
         appwidget_manager.updateAppWidget(component_name, remoteViews);
@@ -92,13 +90,12 @@ public class RecorderAppWidget extends AppWidgetProvider{
     private void updateRemoteViews(Context context,RemoteViews remoteViews,Recorder.MediaRecorderState mState,
                                    Intent intent){
 
-        RecordTool.e(LOG_CAT+"->updateRemoteViews","updateRemoteViews");
+        RecordTool.e(LOG_CAT,"updateRemoteViews:mState"+mState.toString());
 
         if(mState== Recorder.MediaRecorderState.IDLE_STATE||mState== Recorder.MediaRecorderState.PAUSED){
 
             Intent startIntent = new Intent(ACTION_START);
             PendingIntent startPendingIntent = PendingIntent.getBroadcast(context,0,startIntent,0);
-
 
             remoteViews.setOnClickPendingIntent(R.id.remote_record_action, startPendingIntent);
             remoteViews.setImageViewResource(R.id.remote_record_action,R.drawable.start_selector);
@@ -142,9 +139,9 @@ public class RecorderAppWidget extends AppWidgetProvider{
                     extras.containsKey(ScreenRecordingView.RECORD_DB_KEY)) {
 
                 Bundle bundle = new Bundle();
-                RecordTool.e(LOG_CAT+"->updateRemoteViews","long:"+extras.getLong(ScreenRecordingView.RECORD_TIME_KEY)+"float:"+extras.getFloat(ScreenRecordingView.RECORD_DB_KEY));
+                RecordTool.e(LOG_CAT+"->updateRemoteViews","long:"+extras.getLong(ScreenRecordingView.RECORD_TIME_KEY)+"float:"+extras.getInt(ScreenRecordingView.RECORD_DB_KEY));
                 bundle.putLong(ScreenRecordingView.RECORD_TIME_KEY, extras.getLong(ScreenRecordingView.RECORD_TIME_KEY));
-                bundle.putFloat(ScreenRecordingView.RECORD_DB_KEY, extras.getFloat(ScreenRecordingView.RECORD_DB_KEY));
+                bundle.putFloat(ScreenRecordingView.RECORD_DB_KEY, extras.getInt(ScreenRecordingView.RECORD_DB_KEY));
 //                remoteViews.setBundle(R.id.remote_wave, "updateRecordUI", bundle);
             }
         }
@@ -153,15 +150,15 @@ public class RecorderAppWidget extends AppWidgetProvider{
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 
-        RecordTool.e(LOG_CAT+"->onUpdate","onUpdate");
+        RecordTool.e(LOG_CAT,"onUpdate:State"+RecordApp.getInstance().getmState());
         if(appWidgetIds==null || appWidgetIds.length<=0){
             return;
         }
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-        String stateStr =  sp.getString(Recorder.MediaRecorderState.KEY, Recorder.MediaRecorderState.getStateString(Recorder.MediaRecorderState.IDLE_STATE));
+//        String stateStr =  sp.getString(Recorder.MediaRecorderState.KEY, Recorder.MediaRecorderState.getStateString(Recorder.MediaRecorderState.IDLE_STATE));
 
-        Recorder.MediaRecorderState mState = Recorder.MediaRecorderState.getState(stateStr);
+        Recorder.MediaRecorderState mState = RecordApp.getInstance().getmState();
 
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.recorder_app_widget);
 
