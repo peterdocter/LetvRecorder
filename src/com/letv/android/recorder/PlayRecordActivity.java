@@ -100,7 +100,6 @@ public class PlayRecordActivity extends Activity implements
 			@Override
 			public void onClick(View v) {
 				stopPlay();
-
 			}
 		});
 		mHandler=new Handler(){
@@ -242,8 +241,8 @@ public class PlayRecordActivity extends Activity implements
 
 	@Override
 	public void onBackPressed() {
-		RecordTool.e("reboot->","--------------------->Play record onBackPressed");
-		stopPlay();
+			RecordTool.e("reboot->","--------------------->Play record onBackPressed");
+			stopPlay();
 	}
 
 	@Override
@@ -270,6 +269,7 @@ public class PlayRecordActivity extends Activity implements
 		BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
 		boolean bluetooth = BluetoothProfile.STATE_CONNECTED == adapter.getProfileConnectionState(BluetoothProfile.HEADSET);
 		boolean headset = audioManager.isWiredHeadsetOn();
+        RecordTool.e("playmode","bluetooth:"+bluetooth+" headset:"+headset);
 		return !bluetooth && !headset;
 	}
 
@@ -431,11 +431,11 @@ public class PlayRecordActivity extends Activity implements
 	}
 
 	public void speakerMode(){
-		RecordTool.e("play mode","shouldChangePlayMode:"+shouldChangePlayMode());
+		RecordTool.e("playmode","shouldChangePlayMode:"+shouldChangePlayMode());
 		if(!shouldChangePlayMode()){
 			return;
 		}
-		RecordTool.e("play mode", "正常模式");
+		RecordTool.e("playmode", "正常模式");
 //		audioManager.setMicrophoneMute(false);
 		audioManager.setSpeakerphoneOn(true);// 使用扬声器外放，即使已经插入耳机
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);//控制声音的大小
@@ -443,11 +443,11 @@ public class PlayRecordActivity extends Activity implements
 	}
 
 	public void receiverMode(){
-		RecordTool.e("play mode","shouldChangePlayMode:"+shouldChangePlayMode());
+		RecordTool.e("playmode","shouldChangePlayMode:"+shouldChangePlayMode());
 		if(!shouldChangePlayMode()) {
 			return;
 		}
-		RecordTool.e("play mode","听筒模式");
+		RecordTool.e("playmode","听筒模式");
 //		audioManager.setMicrophoneMute(true);
 //		audioManager.setRouting(AudioManager.MODE_NORMAL, AudioManager.ROUTE_EARPIECE, AudioManager.ROUTE_ALL);
 		setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
@@ -455,6 +455,9 @@ public class PlayRecordActivity extends Activity implements
 		audioManager.setSpeakerphoneOn(false);
 	}
 	public void stopPlay(){
+		if(!RecordTool.canClick(1000)){
+			return;
+		}
 		RecordTool.e("reboot->","--------------------->1 Play record before stopPlay:"+RecordApp.getInstance().getmState());
 		shareBtn.setEnabled(false);
 		playBtn.setEnabled(false);

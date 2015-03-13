@@ -12,12 +12,12 @@
     <SwitchPreference
             android:key="record_silence"
             android:title="@string/record_silence_title"/>
-    <!--<com.letv.leui.preference.LeListPreference-->
-            <!--android:key="scene_mode"-->
-            <!--android:title="@string/scene_title"-->
-            <!--android:entries="@array/scene_entries"-->
-            <!--android:entryValues="@array/scene_entries_value"-->
-            <!--/>-->
+    <com.letv.leui.preference.LeListPreference
+            android:key="scene_mode"
+            android:title="@string/scene_title"
+            android:entries="@array/scene_entries"
+            android:entryValues="@array/scene_entries_value"
+            />
     <com.letv.leui.preference.LeListPreference
             android:key="audio_qulity"
             android:title="@string/audio_qulity_title"

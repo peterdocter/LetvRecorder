@@ -50,7 +50,7 @@ import com.letv.leui.widget.ScreenRecordingView;
 @SuppressLint("SimpleDateFormat")
 public class RecorderService extends Service implements RecorderInterface {
 
-    private static String LOG_TAG = RecorderService.class.getName();
+    private static String LOG_TAG = RecorderService.class.getSimpleName();
 
 	public static String SERVICE_ACTION = "com.letv.recorder.action.Recorder";
 
@@ -117,6 +117,7 @@ public class RecorderService extends Service implements RecorderInterface {
 	private volatile Looper mServiceLooper;
 	private String mName="RecorderService";
 
+    private RecorderAppWidget mAppWidgetProvider = RecorderAppWidget.getInstance();
 	private AudioQulityPram audioQulityPram;
 	private static Context whichContext;
     RemoteCallbackList<IRecorderCallBack> rc=new RemoteCallbackList<IRecorderCallBack>();
@@ -155,8 +156,8 @@ public class RecorderService extends Service implements RecorderInterface {
 			@Override
 			public void run() {
 
-                recordRealDuring = recordedDuring + (System.currentTimeMillis() - recordStartTime);
-
+				long temp_currentTimeMills=System.currentTimeMillis();
+                recordRealDuring = recordedDuring + (temp_currentTimeMills - recordStartTime);
 				if (recordRealDuring >= MAX_TIME_LENGTH && !showNotification) {
 					showNotification = true;
 					sendAlertBroadcast();
@@ -177,7 +178,10 @@ public class RecorderService extends Service implements RecorderInterface {
 
 //                if(LockScreen.isShowing(RecorderService.this)&& 0==i%50 &&locked){
 
-				if(0==i%50){
+				if(0==i%50&&mAppWidgetProvider.hasInstances(RecorderService.this)) {
+                        mAppWidgetProvider.updateUI(RecorderService.this);
+                }
+				if(false){
 					int count=rc.beginBroadcast();
 					for (int i=0;i<count;i++){
 						try {
@@ -355,12 +359,14 @@ public class RecorderService extends Service implements RecorderInterface {
         i.putExtra("command", "pause");
         sendBroadcast(i);
         AudioManager am = (AudioManager) RecordApp.getInstance().getSystemService(Context.AUDIO_SERVICE);
+		RecordTool.e(LOG_TAG,"parameter："+am.getParameters("Recorder"));
         int result = am.requestAudioFocus(null,AudioManager.STREAM_DTMF,AudioManager.AUDIOFOCUS_LOSS);
 
     }
 
 	@Override
 	public int startRecording() {
+
 		RecordTool.e("RecordSer","->startRecording");
 		if(whichContext instanceof  SoundRecorder){
 			audioQulityPram=SettingTool.getAudioQulity(whichContext);
@@ -461,9 +467,14 @@ public class RecorderService extends Service implements RecorderInterface {
 			mRecorder.prepare();
 			mRecorder.start();
 			recordStartTime = System.currentTimeMillis();
+			RecordTool.e(LOG_TAG,"start:"+recordStartTime);
 			timerStart();
 		    sendStateBroadcast();
 			AudioManagerUtil.initPrePlayingAudioFocus(null);
+
+			AudioManager am = (AudioManager) RecordApp.getInstance().getSystemService(Context.AUDIO_SERVICE);
+			RecordTool.e(LOG_TAG, "start:" + am.getProperty("Recorder"));
+			RecordTool.e(LOG_TAG,"start:"+am.getParameters("Recorder"));
 		} catch (Exception e) {
 			e.printStackTrace();
 			LeTopSlideToastHelper.getToastHelper(getApplicationContext(),LeTopSlideToastHelper.LENGTH_SHORT,
@@ -515,7 +526,7 @@ public class RecorderService extends Service implements RecorderInterface {
 		sendStateBroadcast();
 		showNotification = false;
 		sendAlertBroadcast();
-        RecordTool.loge(LOG_TAG,"stopRecording");
+        RecordTool.e(LOG_TAG,"stopRecording");
 		AudioManagerUtil.destroyAudioFocus(null);
 		return true;
 	}
@@ -532,7 +543,7 @@ public class RecorderService extends Service implements RecorderInterface {
 		mTmpFiles.clear();
         clearRecorderData();
 		sendStateBroadcast();
-        RecordTool.loge(LOG_TAG,"deleRecording");
+        RecordTool.e(LOG_TAG,"deleRecording");
 		return true;
 	}
 

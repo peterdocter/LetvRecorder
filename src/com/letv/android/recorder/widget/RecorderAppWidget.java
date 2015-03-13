@@ -8,6 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -49,6 +52,7 @@ public class RecorderAppWidget extends AppWidgetProvider{
 //        String stateStr =  sp.getString(RecordTool.getRecordState(context), Recorder.MediaRecorderState.getStateString(Recorder.MediaRecorderState.IDLE_STATE));
 
 //        Recorder.MediaRecorderState mState = Recorder.MediaRecorderState.getState(stateStr);
+
         Recorder.MediaRecorderState mState = RecordTool.getRecordState(context);
         RecordTool.e(LOG_CAT, "onReceive: mState:"+mState+"  action"+action);
         if(action.equals(ACTION_DONE)){
@@ -61,8 +65,9 @@ public class RecorderAppWidget extends AppWidgetProvider{
         }else if(action.equals(ACTION_PAUSE)){
             RecorderService.pauseRecoring(context);
         }else if(action.equals(ACTION_START)){
-            RecorderService.startRecording(context);
+                RecorderService.startRecording(context);
         }else if(action.equals(ACTION_UPDATE)){
+
             updateUI(context,mState,intent);
         }
 
@@ -85,7 +90,20 @@ public class RecorderAppWidget extends AppWidgetProvider{
         long postTime = System.currentTimeMillis();
         RecordTool.e(LOG_CAT+"->updateUI time "+i,(postTime-preTime)/1000f+"");
     }
+    public void updateUI(Context context){
+        long preTime = System.currentTimeMillis();
+        i++;
+        if(remoteViews==null) {
+            remoteViews = new RemoteViews(context.getPackageName(), R.layout.recorder_app_widget);
+        }
 
+        updateRemoteViews(context, remoteViews,RecordTool.getRecordState(context),null);
+        AppWidgetManager appwidget_manager = AppWidgetManager.getInstance(context);
+        ComponentName component_name = new ComponentName(context, RecorderAppWidget.class);
+        appwidget_manager.updateAppWidget(component_name, remoteViews);
+        long postTime = System.currentTimeMillis();
+        RecordTool.e(LOG_CAT+"->updateUI time "+i,(postTime-preTime)/1000f+"");
+    }
 
     private void updateRemoteViews(Context context,RemoteViews remoteViews,Recorder.MediaRecorderState mState,
                                    Intent intent){
@@ -196,5 +214,20 @@ public class RecorderAppWidget extends AppWidgetProvider{
     public static boolean hasAppWidget(Context context){
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         return sp.getBoolean(APP_WIDGET_ENABLED,false);
+    }
+
+
+    private static RecorderAppWidget sInstance;
+    public static synchronized RecorderAppWidget getInstance() {
+        if (sInstance == null) {
+            sInstance = new RecorderAppWidget();
+        }
+        return sInstance;
+    }
+    public boolean hasInstances(Context context) {
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(
+                new ComponentName(context, this.getClass()));
+        return (appWidgetIds.length > 0);
     }
 }

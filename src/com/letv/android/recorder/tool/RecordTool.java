@@ -234,7 +234,7 @@ public class RecordTool {
             if(mRecorderState==MediaRecorderState.RECORDING){
                 conStr = context.getResources().getString(R.string.recording);
             }else if(mRecorderState==MediaRecorderState.PAUSED){
-                conStr = context.getResources().getString(R.string.record_pase);
+                conStr = context.getResources().getString(R.string.record_paused);
             }else{
                 hideNotificationWhenBack(context);
                 return;
@@ -249,7 +249,7 @@ public class RecordTool {
                     .setTicker(conStr)
                     .setWhen(System.currentTimeMillis())
                     .build();
-//            notification.setLatestEventInfo(context, title, conStr, contentIntent);
+            notification.setLatestEventInfo(context, title, conStr, contentIntent);
             notification.flags = Notification.FLAG_ONGOING_EVENT;
             manager.notify(Constants.NOTIFICATION_BACK_ID, notification);
         }

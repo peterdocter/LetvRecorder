@@ -42,7 +42,6 @@
 
     <string name="recording">正在录音...</string>
     <string name="saving_record">正在保存...</string>
-    <string name="record_pase">录音已暂停</string>
     <string name="record_over_max_time">录音超过一小时</string>
     <string name="record_name_cannot_null">录音名不能为空</string>
     <string name="record_existed">录音名已存在</string>
