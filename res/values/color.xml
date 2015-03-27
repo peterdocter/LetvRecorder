@@ -37,5 +37,6 @@
     <color name="defalut_black">#000000</color>
     <color name="defalut_red">#ff0000</color>
     <color name="defalut_white">#ffffff</color>
-
+    <color name="buttom_red">#cc1816</color>
+    <color name="setting_action_bar">#f9f9f9</color>
 </resources>

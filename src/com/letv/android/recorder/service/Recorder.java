@@ -138,19 +138,19 @@ public class Recorder{
 	}
 
 	public void startRecording(Context mContext) {
-		Log.i(TAG, "startRecording");
+		RecordTool.e(TAG, "startRecording");
 		RecorderService.startRecording(mContext);
 	}
 
 	public void pauseRecording(Context mContext) {
-		Log.i(TAG, "pauseRecording");
+		RecordTool.e(TAG, "pauseRecording");
 		if (RecorderService.isRecording()) {
 			RecorderService.pauseRecoring(mContext);
 		}
 	}
 
 	public void stopRecording(Context mContext) {
-		Log.i(TAG, "stopRecording");
+		RecordTool.e(TAG, "stopRecording");
 		RecorderService.stopRecording(mContext);
 	}
 

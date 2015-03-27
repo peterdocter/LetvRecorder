@@ -19,6 +19,8 @@ public class AudioManagerUtil {
     }
     public static void destroyAudioFocus(AudioManager.OnAudioFocusChangeListener afChangeListener){
         AudioManager am = (AudioManager) RecordApp.getInstance().getSystemService(Context.AUDIO_SERVICE);
+        RecordTool.e("AudioManagerUtil","scene_mode:"+SettingTool.getSceneMode(RecordApp.getInstance().getApplicationContext()));
+        am.setParameters("Recorder=null");
         am.abandonAudioFocus(afChangeListener);
     }
 

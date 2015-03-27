@@ -31,7 +31,7 @@ import com.letv.leui.widget.LeTopSlideToastHelper;
 
 public class RecordTool {
 
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     public static void logi(String tag,String log){
         if(DEBUG)
@@ -84,7 +84,9 @@ public class RecordTool {
         getSharedPreferences(context).edit().putBoolean(RECORDER_IS_FIRST_LAUNCH,false).commit();
         return isFirst;
     }
-
+    public static void saveFirstLaunch(Context context,boolean isFirstLuach){
+        getSharedPreferences(context).edit().putBoolean(RECORDER_IS_FIRST_LAUNCH,isFirstLuach).commit();
+    }
     public static void saveRecordState(Context context ,MediaRecorderState mediaRecorderState){
         getSharedPreferences(context).edit()
                 .putString(RECORDER_SERVICE_STATE,MediaRecorderState.getStateString(mediaRecorderState))
@@ -122,7 +124,7 @@ public class RecordTool {
         SharedPreferences sp = getSharedPreferences(context);
         long recordedTime = sp.getLong(RECORDER_RECORDED_TIME,0);
         long startTime = sp.getLong(RECORDER_START_TIME,0);
-        RecordTool.e("RecordTool--time",""+startTime);
+        RecordTool.e("RecordToolstartTime",""+startTime+" context:"+context.getClass().getSimpleName());
         if(startTime!=0) {
             SharedPreferences.Editor editor= sp.edit();
             editor.putLong(RECORDER_START_TIME,startTime);
@@ -307,12 +309,20 @@ public class RecordTool {
 
 		String title = context.getResources().getString(R.string.app_name);
 		String conStr = context.getResources().getString(R.string.record_over_max_time);
-		
+
 		NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-		Notification notification = new Notification(R.drawable.ic_rec_status, title, System.currentTimeMillis());
-		notification.setLatestEventInfo(context, title, conStr, contentIntent);
-		manager.notify(id, notification);
-		
+        Notification notification = new Notification.Builder(context)
+                .setSmallIcon(com.android.internal.R.drawable.le_notify_center_recording_more_than_60_minutes_icon)
+                .setNotificationIcon(com.android.internal.R.drawable.le_notify_status_record_morethan_60_minute_icon)
+                .setContentTitle(conStr)
+                .setTicker(conStr)
+                .setWhen(System.currentTimeMillis())
+                .build();
+
+        notification.flags = Notification.FLAG_AUTO_CANCEL;
+        notification.setLatestEventInfo(context, title, conStr, contentIntent);
+        manager.notify(null,id, notification);
+
 	}
 	
 	

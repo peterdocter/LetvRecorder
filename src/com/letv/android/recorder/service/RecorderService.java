@@ -12,10 +12,12 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+
 import android.annotation.SuppressLint;
 import android.app.ActivityThread;
 import android.app.AppOpsManager;
 import android.app.KeyguardManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -25,6 +27,9 @@ import android.media.MediaRecorder.OnErrorListener;
 import android.os.*;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.RemoteViews;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 
 import com.letv.android.recorder.*;
 import com.letv.android.recorder.aidl.IRecorder;
@@ -120,12 +125,30 @@ public class RecorderService extends Service implements RecorderInterface {
     private RecorderAppWidget mAppWidgetProvider = RecorderAppWidget.getInstance();
 	private AudioQulityPram audioQulityPram;
 	private static Context whichContext;
+
+    //widget refresh field
+    
+    private Timer mTimer;
+    private int mTimeCount = 0;
+    private TimerTask mTimeCountTimerTask;
+    RemoteViews mRemoteViews;
+
+    AppWidgetManager mAppWidgetManager;
+
+    ComponentName mComponentName;
+    PowerManager pm ;
+
     RemoteCallbackList<IRecorderCallBack> rc=new RemoteCallbackList<IRecorderCallBack>();
 
 	public static int getDB() {
 		int db = 0;// 分贝
+        int ratio=0;
 		if (mRecorder != null) {
-			int ratio = mRecorder.getMaxAmplitude();
+            try {
+                ratio = mRecorder.getMaxAmplitude();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
 			if (ratio > 1) {
                 db = ratio;
 			}
@@ -134,7 +157,6 @@ public class RecorderService extends Service implements RecorderInterface {
 		return db;
 	}
 
-	private Timer mTimer;
 	private boolean showNotification = false;
 
 
@@ -148,69 +170,39 @@ public class RecorderService extends Service implements RecorderInterface {
         }
     };
 
-	int i=0;
+    //widget refresh method
+    private void newObjectForWidget(){
+        RecordTool.e(LOG_TAG,"newObjectForWidget");
+        mTimeCount=0;
+        mAppWidgetManager=AppWidgetManager.getInstance(RecorderService.this);
+        mComponentName=new ComponentName(this,RecorderAppWidget.class);
+        mRemoteViews=new RemoteViews(Constants.PACKAGE_NAME, R.layout.recorder_app_widget);
+        pm=(PowerManager) RecorderService.this.getSystemService(Context.POWER_SERVICE);
+    }
 	private void timerStart() {
-		mTimer = new Timer();
-		mTimer.schedule(new TimerTask() {
-
-			@Override
-			public void run() {
-
-				long temp_currentTimeMills=System.currentTimeMillis();
-                recordRealDuring = recordedDuring + (temp_currentTimeMills - recordStartTime);
-				if (recordRealDuring >= MAX_TIME_LENGTH && !showNotification) {
-					showNotification = true;
-					sendAlertBroadcast();
-				}
-
-                boolean isFull = mRemainingTimeCalculator.storageFull();
-
-                if(isFull){
-                    stopRecording();
-                    saveRecording(RecordApp.getInstance().getRecordName());
-                    if(!storageFullCallBack()){
-                        mHandler.postDelayed(alertStorage,500);
-                    }
-                    return;
-                }
-				i++;
-//				boolean locked = keyguardManager.isKeyguardLocked();
-
-//                if(LockScreen.isShowing(RecorderService.this)&& 0==i%50 &&locked){
-
-				if(0==i%50&&mAppWidgetProvider.hasInstances(RecorderService.this)) {
-                        mAppWidgetProvider.updateUI(RecorderService.this);
-                }
-				if(false){
-					int count=rc.beginBroadcast();
-					for (int i=0;i<count;i++){
-						try {
-							rc.getBroadcastItem(i).updateMaxAmplitude(recordRealDuring,getDB());
-						} catch (RemoteException e) {
-							e.printStackTrace();
-						}
-					}
-					rc.finishBroadcast();
-                    Intent intent = new Intent(RecorderAppWidget.ACTION_UPDATE);
-                    intent.putExtra(ScreenRecordingView.RECORD_TIME_KEY,recordRealDuring);
-                    intent.putExtra(ScreenRecordingView.RECORD_DB_KEY,getDB());
-                    intent.putExtra(ScreenRecordingView.RECORD_NAME,RecordTool.getRecordName(getApplicationContext()));
-                    sendBroadcast(intent);
-                }
-
-			}
-		}, 20, 20);
+        RecordTool.e(LOG_TAG,"timerStart");
+        newObjectForWidget();
+        mTimer=new Timer();
+        mTimeCountTimerTask=new TimeCountTimerTask();
+		mTimer.schedule(mTimeCountTimerTask, 20, 20);
 	}
 
 	private void timerStop() {
+        RecordTool.e(LOG_TAG,"timerStop"+"mTimer:"+mTimer+" mTimeCountTimerTask:"+mTimeCountTimerTask);
 		if (mTimer != null) {
 			mTimer.cancel();
 			mTimer = null;
 		}
+        if(mTimeCountTimerTask!=null){
+            mTimeCountTimerTask.cancel();
+            mTimer = null;
+        }
+        mTimeCount=0;
 	}
 
 	@Override
 	public void onCreate() {
+        RecordTool.e(LOG_TAG,"onCreate");
 		mSdCardRecodPath = Constants.RECORD_PATH;
 		mTempPath = mSdCardRecodPath + File.separator + ".temp";
 		mFileFormat = getResources().getString(R.string.record_file_name_format);
@@ -219,7 +211,6 @@ public class RecorderService extends Service implements RecorderInterface {
 		keyguardManager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
 		HandlerThread thread = new HandlerThread("IntentService[" + mName + "]");
 		thread.start();
-
 		mServiceLooper = thread.getLooper();
 		mServiceHandler = new ServiceHandler(mServiceLooper);
 		super.onCreate();
@@ -292,13 +283,11 @@ public class RecorderService extends Service implements RecorderInterface {
 		Message msg = mServiceHandler.obtainMessage();
 		msg.arg1 = startId;
 		msg.obj = intent;
-		mServiceHandler.handleMessage(msg);
-
+		mServiceHandler.sendMessage(msg);
 		return super.onStartCommand(intent, flags, startId);
 	}
 
 	private IRecorder.Stub iRecorder = new IRecorder.Stub() {
-
 		@Override
 		public boolean stopRecorder() throws RemoteException {
 			stopRecording();
@@ -306,8 +295,6 @@ public class RecorderService extends Service implements RecorderInterface {
 			isRemoteRecord = false;
 			return true;
 		}
-
-
 		@Override
 		public boolean rename(String newName) throws RemoteException {
 			recordName = newName;
@@ -323,6 +310,7 @@ public class RecorderService extends Service implements RecorderInterface {
 		 */
 		@Override
 		public int startRecorder(String recordName) throws RemoteException {
+            RecordTool.e(LOG_TAG,"int startRecorder");
             if(RecordApp.getInstance().getmState()!=MediaRecorderState.IDLE_STATE) {
                 stopRecording();
                 saveRecording(RecordApp.getInstance().getRecordName());
@@ -355,9 +343,6 @@ public class RecorderService extends Service implements RecorderInterface {
     private void stopAudioPlayback() {
         // Shamelessly copied from MediaPlaybackService.java, which
         // should be public, but isn't.
-        Intent i = new Intent("com.android.music.musicservicecommand");
-        i.putExtra("command", "pause");
-        sendBroadcast(i);
         AudioManager am = (AudioManager) RecordApp.getInstance().getSystemService(Context.AUDIO_SERVICE);
 		RecordTool.e(LOG_TAG,"parameter："+am.getParameters("Recorder"));
         int result = am.requestAudioFocus(null,AudioManager.STREAM_DTMF,AudioManager.AUDIOFOCUS_LOSS);
@@ -367,7 +352,8 @@ public class RecorderService extends Service implements RecorderInterface {
 	@Override
 	public int startRecording() {
 
-		RecordTool.e("RecordSer","->startRecording");
+		RecordTool.e(LOG_TAG,"int startRecording");
+
 		if(whichContext instanceof  SoundRecorder){
 			audioQulityPram=SettingTool.getAudioQulity(whichContext);
 		}else {
@@ -464,9 +450,12 @@ public class RecorderService extends Service implements RecorderInterface {
 		});
 		try {
             stopAudioPlayback();
-			mRecorder.prepare();
-			mRecorder.start();
-			recordStartTime = System.currentTimeMillis();
+            RecordTool.e("startRecording", "startRecording:prepare {");
+            mRecorder.prepare();
+            RecordTool.e("startRecording", "startRecording:prepare }");
+            mRecorder.start();
+            RecordTool.e("startRecording", "startRecording:start");
+            recordStartTime = System.currentTimeMillis();
 			RecordTool.e(LOG_TAG,"start:"+recordStartTime);
 			timerStart();
 		    sendStateBroadcast();
@@ -475,8 +464,8 @@ public class RecorderService extends Service implements RecorderInterface {
 			AudioManager am = (AudioManager) RecordApp.getInstance().getSystemService(Context.AUDIO_SERVICE);
 			RecordTool.e(LOG_TAG, "start:" + am.getProperty("Recorder"));
 			RecordTool.e(LOG_TAG,"start:"+am.getParameters("Recorder"));
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception startExe) {
+            startExe.printStackTrace();
 			LeTopSlideToastHelper.getToastHelper(getApplicationContext(),LeTopSlideToastHelper.LENGTH_SHORT,
 					getResources().getString(R.string.record_exception),null,
 					null,null,
@@ -487,7 +476,6 @@ public class RecorderService extends Service implements RecorderInterface {
             mRecorderState = MediaRecorderState.IDLE_STATE;
             sendStateBroadcast();
 		}
-        RecordTool.loge(LOG_TAG,"startRecording");
 		return  Constants.START_RECORD_SUCCESS;
 	}
 
@@ -495,7 +483,7 @@ public class RecorderService extends Service implements RecorderInterface {
 	@Override
 	public boolean pauseRecording() {
 
-		RecordTool.loge("RecordSer","->pauseRecording");
+		RecordTool.loge(LOG_TAG,"pauseRecording");
 		mRecorderState = MediaRecorderState.PAUSED;
 		recordedDuring += System.currentTimeMillis() - recordStartTime;
 		timerStop();
@@ -513,6 +501,7 @@ public class RecorderService extends Service implements RecorderInterface {
 
 	@Override
 	public boolean stopRecording() {
+        RecordTool.loge(LOG_TAG,"stopRecording {");
 		if (MediaRecorderState.RECORDING == mRecorderState) {
 			recordRealDuring = recordedDuring + System.currentTimeMillis() - recordStartTime;
 		}
@@ -526,13 +515,14 @@ public class RecorderService extends Service implements RecorderInterface {
 		sendStateBroadcast();
 		showNotification = false;
 		sendAlertBroadcast();
-        RecordTool.e(LOG_TAG,"stopRecording");
+        RecordTool.e(LOG_TAG,"stopRecording }");
 		AudioManagerUtil.destroyAudioFocus(null);
 		return true;
 	}
 
 	@Override
 	public boolean deleRecording() {
+        RecordTool.loge(LOG_TAG,"deleRecording {");
 		if (mTmpFiles == null || mTmpFiles.size() <= 0) {
 			return false;
 		}
@@ -543,7 +533,7 @@ public class RecorderService extends Service implements RecorderInterface {
 		mTmpFiles.clear();
         clearRecorderData();
 		sendStateBroadcast();
-        RecordTool.e(LOG_TAG,"deleRecording");
+        RecordTool.e(LOG_TAG,"deleRecording }");
 		return true;
 	}
 
@@ -551,14 +541,12 @@ public class RecorderService extends Service implements RecorderInterface {
 
 	@Override
 	public boolean saveRecording(String recordName) {
+
+        RecordTool.e(LOG_TAG, "saveRecording");
 		if (mTmpFiles == null || mTmpFiles.size() <= 0) {
 			return false;
 		}
-
 //        resumeRecorderData();
-
-        RecordTool.loge(LOG_TAG,"saveRecording");
-
 		String tempPath = null;
 		if (TextUtils.isEmpty(recordName)) {
 			SimpleDateFormat dateFormat = new SimpleDateFormat(mFileFormat);
@@ -647,9 +635,10 @@ public class RecorderService extends Service implements RecorderInterface {
 	}
 
 	private void sendStateBroadcast() {
+        RecordTool.e(LOG_TAG,"sendStateBroadcast:state:"+RecordApp.getInstance().getmState());
 		Intent intent = new Intent(RECORDER_SERVICE_BROADCAST_NAME);
 		intent.putExtra(RecordTool.RECORDER_SERVICE_STATE, MediaRecorderState.getStateString(mRecorderState));
-        intent.putExtra(RecordTool.RECORDER_CALL_RECORDING,isRemoteRecord);
+        intent.putExtra(RecordTool.RECORDER_CALL_RECORDING, isRemoteRecord);
 		sendBroadcast(intent);
 		if(MediaRecorderState.RECORDING == mRecorderState||
 				MediaRecorderState.PAUSED == mRecorderState){
@@ -675,6 +664,7 @@ public class RecorderService extends Service implements RecorderInterface {
 
 	@Override
 	public void onDestroy() {
+        RecordTool.e(LOG_TAG,"onDestroy");
 		LockScreen.hideLockScreenWidget(this);
 		timerStop();
 		super.onDestroy();
@@ -684,7 +674,7 @@ public class RecorderService extends Service implements RecorderInterface {
      * record everything change
      */
     private void saveRecorderData(){
-
+        RecordTool.e(LOG_TAG,"saveRecorderData:"+mRecorderState);
         if(mRecorderState == MediaRecorderState.PAUSED||
                mRecorderState==MediaRecorderState.STOPPED){
             recordedDuring = RecordTool.getRecordedTime(getApplicationContext());
@@ -692,8 +682,8 @@ public class RecorderService extends Service implements RecorderInterface {
             recordStartTime = 0;
         }
 
-        RecordTool.saveRecordState(getApplicationContext(),mRecorderState);
-        RecordTool.saveRecordedTime(getApplicationContext(),recordedDuring);
+        RecordTool.saveRecordState(getApplicationContext(), mRecorderState);
+        RecordTool.saveRecordedTime(getApplicationContext(), recordedDuring);
         RecordTool.saveStartRecordTime(getApplicationContext(),recordStartTime);
         RecordTool.saveRecordName(getApplicationContext(),RecordApp.getInstance().getRecordName());
         RecordTool.saveRecordType(getApplicationContext(),isRemoteRecord);
@@ -757,7 +747,7 @@ public class RecorderService extends Service implements RecorderInterface {
 
 
 		File dirFile = new File(dir);
-		Log.i("file dir", dir + "      " + fileName);
+        RecordTool.e("file dir", dir + "      " + fileName);
 		if (dirFile.exists() && dirFile.isFile()) {
 			dirFile.delete();
 			dirFile.mkdirs();
@@ -789,6 +779,7 @@ public class RecorderService extends Service implements RecorderInterface {
     }
 
 	public static void startRecording(Context context) {
+        RecordTool.e(LOG_TAG,"static:startRecording");
 		Intent intent = new Intent(context, RecorderService.class);
 		whichContext=context;
 		intent.putExtra(ACTION_NAME, ACTION_START_RECORDING);
@@ -797,6 +788,7 @@ public class RecorderService extends Service implements RecorderInterface {
 	}
 
 	public static void stopRecording(Context context) {
+        RecordTool.e(LOG_TAG,"static:stopRecording");
 		Intent intent = new Intent(context, RecorderService.class);
 		intent.putExtra(ACTION_NAME, ACTION_STOP_RECORDING);
 		context.startService(intent);
@@ -804,6 +796,7 @@ public class RecorderService extends Service implements RecorderInterface {
 	}
 
 	public static void pauseRecoring(Context context) {
+        RecordTool.e(LOG_TAG,"static:pauseRecoring");
 		Intent target = new Intent(context, RecorderService.class);
 		target.putExtra(ACTION_NAME, RecorderService.ACTION_PAUSE_RECORDING);
 		context.startService(target);
@@ -811,6 +804,7 @@ public class RecorderService extends Service implements RecorderInterface {
 	}
 
 	public static void saveRecording(Context context, String recordName) {
+        RecordTool.e(LOG_TAG,"static:saveRecording");
 		Intent target = new Intent(context, RecorderService.class);
 		target.putExtra(ACTION_NAME, RecorderService.ACTION_SAVE_RECORDING);
 		context.startService(target);
@@ -819,6 +813,7 @@ public class RecorderService extends Service implements RecorderInterface {
 	}
 
 	public static void deleteRecording(Context context) {
+        RecordTool.e(LOG_TAG,"static:deleteRecording");
 		Intent target = new Intent(context, RecorderService.class);
 		target.putExtra(ACTION_NAME, RecorderService.ACTION_DELE_RECORDING);
 		context.startService(target);
@@ -847,4 +842,49 @@ public class RecorderService extends Service implements RecorderInterface {
 			onHandleIntent((Intent)msg.obj);
 		}
 	}
+
+    class TimeCountTimerTask extends TimerTask{
+        @Override
+        public void run() {
+            RecordTool.e(LOG_TAG,"TimerTask"+this.hashCode()+"run:"+mTimeCount);
+            long temp_currentTimeMills=System.currentTimeMillis();
+            recordRealDuring = recordedDuring + (temp_currentTimeMills - recordStartTime);
+            if (recordRealDuring >= MAX_TIME_LENGTH && !showNotification) {
+                showNotification = true;
+                sendAlertBroadcast();
+            }
+            boolean isFull = mRemainingTimeCalculator.storageFull();
+            if(isFull){
+                stopRecording();
+                saveRecording(RecordApp.getInstance().getRecordName());
+                if(!storageFullCallBack()){
+                    mHandler.postDelayed(alertStorage,500);
+                }
+                return;
+            }
+            mTimeCount++;
+
+            //最好作如下判读if(后台录音&&到达刷新时间&&当前widget是锁屏还是桌面小部件)
+            if(0==mTimeCount%50&&pm.isInteractive()&&mAppWidgetProvider.hasInstances(RecorderService.this)) {
+                RecordTool.e("TimeCountTimerTask", "TimerTask"+this.hashCode()+"widgetupdate" + mTimeCount);
+                if(null== mRemoteViews){
+                    mRemoteViews=new RemoteViews(Constants.PACKAGE_NAME, R.layout.recorder_app_widget);
+                }
+                if(null==mAppWidgetManager){
+                    mAppWidgetManager=AppWidgetManager.getInstance(RecorderService.this);
+                }
+                if(null==mComponentName){
+                    mComponentName=new ComponentName(RecorderService.this,RecorderAppWidget.class);
+                }
+                mRemoteViews.setTextViewText(R.id.remote_record_time_during,RecordTool.recordTimeFormat(RecordTool.getRecordTime(RecorderService.this)));
+                mAppWidgetManager.updateAppWidget(mComponentName,mRemoteViews);
+            }
+        }
+
+        @Override
+        public boolean cancel() {
+            RecordTool.e(LOG_TAG,"cancel");
+            return super.cancel();
+        }
+    }
 }

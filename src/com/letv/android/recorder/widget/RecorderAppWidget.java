@@ -38,6 +38,8 @@ public class RecorderAppWidget extends AppWidgetProvider{
     public static final String ACTION_UPDATE="com.letv.android.recorder.AppWidget.ACTION_UPDATE";
 
     public static String APP_WIDGET_ENABLED="app_widget_enabled";
+    public int[] appWidgetIds;
+    AppWidgetManager appWidgetManager;
 
     public RecorderAppWidget() {
         super();
@@ -50,9 +52,7 @@ public class RecorderAppWidget extends AppWidgetProvider{
 
 //        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 //        String stateStr =  sp.getString(RecordTool.getRecordState(context), Recorder.MediaRecorderState.getStateString(Recorder.MediaRecorderState.IDLE_STATE));
-
 //        Recorder.MediaRecorderState mState = Recorder.MediaRecorderState.getState(stateStr);
-
         Recorder.MediaRecorderState mState = RecordTool.getRecordState(context);
         RecordTool.e(LOG_CAT, "onReceive: mState:"+mState+"  action"+action);
         if(action.equals(ACTION_DONE)){
@@ -63,11 +63,13 @@ public class RecorderAppWidget extends AppWidgetProvider{
                 RecordApp.getInstance().addFlag(RecorderService.recordRealDuring);
             }
         }else if(action.equals(ACTION_PAUSE)){
+            if(!RecordTool.canClick(1500)){
+                return;
+            }
             RecorderService.pauseRecoring(context);
         }else if(action.equals(ACTION_START)){
                 RecorderService.startRecording(context);
         }else if(action.equals(ACTION_UPDATE)){
-
             updateUI(context,mState,intent);
         }
 
@@ -118,6 +120,7 @@ public class RecorderAppWidget extends AppWidgetProvider{
             remoteViews.setOnClickPendingIntent(R.id.remote_record_action, startPendingIntent);
             remoteViews.setImageViewResource(R.id.remote_record_action,R.drawable.start_selector);
             remoteViews.setTextViewText(R.id.remote_record_name, RecordTool.getNewRecordName(context));
+            remoteViews.setTextViewText(R.id.remote_record_time_during, RecordTool.recordTimeFormat(RecordTool.getRecordTime(context)));
             remoteViews.setTextViewText(R.id.remote_record_state,mState== Recorder.MediaRecorderState.IDLE_STATE?context.getResources().getText(R.string.ready_record):context.getResources().getText(R.string.record_paused));
 
         }else if(mState == Recorder.MediaRecorderState.RECORDING){
@@ -139,23 +142,13 @@ public class RecorderAppWidget extends AppWidgetProvider{
             remoteViews.setTextViewText(R.id.remote_record_name, RecordTool.getRecordName(context));
             remoteViews.setTextViewText(R.id.remote_record_state,context.getResources().getText(R.string.recording));
 
-            remoteViews.setViewVisibility(R.id.remote_record_flag, View.VISIBLE);
-            remoteViews.setViewVisibility(R.id.remote_record_done,View.VISIBLE);
-//            remoteViews.setViewVisibility(R.id.remote_wave,View.VISIBLE);
         }else if(mState == Recorder.MediaRecorderState.STOPPED){
             remoteViews.setTextViewText(R.id.remote_record_state,context.getResources().getText(R.string.saving_record));
         }
-
-
-        remoteViews.setTextViewText(R.id.remote_record_time_during,
-                RecordTool.recordTimeFormat(RecordTool.getRecordTime(context)));
-
         if(intent!=null&&intent.getExtras()!=null) {
-
             Bundle extras = intent.getExtras();
             if(extras.containsKey(ScreenRecordingView.RECORD_TIME_KEY)&&
                     extras.containsKey(ScreenRecordingView.RECORD_DB_KEY)) {
-
                 Bundle bundle = new Bundle();
                 RecordTool.e(LOG_CAT+"->updateRemoteViews","long:"+extras.getLong(ScreenRecordingView.RECORD_TIME_KEY)+"float:"+extras.getInt(ScreenRecordingView.RECORD_DB_KEY));
                 bundle.putLong(ScreenRecordingView.RECORD_TIME_KEY, extras.getLong(ScreenRecordingView.RECORD_TIME_KEY));
@@ -225,9 +218,9 @@ public class RecorderAppWidget extends AppWidgetProvider{
         return sInstance;
     }
     public boolean hasInstances(Context context) {
-        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-        int[] appWidgetIds = appWidgetManager.getAppWidgetIds(
-                new ComponentName(context, this.getClass()));
+        appWidgetManager = AppWidgetManager.getInstance(context);
+        appWidgetIds = appWidgetManager.getAppWidgetIds(new ComponentName(context, this.getClass()));
+        RecordTool.e(LOG_CAT,"Recorderhaswidget:"+appWidgetIds.length);
         return (appWidgetIds.length > 0);
     }
 }

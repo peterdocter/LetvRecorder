@@ -36,6 +36,7 @@ import com.letv.android.recorder.widget.FlagImageView;
 
 public class AbsRecorderActivity extends Activity implements OnClickListener, OnStateChangedListener, OnRecordTimeChangedListener {
 
+    private String TAG="AbsRecorderActivity";
     protected ImageView recordBtn, stopBtn;
     protected FlagImageView flagBtn;
     protected MediaRecorderState mRecorderState ;
@@ -61,7 +62,7 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_recorder);
-        isFistTime = RecordTool.isFirstLaunch(this);
+//        isFistTime = RecordTool.isFirstLaunch(this);
 
         mReceiver = new RecorderReceiver();
         mRecorder = Recorder.getInstance();
@@ -80,20 +81,26 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
 
     @Override
     protected void onStart() {
-        RecordTool.e("reboot->","--------------------->Abs record onStart");
-        mRecorderState = RecordTool.getRecordState(this);
+        RecordTool.e(TAG,"onStart: !isFistTime="+!isFistTime());
+//        mRecorderState = RecordTool.getRecordState(this);
+        mRecorderState=RecordApp.getInstance().getmState();
         mRecorder.setmOnStateChangedListener(this);
         mRecorder.setTimeChangedListener(this);
 //        mRecorder.checkRecorderState();
-        if(!isFistTime()) {
+
+        isFistTime = RecordTool.isFirstLaunch(this);
+        RecordTool.e(TAG,"onStartState:"+RecordApp.getInstance().getmState());
+        if(MediaRecorderState.IDLE_STATE!=RecordApp.getInstance().getmState()) {
             updateUI();
+        }else if(!isFistTime){
+               updateUI();
         }
         super.onStart();
     }
 
     @Override
     protected void onResume() {
-        RecordTool.e("reboot->","--------------------->Abs record onResume"+!isFistTime());
+        RecordTool.e(TAG,"onResume"+!isFistTime());
         RecordTool.hideNotificationWhenBack(this);
 //        RecordTool.hintNotificationLedWhenBack(this);
 //        if(!isFistTime()&&!recordedFragment.recordedAdapter.isActionMode()) {
@@ -110,7 +117,7 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
 
     @Override
     protected void onStop() {
-        RecordTool.e("reboot->","--------------------->Abs record onStop");
+        RecordTool.e(TAG,"onStop");
         if(mRecorder!=null){
             mRecorder.setmOnStateChangedListener(null);
             mRecorder.setTimeChangedListener(null);
@@ -128,28 +135,29 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
 
     @Override
     protected void onDestroy() {
-        RecordTool.e("reboot->","AbsRecorderDestoryState:"+RecordApp.getInstance().getmState());
-        RecordTool.e("reboot->","--------------------->Abs record onDestroy");
+        RecordTool.e(TAG,"onDestroy:AbsRecorderDestoryState:"+RecordApp.getInstance().getmState());
         if (mReceiver != null) {
             unregisterReceiver(mReceiver);
         }
+        RecordTool.saveFirstLaunch(AbsRecorderActivity.this,true);
         super.onDestroy();
     }
 
     @Override
     public void onClick(View arg0) {
 
-        RecordTool.e("reboot->", "Abs record before onClick:" +"click - in");
+        mRecorderState=RecordApp.getInstance().getmState();
+        RecordTool.e(TAG, "click:in:canClick ?");
         if(!RecordTool.canClick(500))
             return;
-
+        RecordTool.e(TAG, "click:in:recordedFragment"+(recordedFragment!=null));
         if(recordedFragment!=null){
             recordedFragment.onClick(arg0);
         }
-
-        RecordTool.e("reboot->", "Abs record before onClick:" + mRecorderState.toString());
+        RecordTool.e(TAG, "Abs record before onClick:" + mRecorderState.toString());
         switch (arg0.getId()) {
             case R.id.recordBtn:
+                RecordTool.e("AbsRecorderActivity","click:recordBtn");
                 if (mRecorderState == MediaRecorderState.IDLE_STATE || mRecorderState == MediaRecorderState.PAUSED) {
                     mRecorder.startRecording(this);
                 } else if (mRecorderState == MediaRecorderState.RECORDING) {
@@ -157,10 +165,12 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
                 }
                 break;
             case R.id.stopBtn:
+                RecordTool.e("AbsRecorderActivity","click:stopBtn");
                 mRecorder.stopRecording(this);
                 RecorderService.saveRecording(this, RecordApp.getInstance().getRecordName());
                 break;
             case R.id.flagBtn:
+                RecordTool.e("AbsRecorderActivity","click:flagBtn");
                 if(mRecorderState == MediaRecorderState.RECORDING) {
                     RecordApp.getInstance().addFlag(RecorderService.recordRealDuring);
                 }
@@ -174,7 +184,7 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
 
     protected void updateUI() {
         mRecorderState=RecordApp.getInstance().getmState();
-        RecordTool.e("reboot->", "Abs record before updateUI:" + mRecorderState.toString());
+        RecordTool.e(TAG, "Abs record before updateUI:" + mRecorderState.toString());
         if (MediaRecorderState.RECORDING == mRecorderState) {
             recordBtn.setImageResource(R.drawable.frame_record_pause);
             AnimationDrawable am_record=(AnimationDrawable)recordBtn.getDrawable();
@@ -237,7 +247,6 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
 ////            topWidget.setCenterTitle(R.string.record_note);
 //            getActionBar().setTitle(R.string.record_note);
 //        }
-
         if (recordedFragment!=null&&!RecordApp.getInstance().isActionMode()) {
             recordedFragment.refreshRecordList();
         }
@@ -245,14 +254,12 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
 
     @Override
     public void onStateChanged(MediaRecorderState state) {
-        RecordTool.e("reboot->","Abs record call onStateChanged:"+state.toString());
+        RecordTool.e(TAG,"onStateChanged: state="+state.toString());
         mRecorderState = state;
-
         if(mRecorderState == MediaRecorderState.STOPPED||
                 mRecorderState == MediaRecorderState.IDLE_STATE){
             recordedFragment.stopRecording();
         }
-//
         if(mRecorderState == MediaRecorderState.RECORDING){
             recordedFragment.startRecording();
         }

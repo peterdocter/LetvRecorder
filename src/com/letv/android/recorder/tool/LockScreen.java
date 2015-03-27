@@ -24,6 +24,7 @@ public class LockScreen {
         ComponentName mRecordWidget = new ComponentName(pkg, clss);  //ComponentName还可以通过其它方法new出来，这个无所谓。
 	    Intent intent = new Intent(ACTION_KEYGUARD_INSTALL_WIDGET);
         intent.putExtra(EXTRA_KEYGUARD_APPWIDGET_COMPONENT, mRecordWidget);
+        RecordTool.e("screenwidget", "screenwidget_show");
         mContext.sendBroadcast(intent);
         saveShowScreenWidgetInfo(mContext,true);
     }
@@ -34,6 +35,7 @@ public class LockScreen {
         ComponentName mRecordWidget = new ComponentName(pkg, clss);  //ComponentName还可以通过其它方法new出来，这个无所谓。
 	    Intent intent = new Intent(ACTION_KEYGUARD_UNINSTALL_WIDGET);
         intent.putExtra(EXTRA_KEYGUARD_APPWIDGET_COMPONENT, mRecordWidget);
+        RecordTool.e("screenwidget", "screenwidget_hide");
         mContext.sendBroadcast(intent);
         saveShowScreenWidgetInfo(mContext,false);
     }

@@ -72,8 +72,9 @@
         <item name="android:textColor">@color/actionBarTitleColor</item>  
     </style>
     
-    <style name="setting_actionbar_style" parent="@android:style/Widget.Material.ActionBar">
+    <style name="setting_actionbar_style" parent="@*android:style/Theme.Leui">
         <item name="android:displayOptions">homeAsUp|showTitle</item>
+        <item name="android:background">@color/setting_action_bar</item>
 
     </style>
     

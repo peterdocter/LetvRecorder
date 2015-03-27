@@ -29,6 +29,7 @@ public class Constants {
 //	public static int PERMISSION_DENY=0x0004;
     public static int SDCARD_FULL = 0x0004;
 
+    public static final String PACKAGE_NAME="com.letv.android.recorder";
 
 
 }

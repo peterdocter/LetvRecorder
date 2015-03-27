@@ -22,15 +22,14 @@ import java.util.Date;
 
 public class SoundRecorder extends AbsRecorderActivity {
 
-
+    private final static String TAG="SoundRecorder";
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 //        topWidget.setCenterTitle(R.string.record_note);
 
         recordedFragment = new RecordedFragment();
-//        recordedFragment.setCallRecordUI(true);
-        recordedFragment.setCallRecordUI(false);
+        recordedFragment.setCallRecordUI(true);
         getFragmentManager().beginTransaction().add(R.id.container, recordedFragment).commit();
 //        mRecorder.startRecording(this);
 	}
@@ -40,7 +39,9 @@ public class SoundRecorder extends AbsRecorderActivity {
 	public void onClick(View arg0) {
 
         if(arg0.getId()==R.id.stopBtn){
+            RecordTool.e(TAG, "onclickStop1");
             saveRecordAndReturn();
+            RecordTool.e(TAG, "onclickStop2");
             return;
         }
 
@@ -48,7 +49,18 @@ public class SoundRecorder extends AbsRecorderActivity {
 
 	}
 
-	@Override
+    @Override
+    protected void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        recordedFragment.setCallRecordUI(false);
+        super.onDestroy();
+    }
+
+    @Override
 	public void onBackPressed() {
 		saveRecordAndReturn();
 	}

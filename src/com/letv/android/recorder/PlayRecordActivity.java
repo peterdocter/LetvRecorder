@@ -47,7 +47,7 @@ import com.letv.leui.widget.LeTopSlideToastHelper;
 
 public class PlayRecordActivity extends Activity implements
 		OnClickListener, SensorEventListener,PlayEngineListener {
-
+    private final String TAG="PlayRecordActivity";
 	public static final String RECORD_ENTRY = "record_entry";
 	private RecordEntry mEntry;
 
@@ -79,7 +79,7 @@ public class PlayRecordActivity extends Activity implements
 		editBtn = (ImageView) findViewById(R.id.editBtn);
 
 		curTime.setText(RecordTool.recordTimeFormat(0));
-		RecordTool.e("PlayRecordActivity total time",RecordTool.timeFormat(0, "mm:ss"));
+		RecordTool.e(TAG,"onCreate:"+RecordTool.timeFormat(0, "mm:ss"));
 		totalTime.setText(RecordTool.recordTimeFormat(mEntry.getRecordDuring()));
 		mSeekBar.setMax((int) mEntry.getRecordDuring());
 
@@ -115,29 +115,26 @@ public class PlayRecordActivity extends Activity implements
 
 	@Override
 	protected void onStop() {
-		RecordTool.e("reboot->","--------------------->Play record onStop");
-		if (RecordApp.getInstance().getmState()
-				== MediaRecorderState.PLAYING) {
-			PlayService.pausePlay(this);
-		}
+		RecordTool.e(TAG,TAG+":onStop");
+//		if (RecordApp.getInstance().getmState()== MediaRecorderState.PLAYING) {
+//			PlayService.pausePlay(this);
+//		}
 		super.onStop();
 	}
 
 	@Override
 	protected void onDestroy() {
-		RecordTool.e("reboot->","--------------------->Play record onDestroy");
+		RecordTool.e(TAG,TAG+"onDestroy");
 		unregisterHeadsetPlugReceiver();
 //		unregisterSensorListener();
 //		PlayEngineImp.getInstance().setpEngineListener(null);
 //		PlayEngineImp.getInstance().stop();
-
-
 		super.onDestroy();
 	}
 
 	@Override
 	protected void onResume() {
-		RecordTool.e("reboot->","--------------------->Play record onResume");
+		RecordTool.e(TAG,TAG+"onResume");
 		shareBtn.setOnClickListener(this);
 		playBtn.setOnClickListener(this);
 		editBtn.setOnClickListener(this);
@@ -184,7 +181,7 @@ public class PlayRecordActivity extends Activity implements
 				startActivity(Intent.createChooser(share, getTitle()));
 				break;
 			case R.id.playBtn:
-				RecordTool.e("reboot->","--------------------->Play record before onClick:"+RecordApp.getInstance().getmState());
+				RecordTool.e(TAG,"Play record before onClick:"+RecordApp.getInstance().getmState());
 				if (RecordApp.getInstance().getmState() == MediaRecorderState.PLAYING) {
 					PlayService.pausePlay(this);
 				} else if (RecordApp.getInstance().getmState() == MediaRecorderState.PLAYING_PAUSED) {
@@ -192,7 +189,7 @@ public class PlayRecordActivity extends Activity implements
 				} else {
 					PlayService.startPlay(this, mEntry.getFilePath());
 				}
-				RecordTool.e("reboot->","--------------------->Play record after onClick:"+RecordApp.getInstance().getmState());
+				RecordTool.e(TAG,"Play record after onClick:"+RecordApp.getInstance().getmState());
 				break;
 			case R.id.editBtn:
 			case R.id.record_title:
@@ -241,7 +238,7 @@ public class PlayRecordActivity extends Activity implements
 
 	@Override
 	public void onBackPressed() {
-			RecordTool.e("reboot->","--------------------->Play record onBackPressed");
+			RecordTool.e(TAG,"Play record onBackPressed");
 			stopPlay();
 	}
 
@@ -260,7 +257,7 @@ public class PlayRecordActivity extends Activity implements
 
 	@Override
 	public void finish() {
-		RecordTool.e("reboot->","--------------------->Play record finish");
+		RecordTool.e(TAG,"Play record finish");
 		super.finish();
 		overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 	}
@@ -269,7 +266,7 @@ public class PlayRecordActivity extends Activity implements
 		BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
 		boolean bluetooth = BluetoothProfile.STATE_CONNECTED == adapter.getProfileConnectionState(BluetoothProfile.HEADSET);
 		boolean headset = audioManager.isWiredHeadsetOn();
-        RecordTool.e("playmode","bluetooth:"+bluetooth+" headset:"+headset);
+        RecordTool.e(TAG,"playmode：bluetooth:"+bluetooth+" headset:"+headset);
 		return !bluetooth && !headset;
 	}
 
@@ -328,7 +325,7 @@ public class PlayRecordActivity extends Activity implements
 					am_record.start();
 				}
 				mSeekBar.setMax(totalTime);
-				RecordTool.e("formattime-> 01", "1:onTrackStart:totalTime"+totalTime+":miTime:"+miTime);
+				RecordTool.e(TAG, "1:onTrackStart:totalTime"+totalTime+":miTime:"+miTime);
 				curTime.setText(RecordTool.timeFormat(miTime, "mm:ss"));
 				PlayRecordActivity.this.totalTime.setText(RecordTool.recordTimeFormat(totalTime));
 				registerHeadsetPlugReceiver();
@@ -342,14 +339,15 @@ public class PlayRecordActivity extends Activity implements
 
 			@Override
 			public void onTrackProgressChange(int miTime) {
-				RecordTool.e("formattime-> 01", "1:onTrackProgressChange"+miTime);
+                RecordTool.e(TAG, "onTrackProgressChange"+miTime);
 				mSeekBar.setProgress(miTime);
 				curTime.setText(RecordTool.recordTimeFormat(miTime));
 			}
 
 			@Override
 			public void onTrackPause() {
-				speakerMode();
+                RecordTool.e(TAG,"onTrackPause");
+                speakerMode();
 				unregisterHeadsetPlugReceiver();
 				playBtn.setImageResource(R.drawable.frame_pause_play);
 				AnimationDrawable am_record=(AnimationDrawable)playBtn.getDrawable();
@@ -366,6 +364,7 @@ public class PlayRecordActivity extends Activity implements
 
 			@Override
 			public void onTrackStop() {
+                RecordTool.e(TAG,"onTrackStop");
 				speakerMode();
 				unregisterHeadsetPlugReceiver();
 				playBtn.setImageResource(R.drawable.frame_pause_play);
@@ -381,10 +380,6 @@ public class PlayRecordActivity extends Activity implements
 			public void onTrackError() {
 
 			}
-//		};
-//	}
-
-
 
 	@Override
 	public void onAccuracyChanged(Sensor arg0, int arg1) {
@@ -395,22 +390,21 @@ public class PlayRecordActivity extends Activity implements
 	@Override
 	public void onSensorChanged(SensorEvent event) {
 
-		RecordTool.e("paly mode","传感起变化");
+		RecordTool.e(TAG,"paly mode传感起变化");
 		if (RecordApp.getInstance().getmState() == MediaRecorderState.PLAYING ||
 				RecordApp.getInstance().getmState() == MediaRecorderState.PLAYING_PAUSED) {
 
 			float range = event.values[0];
 			if (range == sensor.getMaximumRange()) {// 强制使用扬声器
-				System.out.println("playing record mode 正常模式");
+                RecordTool.e(TAG, "onSensorChanged:playing record mode 正常模式");
 				audioManager.setMicrophoneMute(false);
 				audioManager.setSpeakerphoneOn(true);// 使用扬声器外放，即使已经插入耳机
 				// setVolumeControlStream(AudioManager.STREAM_MUSIC);//控制声音的大小
 				audioManager.setMode(AudioManager.MODE_NORMAL);
 			} else {// 强制使用听筒
-				System.out.println("playing record mode 听筒模式");
+                RecordTool.e(TAG, "onSensorChanged:playing record mode 听筒模式");
 				audioManager.setSpeakerphoneOn(false);
 				// setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
-
 				audioManager.setMode(AudioManager.MODE_IN_CALL);
 			}
 		}
@@ -419,8 +413,8 @@ public class PlayRecordActivity extends Activity implements
 
 	public void setPlayMode() {
 
-		if (RecordApp.getInstance().getmState() == MediaRecorderState.PLAYING ||
-				RecordApp.getInstance().getmState() == MediaRecorderState.PLAYING_PAUSED) {
+		if (    RecordApp.getInstance().getmState() == MediaRecorderState.PLAYING ||
+                RecordApp.getInstance().getmState() == MediaRecorderState.PLAYING_PAUSED) {
 
 			if (SettingTool.getPlayMode(this)== SettingTool.PlayMode.SPEAKER) {// 强制使用扬声器
 				speakerMode();
@@ -431,11 +425,11 @@ public class PlayRecordActivity extends Activity implements
 	}
 
 	public void speakerMode(){
-		RecordTool.e("playmode","shouldChangePlayMode:"+shouldChangePlayMode());
+		RecordTool.e(TAG,"shouldChangePlayMode:"+shouldChangePlayMode());
 		if(!shouldChangePlayMode()){
 			return;
 		}
-		RecordTool.e("playmode", "正常模式");
+		RecordTool.e(TAG, "正常模式");
 //		audioManager.setMicrophoneMute(false);
 		audioManager.setSpeakerphoneOn(true);// 使用扬声器外放，即使已经插入耳机
 		setVolumeControlStream(AudioManager.STREAM_MUSIC);//控制声音的大小
@@ -443,11 +437,11 @@ public class PlayRecordActivity extends Activity implements
 	}
 
 	public void receiverMode(){
-		RecordTool.e("playmode","shouldChangePlayMode:"+shouldChangePlayMode());
+		RecordTool.e(TAG,"shouldChangePlayMode:"+shouldChangePlayMode());
 		if(!shouldChangePlayMode()) {
 			return;
 		}
-		RecordTool.e("playmode","听筒模式");
+		RecordTool.e(TAG,"听筒模式");
 //		audioManager.setMicrophoneMute(true);
 //		audioManager.setRouting(AudioManager.MODE_NORMAL, AudioManager.ROUTE_EARPIECE, AudioManager.ROUTE_ALL);
 		setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
@@ -458,7 +452,7 @@ public class PlayRecordActivity extends Activity implements
 		if(!RecordTool.canClick(1000)){
 			return;
 		}
-		RecordTool.e("reboot->","--------------------->1 Play record before stopPlay:"+RecordApp.getInstance().getmState());
+		RecordTool.e(TAG,"stopPlay:state:"+RecordApp.getInstance().getmState());
 		shareBtn.setEnabled(false);
 		playBtn.setEnabled(false);
 		editBtn.setEnabled(false);
@@ -475,7 +469,7 @@ public class PlayRecordActivity extends Activity implements
 		am_edit.setStartOffset(70);
 		editBtn.startAnimation(am_edit);
 
-		RecordTool.e("reboot->","--------------------->4 in  stopPlay after play engine:"+RecordApp.getInstance().getmState());
+		RecordTool.e(TAG,"stopPlay:state:"+RecordApp.getInstance().getmState());
 		if(RecordApp.getInstance().getmState()==MediaRecorderState.PLAYING){
 			playBtn.setImageResource(R.drawable.frame_pause_record);
 		}else if(RecordApp.getInstance().getmState()==MediaRecorderState.PLAY_STOP){
@@ -483,7 +477,7 @@ public class PlayRecordActivity extends Activity implements
 		}
 
 		RecordApp.getInstance().setmState(MediaRecorderState.IDLE_STATE);
-		RecordTool.e("reboot->","--------------------->5 in  stopPlay after play engine:"+RecordApp.getInstance().getmState());
+		RecordTool.e(TAG,"stopPlay:state:"+RecordApp.getInstance().getmState());
 		AnimationDrawable am_record=(AnimationDrawable)playBtn.getDrawable();
 		am_record.start();
 

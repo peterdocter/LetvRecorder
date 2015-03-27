@@ -41,6 +41,7 @@ import com.letv.android.recorder.tool.StatusBarTool;
 import com.letv.android.recorder.widget.ActionBarTool;
 import com.letv.android.recorder.widget.EditRecordNameDialog;
 import com.letv.android.recorder.widget.RecordingView;
+import com.letv.android.recorder.service.RecorderService;
 import com.letv.leui.widget.LeBottomWidget;
 import com.letv.leui.widget.LeCheckBox;
 import com.letv.leui.widget.LeTopSlideToastHelper;
@@ -88,6 +89,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 
     @Override
 	public void onCreate(Bundle savedInstanceState) {
+        RecordTool.e(TAG,"onCreate: !isCallRecordUI = "+!isCallRecordUI());
         actionBar=getActivity().getActionBar();
         actionBar.setTitle(R.string.record_note);
         if(!isCallRecordUI()) {
@@ -99,9 +101,10 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 
 	@Override
 	public void onResume() {
-        RecordTool.e(TAG,"onResume");
-        if(!isCallRecordUI()&&!((AbsRecorderActivity)getActivity()).isFistTime()&&!recordedAdapter.isActionMode()) {
-
+//        RecordTool.e(TAG,"onResume:!isCallRecordUI()"+!isCallRecordUI()
+//                +"\n!((AbsRecorderActivity)getActivity()).isFistTime():"+!((AbsRecorderActivity)getActivity()).isFistTime()
+//                +"\n!recordedAdapter.isActionMode():"+!recordedAdapter.isActionMode());
+        if(!isCallRecordUI()&&!recordedAdapter.isActionMode()) {
             RecordTool.e(TAG,"onResumerefreshRecordList");
             refreshRecordList();
         }
@@ -112,6 +115,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        RecordTool.e(TAG,"onCreateView");
 		rootView = inflater.inflate(R.layout.fragment_recorded, container, false);
 		recordVF = (ViewFlipper) rootView.findViewById(R.id.recordVF);
 		recordList = (ListView) rootView.findViewById(R.id.record_list);
@@ -149,26 +153,23 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 	 * @param recordTimeMillis
 	 */
 	public void updateRecordTimeUI(long recordTimeMillis, float db) {
+        RecordTool.e(TAG,"updateRecordTimeUI:recordTimeMillis="+recordTimeMillis+" db:"+db);
 		if(!isDetached()){
 			if (recordTime != null) {
                 String newStr = RecordTool.recordTimeFormat(recordTimeMillis);
                 if(!recordTime.getText().toString().equals(newStr))
 				    recordTime.setText(newStr);
 			}
-
 			if(recordName!=null){
                 String newStr = RecordApp.getInstance().getRecordName();
                 if(!recordName.getText().toString().equals(newStr)) {
                     recordName.setText(RecordApp.getInstance().getRecordName());
                 }
 			}
-
-
 			if (recordingView != null) {
 				recordingView.updateRecordUI(recordTimeMillis, db);
 			}
 		}
-		
 	}
 
 	public void stopRecording() {
@@ -312,68 +313,25 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                                     delete_listener,
                                     cancel_listener,
                                     null,
-                                    new String[]{"删除", "取消"},
-                                    String.format(getResources().getString(R.string.delete_record_dialog_title), selecteds.length),
+                                    new String[]{String.format(getResources().getString(R.string.delete_record_dialog_title), selecteds.length), "取消"},
+                                    null,
                                     null,
                                     null,
                                     getActivity().getResources().getColor(R.color.defalut_red),
                                     false
                             );
                             mBottomSheet.appear();
-
-//                            builder.setTitle(String.format(getResources().getString(R.string.delete_record_dialog_title), selecteds.length))
-//                                    .setPositiveButton(getResources().getString(R.string.delete), new Dialog.OnClickListener() {
-//                                        @Override
-//                                        public void onClick(DialogInterface dialog, int which) {
-//                                            for (int i = 0; i < selecteds.length; i++) {
-//
-//                                                int type = recordedAdapter.getItemViewType(selecteds[i]);
-//
-//                                                if (type == RecorderAdapter.ITEM_TYPE_CALL_SET) {
-//                                                    RecordDb db = RecordDb.getInstance(getActivity());
-//                                                    List<RecordEntry> callRecords = db.getCallRecords();
-//                                                    if (callRecords != null && callRecords.size() > 0) {
-//                                                        for (RecordEntry call : callRecords) {
-//                                                            String path = call.getFilePath();
-//                                                            File delFile = new File(path);
-//                                                            delFile.delete();
-//                                                            FileSyncContentProvider.removeImageFromLib(getActivity(),
-//                                                                    path);
-//                                                        }
-//                                                    }
-//                                                } else {
-//                                                    String path = recordedAdapter.getItem(selecteds[i]).getFilePath();
-//                                                    File delFile = new File(path);
-//                                                    delFile.delete();
-//                                                    FileSyncContentProvider.removeImageFromLib(getActivity(),
-//                                                            path);
-//                                                }
-//                                            }
-//                                            refreshRecordList();
-//                                            updateSherlockUI();
-//
-//                                            if (recordedAdapter.isActionMode()) {
-//                                                recordedAdapter.setActionMode(true);
-//                                            }
-//
-//                                            if (mActionMode != null) {
-//                                                mActionMode.invalidate();
-//                                            }
-//                                        }
-//                                    })
-//                                    .setNegativeButton(getResources().getString(R.string.cancel), new Dialog.OnClickListener() {
-//                                        @Override
-//                                        public void onClick(DialogInterface dialog, int which) {
-////                                            recordedAdapter.setActionMode(false);
-////                                            refreshRecordList();
-////                                            updateSherlockUI();
-//                                        }
-//                                    })
-//                                    .create()
-//                                    .show();
-
                             break;
                         case 2:
+
+                            int type = recordedAdapter.getItemViewType(getSelectedIndexs()[0]);
+                            if(type == RecorderAdapter.ITEM_TYPE_CALL_SET){
+                                LeTopSlideToastHelper.getToastHelper(getActivity(), LeTopSlideToastHelper.LENGTH_SHORT,
+                                        getResources().getString(R.string.app_keyword_call_record), null,
+                                        null, null,
+                                        null).show();
+                                return;
+                            }
                             final EditRecordNameDialog mDialog = new EditRecordNameDialog(getActivity());
                             mDialog.setPositiveButton(new Dialog.OnClickListener() {
                                 @Override
@@ -384,7 +342,10 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                                     File file = new File(mEntry.getFilePath());
                                     String fileName = RecordTool.getRecordName(mEntry.getFilePath());
                                     if (fileName.equalsIgnoreCase(mDialog.getText())) {
-
+                                        LeTopSlideToastHelper.getToastHelper(getActivity(), LeTopSlideToastHelper.LENGTH_SHORT,
+                                                getResources().getString(R.string.no_change_recordname), null,
+                                                null, null,
+                                                null).show();
                                     } else if (RecordTool.canSave(getActivity(), mDialog.getText())) {
                                         RecordDb recordDb = RecordDb.getInstance(getActivity());
                                         String oldPath = mEntry.getFilePath();
@@ -430,7 +391,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 		@Override
 		public boolean onItemLongClick(AdapterView<?> parent, View view,
 				int position, long id) {
-			System.out.println("chang an");
+			RecordTool.e(TAG,"longClickListener");
 			if(recordedAdapter.isActionMode())
 				return false;
 			initSelectItem();
@@ -453,7 +414,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 		
 		@Override
 		public boolean onPrepareActionMode(ActionMode arg0, Menu arg1) {
-	    	
+	    	RecordTool.e(TAG,"onPrepareActionMode");
 			String itemXliff = getActivity().getResources().getString(R.string.select_item_xliff);
     		mActionMode.setTitle(getSelectedCount()==0?getActivity().getResources().getString(R.string.please_select_reoord):String.format(itemXliff, getSelectedCount()));
 			
@@ -584,7 +545,8 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 	}
 	
 	private void initSelectItem(){
-		getActivity().findViewById(R.id.bottom_widget).setVisibility(View.VISIBLE);
+        RecordTool.e(TAG,"initSelectItem");
+        getActivity().findViewById(R.id.bottom_widget).setVisibility(View.VISIBLE);
 		getActivity().findViewById(R.id.record_control_layout).setVisibility(View.GONE);
 		recordedAdapter.setActionMode(true);
         recordSelectFlag = recordedAdapter.getRecordSelectFlag();
@@ -593,7 +555,8 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 	}
 
     public void changeSelectStatus(){
-    	getActivity().invalidateOptionsMenu();
+        RecordTool.e(TAG,"changeSelectStatus");
+        getActivity().invalidateOptionsMenu();
         updateSherlockUI();
     }
 
@@ -651,6 +614,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
     }
 
     protected void updateSherlockUI() {
+        RecordTool.e(TAG,"updateSherlockUI");
 		int selectCount = getSelectedCount();
         if(recordedAdapter.isActionMode()) {
 
@@ -671,7 +635,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 	}
 
     protected void updateActionBarAndBottomLayout(){
-    	
+    	RecordTool.e(TAG,"updateActionBarAndBottomLayout");
         if(recordedAdapter.isShowCallRecord()){
             getActivity().findViewById(R.id.record_control_layout).setVisibility(View.GONE);
         }else{
@@ -695,7 +659,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 	}
 
 	public void refreshRecordList() {
-        RecordTool.e(TAG,"refreshRecordList");
+        RecordTool.e(TAG,"refreshRecordList:isCallRecordUI():"+isCallRecordUI());
         if(isCallRecordUI()){
             return;
         }
@@ -770,13 +734,9 @@ public class RecordedFragment extends Fragment implements OnClickListener {
             }
 
 		} else {
-
             StatusBarTool.updateStausBar(getActivity(),false);
-
             boolean isShowList = false;
-
 			RecordDb db = RecordDb.getInstance(getActivity());
-
             if(recordedAdapter.isShowCallRecord()){
                 if(db.getCallRecordCounts()>0){
                     recordedAdapter.setRecordList(db.getCallRecords());
@@ -798,7 +758,6 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                     isShowList = false;
                 }
             }
-
 			if (isShowList) {
 				if (recordVF != null&&recordVF.getDisplayedChild()!=PAGE_SHOW_RECORD_LIST)
 					recordVF.setDisplayedChild(PAGE_SHOW_RECORD_LIST);
@@ -844,7 +803,6 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 	}
 
 	public String[] getSelectedPaths() {
-//		String[] path = new String[getSelectedCount()];
         ArrayList<String> path=new ArrayList<String>();
         RecordTool.loge(this.getClass().getSimpleName(),"count:"+getSelectedCount());
 		int cursor = 0;
@@ -860,10 +818,8 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                     }
                 }
             }else{
-//                path[cursor++] = recordedAdapter.getItem(selecteds[i]).getFilePath();
                   path.add(recordedAdapter.getItem(selecteds[i]).getFilePath());
             }
-//            path[cursor++] = recordedAdapter.getItem(selecteds[i]).getFilePath();
 		}
 		String[] pathArr = new String[path.size()];
 		return path.toArray(pathArr);

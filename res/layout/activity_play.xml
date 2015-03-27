@@ -53,7 +53,8 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="@dimen/ctrl_margin"
                 android:scaleType="center"
-                android:src="@drawable/play_share_selector" 
+                android:src="@drawable/play_share_selector"
+                android:tint="@color/buttom_red"
                 android:background="@drawable/ic_small_circle_play_selector"/>
 
             <ImageView
@@ -72,7 +73,8 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="@dimen/ctrl_margin"
                 android:scaleType="center"
-                android:src="@drawable/play_edit_selector" 
+                android:src="@drawable/play_edit_selector"
+                android:tint="@color/buttom_red"
                 android:background="@drawable/ic_small_circle_play_selector"/>
         </RelativeLayout>
         

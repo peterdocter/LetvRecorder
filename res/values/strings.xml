@@ -1,70 +1,69 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
+<?xml version="1.0" encoding="utf-8"?><resources>
 
-    <string name="record_note">Voice Memos</string>
-    <string name="no_recorder">No new recordings</string>
-    <string name="new_recorder">New Recording</string>
+    <string name="record_note">Recordings</string>
+    <string name="no_recorder">No recordings</string>
+    <string name="new_recorder">New recording</string>
 
-    <string name="new_recorder_xliff">新录音%d</string>
-    <string name="select_item_xliff">已选中 %d 项</string>
+    <string name="new_recorder_xliff">New recording %d</string>
+    <string name="select_item_xliff">Select %d items</string>
     <string name="call_record_count_xliff">(%d)</string>
     <string name="call_record_filename_xliff">(%d)</string>
 
-    <string name="input_new_recorder_name">输入新录音的名称</string>
-    <string name="edit_recorder_name">编辑录音名称</string>
-    <string name="no_change_recordname">没有改变名称</string>
-    <string name="share">share</string>
-    <string name="record_files">录音文件</string>
-    <string name="record">录音</string>
-    <string name="pause_record">暂停录音</string>
-    <string name="continue_record">继续录音</string>
+    <string name="input_new_recorder_name">Enter name for new recording</string>
+    <string name="edit_recorder_name">Edit recording name</string>
+    <string name="no_change_recordname">Name unedited</string>
+    <string name="share">Share</string>
+    <string name="record_files">Recording file</string>
+    <string name="record">Record</string>
+    <string name="pause_record">Pause</string>
+    <string name="continue_record">Continue</string>
     <string name="cancel">Cancel</string>
     <string name="back">Back</string>
-    <string name="select_all">Select</string>
-    <string name="select_none">Clear</string>
+    <string name="select_all">Select all</string>
+    <string name="select_none">Deselect all</string>
     
     <string name="play">Play</string>
     <string name="pause_play">Pause</string>
     <string name="edit">Edit</string>
-    <string name="choose">Choose</string>
+    <string name="choose">Select</string>
     <string name="save">Save</string>
     <string name="send">Send</string>
     <string name="delete">Delete</string>
-    <string name="rename">Rename</string>
-    <string name="app_name">Voice Recorder</string>
-    <string name="record_file_name_format">Voice-yyMMdd-HH-mm-ss</string>
-    <string name="start_time_format">yyyy-MM-dd</string>
+    <string name="rename">Edit</string>
+    <string name="app_name">Recorder</string>
+    <string name="record_file_name_format">Recording-MMddyy-HH-mm-ss</string>
+    <string name="start_time_format">MM-dd-yyyy</string>
 
-	<string name="recording">正在录音...</string>
-	<string name="record_pase">录音已暂停</string>
-	<string name="record_over_max_time">录音超过一小时</string>
-	<string name="record_name_cannot_null">录音名不能为空</string>
-    <string name="record_existed">该录音已经存在</string>
+	<string name="recording">Recording...</string>
+	<string name="record_pase">Recording paused</string>
+	<string name="record_over_max_time">Recording exceeds 1 hour</string>
+	<string name="record_name_cannot_null">Recording name cannot be empty</string>
+    <string name="record_existed">A recording by that name already exists</string>
 
-    <string name="storage_full">储存空间已满</string>
+    <string name="storage_full">Storage is full</string>
 
-    <string name="record_paused">录音已暂停</string>
+    <string name="record_paused">Recording paused</string>
 
-    <string name="delete_record_dialog_title">删除录音%d项</string>
+    <string name="delete_record_dialog_title">Delete %d recordings</string>
     <string name="please_select_reoord">please select</string>
 
-    <string name="create_file_fail">名称含有特殊符号或文件名过长</string>
+    <string name="create_file_fail">Name is too long or contains special characters</string>
 
-    <string name="audio_db_artist_name" >"您的录音"</string>
-    <string name="audio_db_album_name" >"录音"</string>
+    <string name="audio_db_artist_name">Your recordings</string>
+    <string name="audio_db_album_name">Recordings</string>
 
     <!-- setting -->
-    <string name="play_mode_title">听筒模式</string>
-    <string name="play_mode_summary">开启后将使用听筒播放录音</string>
-    <string name="screen_widget_title">录音锁屏插件</string>
-    <string name="screen_widget_summary">锁屏时是否显示锁屏录音控制插件</string>
-    <string name="record_silence_title">录音时来电静音</string>
-    <string name="scene_title">场景设置</string>
-    <string name="audio_qulity_title">录音质量</string>
-    <string name="voice_recording">Voice Recording</string>
+    <string name="play_mode_title">Earpiece mode</string>
+    <string name="play_mode_summary">Play recordings through earpiece speaker when enabled</string>
+    <string name="screen_widget_title">Recording lock screen widget</string>
+    <string name="screen_widget_summary">Show recording widget when screen is locked?</string>
+    <string name="record_silence_title">Silence ringer while recording</string>
+    <string name="scene_title">Scene settings</string>
+    <string name="audio_qulity_title">Audio quality</string>
+    <string name="voice_recording">Recording</string>
 
-    <string name="play_record_playing">正在播放</string>
-    <string name="play_record_pause">暂停</string>
+    <string name="play_record_playing">Playing</string>
+    <string name="play_record_pause">Pause</string>
 
     <string-array name="scene_entries">
         <item>录人声</item>
@@ -91,4 +90,4 @@
         <item>2</item>
         <item>3</item>
     </string-array>
-</resources>
+<string name="no_selected_share">No recordings selected</string><string name="yesterday">Yesterday</string><string name="few_days"> days ago</string><string name="before_yesterday">Two days ago</string><string name="week_ago">1 week ago</string><string name="app_detail_sys_set">App details</string></resources>
