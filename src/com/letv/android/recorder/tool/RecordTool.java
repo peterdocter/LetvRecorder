@@ -31,7 +31,7 @@ import com.letv.leui.widget.LeTopSlideToastHelper;
 
 public class RecordTool {
 
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     public static void logi(String tag,String log){
         if(DEBUG)
