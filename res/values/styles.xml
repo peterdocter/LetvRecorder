@@ -65,7 +65,8 @@
 
     <style name="actionbar_style" parent="@android:style/Widget.Material.ActionBar">
         <item name="android:background">@color/actionBarBackground</item>
-        <item name="android:titleTextStyle">@style/AcBar_titleStyle</item>  
+        <item name="android:titleTextStyle">@style/AcBar_titleStyle</item>
+        <item name="android:title">@string/record_note</item>
     </style>
     
     <style name="AcBar_titleStyle"  parent="@*android:style/TextAppearance.Material.Widget.ActionBar.Title">   

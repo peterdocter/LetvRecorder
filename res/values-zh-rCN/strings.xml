@@ -49,7 +49,7 @@
     <string name="storage_full">储存空间已满</string>
 
     <string name="record_paused">录音已暂停</string>
-    <string name="delete_record_dialog_title">删除录音%d项</string>
+    <string name="delete_record_dialog_title">删除%d项录音</string>
     <string name="please_select_reoord">请选择录音</string>
 
     <string name="create_file_fail">名称含有特殊符号或文件名过长</string>

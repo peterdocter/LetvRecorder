@@ -90,4 +90,4 @@
         <item>2</item>
         <item>3</item>
     </string-array>
-<string name="no_selected_share">No recordings selected</string><string name="yesterday">Yesterday</string><string name="few_days"> days ago</string><string name="before_yesterday">Two days ago</string><string name="week_ago">1 week ago</string><string name="app_detail_sys_set">App details</string></resources>
+<string name="no_selected_share">No recordings selected</string><string name="yesterday">Yesterday</string><string name="few_days"> days ago</string><string name="before_yesterday">Two days ago</string><string name="week_ago">1 week ago</string><string name="app_detail_sys_set">App info</string></resources>

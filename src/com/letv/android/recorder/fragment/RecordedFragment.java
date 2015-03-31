@@ -259,7 +259,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                                 share.putExtra(Intent.EXTRA_STREAM, uris.get(0));
                             }
 
-                            startActivity(Intent.createChooser(share, getActivity().getTitle()));
+                            startActivity(Intent.createChooser(share, null));
                             break;
                         case 1:
 //                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

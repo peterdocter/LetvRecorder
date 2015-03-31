@@ -10,7 +10,7 @@ import android.transition.TransitionSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import com.android.internal.R;
+import com.letv.android.recorder.R;
 
 /**
  * Created by snile on 15/1/5.
@@ -24,7 +24,14 @@ public class ActionBarTool {
         TransitionManager.beginDelayedTransition(sceneRoot,autoTransition);
         int options = activity.getActionBar().getDisplayOptions();
         int optionsMask = ActionBar.DISPLAY_HOME_AS_UP;
-        activity.getActionBar().setDisplayOptions(options ^ optionsMask, optionsMask);
+//        activity.getActionBar().setDisplayOptions(options ^ optionsMask, optionsMask);
+        ActionBar tActionBar=activity.getActionBar();
+        tActionBar.setDisplayOptions(options ^ optionsMask, optionsMask);
+        if(showUpAsHome){
+            tActionBar.setTitle(R.string.voice_recording);
+            return;
+        }
+        tActionBar.setTitle(R.string.record_note);
     }
 
     public static int getInternalId(Context context,String IdName){
