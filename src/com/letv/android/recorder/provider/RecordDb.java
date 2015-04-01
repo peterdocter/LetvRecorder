@@ -15,10 +15,12 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
+import android.provider.ContactsContract;
 import android.text.TextUtils;
 
 import android.util.Log;
 import com.letv.android.recorder.Constants;
+import com.letv.android.recorder.RecordApp;
 import com.letv.android.recorder.RecordEntry;
 import com.letv.android.recorder.tool.RecordTool;
 
@@ -168,7 +170,7 @@ public class RecordDb extends SQLiteOpenHelper {
 	/**
 	 * sync db ,user may be delete the record file by hand
 	 */
-	public synchronized void syncDBFromSdCard() {
+	public synchronized void syncDBFromSdCard(Context context) {
 		Cursor cursor = getReadableDatabase().query(RECORD_TABLE, null, null, null, null, null, null);
         ArrayList<String> savedPath = new ArrayList<String>();
 
@@ -190,13 +192,13 @@ public class RecordDb extends SQLiteOpenHelper {
         File recordDir = new File(Constants.RECORD_PATH);
         File callDir = new File(Constants.CALL_RECORD_PATH);
 
-        syncFileToDb(recordDir,false,savedPath);
-        syncFileToDb(callDir,true,savedPath);
+        syncFileToDb(context,recordDir,false,savedPath);
+        syncFileToDb(context,callDir,true,savedPath);
 
 	}
 
 
-    private void syncFileToDb(File recordDir,boolean isCall,ArrayList<String> savedPath){
+    private void syncFileToDb(Context context,File recordDir,boolean isCall,ArrayList<String> savedPath){
         if(recordDir!=null) {
             File[] files = recordDir.listFiles();
             if (files != null && files.length > 0) {
@@ -219,7 +221,8 @@ public class RecordDb extends SQLiteOpenHelper {
 //                                long during = (temp.length() - 6) / 32 * 20;
                                 long during =getFileDuring(temp);
                                 RecordEntry mEntry = new RecordEntry();
-                                mEntry.setRecordName(recordName);
+//                                mEntry.setRecordName(recordName);
+                                mEntry.setRecordName(getNameByPhoneNum(context, recordName));
                                 mEntry.setFilePath(temp.getAbsolutePath());
                                 mEntry.setCall(isCall);
                                 mEntry.setRecordTime(temp.lastModified());
@@ -272,7 +275,7 @@ public class RecordDb extends SQLiteOpenHelper {
 		if (mInstance == null) {
 			mInstance = new RecordDb(context);
 		}
-        mInstance.syncDBFromSdCard();
+        mInstance.syncDBFromSdCard(context);
         return mInstance;
 	}
 
@@ -287,4 +290,32 @@ public class RecordDb extends SQLiteOpenHelper {
 
 	}
 
+    private String  getNameByPhoneNum(Context context,String fileName){
+        try{
+            String phoneNum = fileName.split("_")[6].replace(" ","");
+            String[]  projection=new String[]{	ContactsContract.PhoneLookup.DISPLAY_NAME};
+            String    selection =new String(ContactsContract.CommonDataKinds.Phone.NUMBER+" =  ?");
+            String[]  selectionArgs=new String[]{phoneNum};
+            String name = null;
+            Cursor tCuror= context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                    projection,
+                    selection,
+                    selectionArgs,
+                    null);
+
+            for( int i = 0; i < tCuror.getCount(); i++ )
+            {
+                tCuror.moveToPosition(i);
+                // 取得联系人名字
+                int nameFieldColumnIndex = tCuror.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME);
+                name = tCuror.getString(nameFieldColumnIndex);
+                RecordTool.e("Contacts", "" + name + " .... " + nameFieldColumnIndex); // 这里提示 force close
+            }
+            return null!=name?name:phoneNum;
+        }catch(ArrayIndexOutOfBoundsException e){
+            return fileName;
+        }
+
+
+    }
 }
