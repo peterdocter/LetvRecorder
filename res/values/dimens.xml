@@ -16,6 +16,8 @@
     <dimen name="record_item_padding_left">16dp</dimen>
 	<dimen name="record_item_padding_right">16dp</dimen>
 
+    <dimen name="record_item_divider_padding_left">0dp</dimen>
+    <dimen name="record_item_divider_padding_right">0dp</dimen>
     <dimen name="ThumbTextSize">14dp</dimen>
 
     <dimen name="ThumbTextOffset">10dp</dimen>

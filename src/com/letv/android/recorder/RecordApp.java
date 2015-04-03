@@ -19,7 +19,11 @@ public class RecordApp extends Application {
     private ArrayList<Long> flags;
 
     public void addFlag(long flag){
+
+        RecordTool.e("RecordApp","addFlag:"+flag);
+        RecordTool.e("RecordApp","addFlag:"+flags.size());
         if(flags.size()==0){
+
             flags.add(flag);
             return;
         }
@@ -30,10 +34,13 @@ public class RecordApp extends Application {
     }
 
     public void deleteFlag(long flag){
+        RecordTool.e("RecordApp","deleteFlag");
         flags.remove(new Long(flag));
     }
 
     public void clearFlag(){
+
+        RecordTool.e("RecordApp","clearFlag");
         flags.clear();
     }
 

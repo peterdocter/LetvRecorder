@@ -178,7 +178,7 @@ public class PlayRecordActivity extends Activity implements
 				share.putExtra(Intent.EXTRA_TEXT, getResources().getString(R.string.record_files));
 				share.putExtra(Intent.EXTRA_STREAM, ProviderTool.getShareUri(mEntry.getFilePath()));
 				share.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(Intent.createChooser(share, getTitle()));
+				startActivity(Intent.createChooser(share, null));
 				break;
 			case R.id.playBtn:
 				RecordTool.e(TAG,"Play record before onClick:"+RecordApp.getInstance().getmState());

@@ -92,6 +92,8 @@ public class RecordedFragment extends Fragment implements OnClickListener {
         RecordTool.e(TAG,"onCreate: !isCallRecordUI = "+!isCallRecordUI());
         actionBar=getActivity().getActionBar();
         actionBar.setTitle(R.string.record_note);
+        actionBar.setBottomLineDrawable(getResources().getDrawable(R.color.record_list_actionbar_color));
+        actionBar.setBottomLineHight(1);
         if(!isCallRecordUI()) {
             recordedAdapter = new RecorderAdapter(getActivity(), null,this);
         }
@@ -217,22 +219,18 @@ public class RecordedFragment extends Fragment implements OnClickListener {
             recordVF.setOutAnimation(getActivity(), android.R.anim.fade_out);
 
             leBottomWidget = (LeBottomWidget)getActivity().findViewById(R.id.bottom_widget);
-            intiBottomWidget();
+            initBottomWidget();
         }
 
 		super.onActivityCreated(savedInstanceState);
 	}
 
-    private void intiBottomWidget() {
+    private void initBottomWidget() {
         if(leBottomWidget!=null){
-            leBottomWidget.setModeAndTabCount(LeBottomWidget.MODE_ICON_TEXT,3);
-            leBottomWidget.addTab(0,"share",R.drawable.ic_rec_share,R.drawable.ic_rec_play_share_pressed,
-                    getResources().getString(R.string.share));
-            leBottomWidget.addTab(1,"delete",R.drawable.ic_rec_delete,R.drawable.ic_rec_delete_disable,
-                    getResources().getString(R.string.delete));
-            leBottomWidget.addTab(2,"rename",R.drawable.ic_rec_rename,R.drawable.ic_rec_rename_disable,
-                    getResources().getString(R.string.rename));
-            leBottomWidget.setTitleTextColor(getResources().getColor(R.color.actionBarTitleColor));
+            leBottomWidget.setModeAndTabCount(LeBottomWidget.MODE_ICON_ONLY,3);
+            leBottomWidget.addTab(0, com.android.internal.R.drawable.le_bottom_btn_icon_share_white, getResources().getString(R.string.share));
+            leBottomWidget.addTab(1, com.android.internal.R.drawable.le_bottom_btn_icon_delete_white, getResources().getString(R.string.delete));
+            leBottomWidget.addTab(2, com.android.internal.R.drawable.le_bottom_btn_icon_edit_white,  getResources().getString(R.string.rename));
             leBottomWidget.setOnClickAndLongClickListener(new LeBottomWidget.OnClickAndLongClickListener() {
                 @Override
                 public void onClick(int pos, String tag) {

@@ -7,6 +7,7 @@
     <color name="actionBarLine">#27272d</color>
     <color name="actionBarColor">#dadada</color>
     <color name="actionBarActionColor">#dadada</color>
+    <color name="record_list_actionbar_color">#4cbdbdbd</color>
     <color name="actionBarPauseColor">#D9000000</color>
     
 
@@ -26,7 +27,7 @@
     <color name="title__color_play">#ff2f0d</color>
     
     <color name="activityBackground">#fffdf8</color>
-    <drawable name="list_divider">#4d525e66</drawable>
+    <drawable name="list_divider">#4cbdbdbd</drawable>
     <color name="sherlock_text_enable">#6f7980</color>
     <color name="sherlock_text_disable">#cbd0d1</color>
 

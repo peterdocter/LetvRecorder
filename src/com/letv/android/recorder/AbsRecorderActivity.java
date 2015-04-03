@@ -172,6 +172,7 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
             case R.id.flagBtn:
                 RecordTool.e("AbsRecorderActivity","click:flagBtn");
                 if(mRecorderState == MediaRecorderState.RECORDING) {
+                    RecordTool.e("AbsRecorderActivity","click:flagBtn add");
                     RecordApp.getInstance().addFlag(RecorderService.recordRealDuring);
                 }
 

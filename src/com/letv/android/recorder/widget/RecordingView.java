@@ -340,7 +340,8 @@ public class RecordingView extends View {
     public void stopRecording() {
         holders.clear();
         wavePointCache.clear();
-        RecordApp.getInstance().clearFlag();
+//        RecordTool.e("RecordApp","recordingView");
+//        RecordApp.getInstance().clearFlag();
 //		mHandler.removeCallbacks(waveRunnable);
 
     }
