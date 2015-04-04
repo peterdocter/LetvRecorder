@@ -2,7 +2,7 @@ package com.letv.android.recorder.fragment;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.transition.TransitionManager;
+//import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -117,7 +117,7 @@ public class RecorderAdapter extends BaseAdapter implements DividerFilter{
     }
 
     public void setRecordList(List<RecordEntry> recordList) {
-        TransitionManager.beginDelayedTransition(mListView, ActionBarTool.autoTransition);
+//        TransitionManager.beginDelayedTransition(mListView, ActionBarTool.autoTransition);
         this.recordList = recordList;
         recordSelectFlag = new ArrayList<Boolean>();
 
