@@ -355,6 +355,8 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                                         dialog.dismiss();
                                         FileSyncContentProvider.renameFile(getActivity(), oldPath, newPath);
                                         refreshRecordList();
+                                        changeSelectStatus();
+                                        mActionMode.invalidate();
                                     }
 
                                 }
