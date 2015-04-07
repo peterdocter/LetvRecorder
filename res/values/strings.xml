@@ -5,7 +5,7 @@
     <string name="new_recorder">New recording</string>
 
     <string name="new_recorder_xliff">New recording %d</string>
-    <string name="select_item_xliff">Select %d items</string>
+    <string name="select_item_xliff">%d selected</string>
     <string name="call_record_count_xliff">(%d)</string>
     <string name="call_record_filename_xliff">(%d)</string>
 
