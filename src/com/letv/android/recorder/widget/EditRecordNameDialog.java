@@ -35,7 +35,7 @@ public class EditRecordNameDialog {
         builder.setTitle(R.string.edit_recorder_name)
                 .setView(mEditText);
         builder.setPositiveButtonPattern(AlertDialog.ButtonPattern.EXPECTATION)// 期望，蓝色
-                .setNeutralButtonPattern(AlertDialog.ButtonPattern.WARNING);//　警告，红色
+                .setNeutralButtonPattern(AlertDialog.ButtonPattern.NORMAL);//　警告，红色
         mEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(50)});
 
     }

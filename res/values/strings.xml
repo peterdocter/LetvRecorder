@@ -21,7 +21,7 @@
     <string name="back">Back</string>
     <string name="select_all">Select all</string>
     <string name="select_none">Deselect all</string>
-    
+
     <string name="play">Play</string>
     <string name="pause_play">Pause</string>
     <string name="edit">Edit</string>
@@ -34,10 +34,10 @@
     <string name="record_file_name_format">Recording-MMddyy-HH-mm-ss</string>
     <string name="start_time_format">MM-dd-yyyy</string>
 
-	<string name="recording">Recording...</string>
-	<string name="record_pase">Recording paused</string>
-	<string name="record_over_max_time">Recording exceeds 1 hour</string>
-	<string name="record_name_cannot_null">Recording name cannot be empty</string>
+    <string name="recording">Recording...</string>
+    <string name="saving_record">Saving...</string>
+    <string name="record_over_max_time">Recording exceeds 1 hour</string>
+    <string name="record_name_cannot_null">Recording name cannot be empty</string>
     <string name="record_existed">A recording by that name already exists</string>
 
     <string name="storage_full">Storage is full</string>
@@ -64,6 +64,10 @@
 
     <string name="play_record_playing">Playing</string>
     <string name="play_record_pause">Pause</string>
+    <string name="ready_record">Ready</string>
+    <string name="record_error">Record Error</string>
+    <string name="record_exception">Start Exception</string>
+    <string name="app_keyword_call_record">Can\'t change</string>
 
     <string-array name="scene_entries">
         <item>Record voice</item>
@@ -90,4 +94,10 @@
         <item>2</item>
         <item>3</item>
     </string-array>
-<string name="no_selected_share">No recordings selected</string><string name="yesterday">Yesterday</string><string name="few_days"> days ago</string><string name="before_yesterday">Two days ago</string><string name="week_ago">1 week ago</string><string name="app_detail_sys_set">App info</string></resources>
+    <string name="no_selected_share">No recordings selected</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="few_days"> days ago</string>
+    <string name="before_yesterday">Two days ago</string>
+    <string name="week_ago">1 week ago</string>
+    <string name="app_detail_sys_set">App info</string>
+</resources>
