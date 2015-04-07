@@ -39,7 +39,7 @@ public class SettingTool {
 
     public static boolean isShowScreenWidget(Context context){
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-        boolean isShow = sp.getBoolean(SCREEN_WIDGET,false);
+        boolean isShow = sp.getBoolean(SCREEN_WIDGET,true);
         return  isShow;
     }
 

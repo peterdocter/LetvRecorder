@@ -7,6 +7,7 @@
             android:title="@string/play_mode_title"/>
     <SwitchPreference
             android:key="screen_widget"
+            android:defaultValue="true"
             android:summary="@string/screen_widget_summary"
             android:title="@string/screen_widget_title"/>
     <SwitchPreference
