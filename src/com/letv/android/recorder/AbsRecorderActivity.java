@@ -89,7 +89,7 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
 //        mRecorder.checkRecorderState();
 
         isFistTime = RecordTool.isFirstLaunch(this);
-        RecordTool.e(TAG,"onStartState:"+RecordApp.getInstance().getmState());
+        RecordTool.e(TAG,"isFistTime:"+isFistTime+"-onStartState:"+RecordApp.getInstance().getmState());
         if(MediaRecorderState.IDLE_STATE!=RecordApp.getInstance().getmState()) {
             updateUI();
         }else if(!isFistTime){

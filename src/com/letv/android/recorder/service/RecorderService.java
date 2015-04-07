@@ -657,6 +657,7 @@ public class RecorderService extends Service implements RecorderInterface {
         saveRecorderData();
 
         if(RecorderAppWidget.hasAppWidget(getApplicationContext())) {
+            RecordTool.e(LOG_TAG,"hasAppWidget");
             Intent appWidget = new Intent(RecorderAppWidget.ACTION_UPDATE);
             sendBroadcast(appWidget);
         }

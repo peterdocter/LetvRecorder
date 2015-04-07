@@ -32,6 +32,9 @@ public class PhoneReceiver extends BroadcastReceiver {
     private AudioManager am;
     @Override
     public void onReceive(Context context, Intent intent) {
+        if(!RecordTool.canClick(1000)){
+            return;
+        }
         this.context = context;
         am=(AudioManager)context.getSystemService(Context.AUDIO_SERVICE);
         RecordTool.loge(this.getClass().getSimpleName(),intent.getAction());
@@ -47,7 +50,7 @@ public class PhoneReceiver extends BroadcastReceiver {
 //        Recorder.MediaRecorderState mState = Recorder.MediaRecorderState.getState(stateStr);
         Recorder.MediaRecorderState mState = RecordApp.getInstance().getmState();
         String state = bundle.getString("state");
-
+        RecordTool.e(TAG,"phone:state:"+state+" ->mState:"+mState);
         if(!TextUtils.isEmpty(state)){
             if(state.equals("RINGING")||state.equals("OFFHOOK")){
                 if(mState == Recorder.MediaRecorderState.RECORDING){
@@ -58,6 +61,7 @@ public class PhoneReceiver extends BroadcastReceiver {
                             am.setRingerMode(AudioManager.RINGER_MODE_SILENT);
                             RecordTool.e("phone_rec", "2:" + am.getRingerMode());
                         }
+                        RecordTool.e(TAG,"pauseRecoring");
                         RecorderService.pauseRecoring(context);
                     }
                 }else if(RecordApp.getInstance().getmState()== Recorder.MediaRecorderState.PLAYING){
@@ -76,7 +80,6 @@ public class PhoneReceiver extends BroadcastReceiver {
 //                }
             }
         }
-
     }
 
 }

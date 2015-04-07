@@ -19,7 +19,7 @@ import com.letv.android.recorder.R;
 
 public class RecordingView extends View {
 
-    private static final String LOG_TAG = "LEUI----" + RecordingView.class.getSimpleName();
+    private static final String LOG_TAG = RecordingView.class.getSimpleName();
 
 //    private ArrayList<WavePoint> wavePoints = new ArrayList<WavePoint>();
 

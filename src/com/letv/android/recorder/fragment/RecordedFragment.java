@@ -169,6 +169,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                 }
 			}
 			if (recordingView != null) {
+                RecordTool.e(TAG,"recordingView:"+recordingView);
 				recordingView.updateRecordUI(recordTimeMillis, db);
 			}
 		}

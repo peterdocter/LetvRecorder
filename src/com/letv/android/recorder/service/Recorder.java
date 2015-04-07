@@ -84,6 +84,8 @@ public class Recorder{
 
 	private Handler handler = new Handler() {
 		public void handleMessage(android.os.Message msg) {
+
+            RecordTool.e(TAG,"handleMessage");
 			if (msg.what == 123) {
 				if (timeChangedListener != null) {
 					timeChangedListener.onRecordTimeChanged(RecorderService.recordRealDuring,RecorderService.getDB());
@@ -97,10 +99,12 @@ public class Recorder{
 	};
 	
 	public void beginUpdateTime(){
+        RecordTool.e(TAG,"beginUpdateTime");
 		handler.sendEmptyMessage(123);
 	}
 	
 	public void endUpdateTime(){
+        RecordTool.e(TAG,"endUpdateTime");
 		handler.removeMessages(123);
 	}
 
@@ -109,6 +113,8 @@ public class Recorder{
 	}
 
 	public void checkRecorderState(){
+
+        RecordTool.e(TAG,"checkRecorderState");
 		MediaRecorderState state = state();
 		if(MediaRecorderState.PAUSED==state||
 				MediaRecorderState.STOPPED==state){
@@ -138,6 +144,7 @@ public class Recorder{
 	}
 
 	public void startRecording(Context mContext) {
+
 		RecordTool.e(TAG, "startRecording");
 		RecorderService.startRecording(mContext);
 	}
@@ -161,7 +168,7 @@ public class Recorder{
 	public void setState(MediaRecorderState state) {
 //		if (state == state())
 //			return;
-
+        RecordTool.e(TAG,"setState:"+state);
 		if(MediaRecorderState.PAUSED==state||
 			MediaRecorderState.STOPPED==state){
 			endUpdateTime();
@@ -174,6 +181,8 @@ public class Recorder{
 	}
 
 	private void signalStateChanged(MediaRecorderState state) {
+
+        RecordTool.e(TAG,"signalStateChanged");
 		if (mOnStateChangedListener != null)
 			mOnStateChangedListener.onStateChanged(state);
 	}

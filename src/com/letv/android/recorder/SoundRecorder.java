@@ -66,6 +66,7 @@ public class SoundRecorder extends AbsRecorderActivity {
 	}
 
 	private void saveRecordAndReturn() {
+        RecordTool.e(TAG,"saveRecordAndReturn:"+mRecorderState);
 		if (MediaRecorderState.RECORDING == mRecorderState || MediaRecorderState.PAUSED == mRecorderState) {
             mRecorder.stopRecording(this);
             RecorderService.saveRecording(this, RecordApp.getInstance().getRecordName());

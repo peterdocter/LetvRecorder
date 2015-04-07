@@ -317,7 +317,7 @@ public class RecorderAdapter extends BaseAdapter implements DividerFilter{
 
     
     public int rightDividerMargin(int position) {
-        return leftDividerMargin(position);
+        return context.getResources().getDimensionPixelOffset(R.dimen.record_item_divider_padding_right);
     }
 
     static class  ViewHolder{

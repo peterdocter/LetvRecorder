@@ -15,8 +15,8 @@
 
     <color name="no_record_text_color">#ffffff</color>
     
-    <color name="summary_color">#606060</color>
-    <color name="title_color">#e9e9e9</color>
+    <color name="summary_color">#7fbdbdbd</color>
+    <color name="title_color">#bdbdbd</color>
 
     <color name="summary_color_selected">#fff</color>
     <color name="title_color_selected">#fff</color>
