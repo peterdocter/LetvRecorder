@@ -6,6 +6,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.text.InputFilter;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
@@ -28,12 +30,13 @@ public class EditRecordNameDialog {
 
     public EditRecordNameDialog(final Context context){
 
-        mEditText = new EditText(context);
-
+        LayoutInflater tLayoutInflater=LayoutInflater.from(context);
+        View parentView=tLayoutInflater.inflate(R.layout.editview_layout,null);
+        mEditText = (EditText)parentView.findViewById(R.id.edit_view);
         builder = new AlertDialog.Builder(context);
 
         builder.setTitle(R.string.edit_recorder_name)
-                .setView(mEditText);
+                .setView(parentView);
         builder.setPositiveButtonPattern(AlertDialog.ButtonPattern.EXPECTATION)// 期望，蓝色
                 .setNeutralButtonPattern(AlertDialog.ButtonPattern.NORMAL);//　警告，红色
         mEditText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(50)});
