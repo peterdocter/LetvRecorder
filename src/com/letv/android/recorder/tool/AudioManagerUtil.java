@@ -14,7 +14,7 @@ public class AudioManagerUtil {
         RecordTool.e("AudioManagerUtil","scene_mode:"+SettingTool.getSceneMode(RecordApp.getInstance().getApplicationContext()));
         am.setParameters(SettingTool.getSceneMode(RecordApp.getInstance().getApplicationContext())==SettingTool.SceneMode.VOICES?
                 "Recorder=voicerecorder":"Recorder=normalrecorder");
-        int result = am.requestAudioFocus(afChangeListener,AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
+        int result = am.requestAudioFocus(afChangeListener,AudioManager.STREAM_MUSIC,AudioManager.AUDIOFOCUS_GAIN);
         return result;
     }
     public static void destroyAudioFocus(AudioManager.OnAudioFocusChangeListener afChangeListener){
