@@ -191,15 +191,20 @@ public class RecordTool {
         File recordDir = new File(Constants.RECORD_PATH);
 
 
+        String recordName = context.getResources().getString(R.string.new_recorder_xliff);
+        int recordNameLength =recordName.length();
         File [] listFile = recordDir.listFiles();
         if(listFile==null||listFile.length==0){
             newIndex = 1;
         }else{
             for(File tmp:listFile){
                 String fileName = tmp.getName();
-                if(!TextUtils.isEmpty(fileName)&&(fileName.endsWith(Constants.RECORD_FORMAT[0])||fileName.endsWith(Constants.RECORD_FORMAT[1]))&&
-                        fileName.length()>(4+3)){
-                    String indexStr = fileName.substring(3,fileName.length()-4);
+                if(!TextUtils.isEmpty(fileName)
+                        &&(fileName.endsWith(Constants.RECORD_FORMAT[0])||fileName.endsWith(Constants.RECORD_FORMAT[1]))
+                        && fileName.length()>(4+3)
+                        && fileName.startsWith(recordName.substring(0,recordNameLength-2))){
+                    String indexStr = fileName.substring(recordNameLength-2,fileName.length()-4);
+                    RecordTool.e("RecordTool",indexStr);
                     try {
                         int index = Integer.parseInt(indexStr);
 
@@ -215,7 +220,6 @@ public class RecordTool {
             }
         }
 
-        String recordName = context.getResources().getString(R.string.new_recorder_xliff);
         recordName = String.format(recordName,newIndex);
         return recordName;
     }
