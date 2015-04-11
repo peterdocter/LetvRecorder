@@ -139,7 +139,10 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
         if (mReceiver != null) {
             unregisterReceiver(mReceiver);
         }
-        RecordTool.saveFirstLaunch(AbsRecorderActivity.this,true);
+        MediaRecorderState state = MediaRecorderState.getState("IDLE_STATE");
+        mRecorder.setState(state);
+        RecordTool.hideNotificationWhenBack(this);
+        LockScreen.hideLockScreenWidget(this);
         super.onDestroy();
     }
 
