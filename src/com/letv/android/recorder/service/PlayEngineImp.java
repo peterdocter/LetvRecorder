@@ -129,7 +129,7 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
 
 	@Override
 	public void seekTo(int msecond) {
-		if(player!=null&&player.isPlaying()){
+		if(player!=null){
 			player.seekTo(msecond);
 		}
 	}
