@@ -9,6 +9,7 @@ import android.app.ActionBar;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.letv.android.recorder.R;
+import com.letv.android.recorder.tool.feature.FeatureUtil;
 
 /**
  * Created by snile on 14/11/4.
@@ -20,7 +21,11 @@ public class RecorderSetting extends PreferenceActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.recorder_setting);
+        if(FeatureUtil.hasSceneSetting(this)){
+            addPreferencesFromResource(R.xml.recorder_setting_qcom);
+        }else{
+            addPreferencesFromResource(R.xml.recorder_setting_mtk);
+        }
         setTitle(R.string.app_name);
     }
 

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference
+            android:key="play_mode"
+            android:summary="@string/play_mode_summary"
+            android:title="@string/play_mode_title"/>
+    <SwitchPreference
+            android:key="screen_widget"
+            android:defaultValue="true"
+            android:summary="@string/screen_widget_summary"
+            android:title="@string/screen_widget_title"/>
+    <SwitchPreference
+            android:key="record_silence"
+            android:title="@string/record_silence_title"/>
+    <com.letv.leui.preference.LeListPreference
+            android:key="audio_qulity"
+            android:title="@string/audio_qulity_title"
+            android:entries="@array/audio_qulity_entries"
+            android:entryValues="@array/audio_qulity_value"
+            />
+</PreferenceScreen>
