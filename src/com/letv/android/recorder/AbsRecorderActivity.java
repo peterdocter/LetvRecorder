@@ -1,10 +1,8 @@
 package com.letv.android.recorder;
 
 import android.animation.ObjectAnimator;
-import android.app.ActionBar;
-import android.app.Activity;
-import android.app.Notification;
-import android.app.NotificationManager;
+import android.app.*;
+import android.appwidget.AppWidgetManager;
 import android.content.*;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.ColorDrawable;
@@ -19,6 +17,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.view.WindowManager;
 import android.animation.ObjectAnimator;
@@ -33,6 +32,7 @@ import com.letv.android.recorder.tool.LockScreen;
 import com.letv.android.recorder.tool.RecordTool;
 import com.letv.android.recorder.tool.StatusBarTool;
 import com.letv.android.recorder.widget.FlagImageView;
+import com.letv.android.recorder.widget.RecorderAppWidget;
 
 public class AbsRecorderActivity extends Activity implements OnClickListener, OnStateChangedListener, OnRecordTimeChangedListener {
 
@@ -86,7 +86,7 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
         mRecorderState=RecordApp.getInstance().getmState();
         mRecorder.setmOnStateChangedListener(this);
         mRecorder.setTimeChangedListener(this);
-//        mRecorder.checkRecorderState();
+        //mRecorder.checkRecorderState();
 
         isFistTime = RecordTool.isFirstLaunch(this);
         RecordTool.e(TAG,"isFistTime:"+isFistTime+"-onStartState:"+RecordApp.getInstance().getmState());
@@ -143,7 +143,24 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
         mRecorder.setState(state);
         RecordTool.hideNotificationWhenBack(this);
         LockScreen.hideLockScreenWidget(this);
+        clearWidget();
         super.onDestroy();
+    }
+
+    private void clearWidget() {
+        RecordTool.saveRecordedTime(this,0);
+        Intent startIntent = new Intent(RecorderAppWidget.ACTION_START);
+        PendingIntent startPendingIntent = PendingIntent.getBroadcast(this,0,startIntent,0);
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+        RemoteViews remoteViews = new RemoteViews(Constants.PACKAGE_NAME, R.layout.recorder_app_widget);
+        ComponentName componentName = new ComponentName(this, RecorderAppWidget.class);
+        remoteViews.setOnClickPendingIntent(R.id.remote_record_action, startPendingIntent);
+        remoteViews.setImageViewResource(R.id.remote_record_action, R.drawable.start_selector);
+        remoteViews.setTextViewText(R.id.remote_record_name, RecordTool.getNewRecordName(this));
+        remoteViews.setTextViewText(R.id.remote_record_time_during, RecordTool.recordTimeFormat(0));
+        remoteViews.setTextViewText(R.id.remote_record_state, this.getResources().getText(R.string.ready_record));
+        appWidgetManager.updateAppWidget(componentName, remoteViews);
+
     }
 
     @Override
@@ -207,6 +224,7 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
             flagBtn.setVisibility(View.VISIBLE);
 //            topWidget.setCenterTitle(R.string.new_recorder);
             getActionBar().hide();
+
         } else if (MediaRecorderState.PAUSED == mRecorderState) {
             recordBtn.setImageResource(R.drawable.frame_pause_record);
             AnimationDrawable am_record=(AnimationDrawable)recordBtn.getDrawable();
@@ -219,7 +237,7 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
             if(stopBtn.getVisibility()==View.VISIBLE){
             	Animation am_stop = AnimationUtils.loadAnimation(AbsRecorderActivity.this, R.anim.anim_out_bottom);
             	stopBtn.startAnimation(am_stop);
-            	
+
             	Animation am_flag = AnimationUtils.loadAnimation(AbsRecorderActivity.this, R.anim.anim_out_bottom);
             	am_flag.setStartOffset(70);
                 flagBtn.startAnimation(am_flag);
@@ -241,7 +259,7 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
             flagBtn.setVisibility(View.INVISIBLE);
 //            topWidget.setCenterTitle(R.string.record_note)
 //            getActionBar().setTitle(R.string.record_note);
-        } 
+        }
 //        else if (MediaRecorderState.PLAYING_PAUSED == mRecorderState) {
 //            recordBtn.setImageResource(R.drawable.pause_selector);
 ////            topWidget.setCenterTitle(R.string.record_note);

@@ -18,6 +18,9 @@ public class RecordApp extends Application {
 
     private ArrayList<Long> flags;
 
+
+	public static boolean isFromWidget;
+
     public void addFlag(long flag){
 
         RecordTool.e("RecordApp","addFlag:"+flag);

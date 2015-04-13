@@ -68,7 +68,16 @@ public class RecorderAppWidget extends AppWidgetProvider{
             }
             RecorderService.pauseRecoring(context);
         }else if(action.equals(ACTION_START)){
-                RecorderService.startRecording(context);
+            Recorder.getInstance();
+            RecordTool.isRecordInBack=true;
+            if(RecordApp.getInstance().getmState()== Recorder.MediaRecorderState.PAUSED||
+                    RecordApp.getInstance().getmState()== Recorder.MediaRecorderState.RECORDING){
+                RecordTool.showNotificationWhenBack(context, RecordApp.getInstance().getmState());
+//            RecordTool.showNotificationLedWhenBack(this);
+            }
+            //Recorder.getInstance().checkRecorderState();
+            RecordApp.isFromWidget=true;
+            RecorderService.startRecording(context);
         }else if(action.equals(ACTION_UPDATE)){
             updateUI(context,mState,intent);
         }

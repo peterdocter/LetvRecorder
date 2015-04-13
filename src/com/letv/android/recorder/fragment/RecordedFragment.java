@@ -33,6 +33,7 @@ import com.letv.android.recorder.*;
 import com.letv.android.recorder.R;
 import com.letv.android.recorder.provider.ProviderTool;
 import com.letv.android.recorder.provider.RecordDb;
+import com.letv.android.recorder.service.Recorder;
 import com.letv.android.recorder.service.Recorder.MediaRecorderState;
 import com.letv.android.recorder.tool.FileSyncContentProvider;
 import com.letv.android.recorder.tool.FileTool;
@@ -852,4 +853,12 @@ public class RecordedFragment extends Fragment implements OnClickListener {
 		return count;
 	}
 
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if(RecordApp.isFromWidget){
+            Recorder.getInstance().checkRecorderState();
+            RecordApp.isFromWidget=false;
+        }
+    }
 }
