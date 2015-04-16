@@ -41,10 +41,7 @@ import com.letv.leui.widget.LeTopSlideToastHelper;
 import com.letv.leui.widget.ScreenRecordingView;
 
 
-
-import android.app.IntentService;
 import android.app.NotificationManager;
-import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Builder;
 
@@ -150,21 +147,31 @@ public class RecorderService extends Service implements RecorderInterface {
     private NotificationConfig notificationConfig;
     private PendingIntent contentIntent;
 
+
+    private static final Object lock =new Object();
+
     public static int getDB() {
         int db = 0;// 分贝
         int ratio = 0;
-        if (mRecorder != null) {
             try {
-                ratio = mRecorder.getMaxAmplitude();
+                //ratio = mRecorder.getMaxAmplitude();
+                ratio=recorderGetMaxAmplitude();
             } catch (Exception e) {
                 e.printStackTrace();
             }
             if (ratio > 1) {
                 db = ratio;
             }
-        }
-
         return db;
+    }
+
+    private static int recorderGetMaxAmplitude(){
+        synchronized (lock){
+            if (mRecorder != null) {
+                return mRecorder.getMaxAmplitude();
+            }
+            return 0;
+        }
     }
 
     private boolean showNotification = false;
@@ -435,29 +442,33 @@ public class RecorderService extends Service implements RecorderInterface {
                 e.printStackTrace();
             }
         }
-        mRecorder = new MediaRecorder();
-        mRecorder.reset();
-        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+
         if (mTmpFiles.size() <= 0) {
             return Constants.CREATE_FILE_FAIL;
         }
-        mRecorder.setOutputFormat(audioQulityPram.OutputFormat);
-        mRecorder.setOutputFile(file.getAbsolutePath());
-        mRecorder.setAudioSamplingRate(audioQulityPram.SampleRate);
-        mRemainingTimeCalculator.reset();
 
-        mRecorder.setAudioEncodingBitRate(audioQulityPram.EncodeBitrate);
-        mRecorder.setAudioChannels(audioQulityPram.AudioChannel);
-        mRecorder.setAudioEncoder(audioQulityPram.EncodeType);
+        recorderInit(file);
+
+        //mRecorder = new MediaRecorder();
+        ////mRecorder.reset();
+        //mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        //mRecorder.setOutputFormat(audioQulityPram.OutputFormat);
+        //mRecorder.setOutputFile(file.getAbsolutePath());
+        //mRecorder.setAudioSamplingRate(audioQulityPram.SampleRate);
+        //mRecorder.setAudioEncodingBitRate(audioQulityPram.EncodeBitrate);
+        //mRecorder.setAudioChannels(audioQulityPram.AudioChannel);
+        //mRecorder.setAudioEncoder(audioQulityPram.EncodeType);
+        mRemainingTimeCalculator.reset();
 
         RecordTool.e(LOG_TAG, audioQulityPram.AudioChannel + "-" + audioQulityPram.EncodeBitrate + "-" + audioQulityPram.EncodeType + "-" + audioQulityPram.OutputFormat + "-" + audioQulityPram.SampleRate);
         mRecorder.setOnErrorListener(new OnErrorListener() {
             @Override
             public void onError(MediaRecorder mr, int what, int extra) {
-                mRecorder.reset();
+                //mRecorder.reset();
                 timerStop();
-                mRecorder.release();
-                mRecorder=null;
+                //mRecorder.release();
+                //mRecorder=null;
+                recorderReleaseAndSetNull();
                 mRecorderState = MediaRecorderState.IDLE_STATE;
                 sendStateBroadcast();
                 Log.e("eee", "what---" + what + "---extra" + extra);
@@ -470,9 +481,10 @@ public class RecorderService extends Service implements RecorderInterface {
         try {
             stopAudioPlayback();
             RecordTool.e("startRecording", "startRecording:prepare {");
-            mRecorder.prepare();
             RecordTool.e("startRecording", "startRecording:prepare }");
-            mRecorder.start();
+            //mRecorder.prepare();
+            //mRecorder.start();
+            recorderPrepareAndStart();
             RecordTool.e("startRecording", "startRecording:start");
             recordStartTime = System.currentTimeMillis();
             RecordTool.e(LOG_TAG, "start:" + recordStartTime);
@@ -489,8 +501,9 @@ public class RecorderService extends Service implements RecorderInterface {
 					getResources().getString(R.string.record_exception),null,
 					null,null,
 					null).show();
-			mRecorder.release();
-			mRecorder = null;
+            recorderReleaseAndSetNull();
+            //mRecorder.release();
+            //mRecorder = null;
             timerStop();
             mRecorderState = MediaRecorderState.IDLE_STATE;
             sendStateBroadcast();
@@ -498,19 +511,47 @@ public class RecorderService extends Service implements RecorderInterface {
         return Constants.START_RECORD_SUCCESS;
     }
 
+    private void recorderPrepareAndStart() throws IOException {
+        synchronized (lock){
+            mRecorder.prepare();
+            mRecorder.start();
+        }
+    }
+
+    private void recorderInit(File file) {
+        synchronized (lock){
+            mRecorder = new MediaRecorder();
+            //mRecorder.reset();
+            mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+            mRecorder.setOutputFormat(audioQulityPram.OutputFormat);
+            mRecorder.setOutputFile(file.getAbsolutePath());
+            mRecorder.setAudioSamplingRate(audioQulityPram.SampleRate);
+            mRecorder.setAudioEncodingBitRate(audioQulityPram.EncodeBitrate);
+            mRecorder.setAudioChannels(audioQulityPram.AudioChannel);
+            mRecorder.setAudioEncoder(audioQulityPram.EncodeType);
+        }
+    }
+    private void recorderReleaseAndSetNull() {
+        synchronized (lock) {
+            mRecorder.reset();
+            mRecorder.release();
+            mRecorder = null;
+        }
+    }
+
 
     @Override
     public boolean pauseRecording() {
-
         RecordTool.loge(LOG_TAG, "pauseRecording");
         mRecorderState = MediaRecorderState.PAUSED;
         recordedDuring += System.currentTimeMillis() - recordStartTime;
         timerStop();
-        if (mRecorder != null) {
-            mRecorder.stop();
-            mRecorder.release();
-            mRecorder = null;
-        }
+        //if (mRecorder != null) {
+        //    mRecorder.stop();
+        //    mRecorder.release();
+        //    mRecorder = null;
+        //}
+        recorderStopAndRelease();
         sendStateBroadcast();
 //        if(!isRemoteRecord){
 //            RecordTool.showNotificationWhenBack(getApplicationContext());
@@ -526,17 +567,28 @@ public class RecorderService extends Service implements RecorderInterface {
         }
         timerStop();
         mRecorderState = MediaRecorderState.IDLE_STATE;
-        if (mRecorder != null) {
-            mRecorder.stop();
-            mRecorder.release();
-            mRecorder = null;
-        }
+        //if (mRecorder != null) {
+        //    mRecorder.stop();
+        //    mRecorder.release();
+        //    mRecorder = null;
+        //}
+        recorderStopAndRelease();
         sendStateBroadcast();
         showNotification = false;
         sendAlertBroadcast();
         RecordTool.e(LOG_TAG, "stopRecording }");
         AudioManagerUtil.destroyAudioFocus(null);
         return true;
+    }
+
+    private void recorderStopAndRelease() {
+        synchronized (lock) {
+            if (mRecorder != null) {
+                mRecorder.stop();
+                mRecorder.release();
+                mRecorder = null;
+            }
+        }
     }
 
     @Override

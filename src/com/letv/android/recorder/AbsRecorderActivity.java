@@ -139,6 +139,8 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
         if (mReceiver != null) {
             unregisterReceiver(mReceiver);
         }
+        Intent intent = new Intent(this, RecorderService.class);
+        stopService(intent);
         MediaRecorderState state = MediaRecorderState.getState("IDLE_STATE");
         mRecorder.setState(state);
         RecordTool.hideNotificationWhenBack(this);

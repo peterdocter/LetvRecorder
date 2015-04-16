@@ -1,15 +1,15 @@
 package com.letv.android.recorder.service;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Message;
+import android.text.TextUtils;
+import com.letv.android.recorder.RecordApp;
+import com.letv.android.recorder.tool.RecordTool;
+
 //import android.media.MediaPlayer;
 //import android.media.MediaPlayer.OnCompletionListener;
 //import android.media.MediaPlayer.OnErrorListener;
-import android.os.Handler;
-import android.text.TextUtils;
-import android.util.Log;
-
-import com.letv.android.recorder.RecordApp;
-import com.letv.android.recorder.tool.RecordTool;
 
 public class Recorder{
 
@@ -86,13 +86,20 @@ public class Recorder{
 		public void handleMessage(android.os.Message msg) {
 
             RecordTool.e(TAG,"handleMessage");
+			MediaRecorderState state = state();
+
+			if(msg.what==456){
+				return;
+			}
 			if (msg.what == 123) {
-				if (timeChangedListener != null) {
-					timeChangedListener.onRecordTimeChanged(RecorderService.recordRealDuring,RecorderService.getDB());
+				if(state == MediaRecorderState.RECORDING) {
+					if (timeChangedListener != null) {
+						timeChangedListener.onRecordTimeChanged(RecorderService.recordRealDuring, RecorderService.getDB());
+					}
 				}
 			}
-			
-			if(state() == MediaRecorderState.RECORDING){
+
+			if(state == MediaRecorderState.RECORDING){
 				handler.sendEmptyMessageDelayed(123, 20);
 			}
 		};
@@ -105,6 +112,8 @@ public class Recorder{
 	
 	public void endUpdateTime(){
         RecordTool.e(TAG,"endUpdateTime");
+		Message message = handler.obtainMessage(456);
+		handler.sendMessageAtFrontOfQueue(message);
 		handler.removeMessages(123);
 	}
 
@@ -152,12 +161,14 @@ public class Recorder{
 	public void pauseRecording(Context mContext) {
 		RecordTool.e(TAG, "pauseRecording");
 		if (RecorderService.isRecording()) {
+			endUpdateTime();
 			RecorderService.pauseRecoring(mContext);
 		}
 	}
 
 	public void stopRecording(Context mContext) {
 		RecordTool.e(TAG, "stopRecording");
+		endUpdateTime();
 		RecorderService.stopRecording(mContext);
 	}
 
