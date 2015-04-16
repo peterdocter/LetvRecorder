@@ -1,8 +1,8 @@
 package com.letv.android.recorder;
 
-import java.io.File;
-
 import android.os.Environment;
+
+import java.io.File;
 
 public class Constants {
 	public static String RECORD_PATH =Environment.getExternalStorageDirectory() + File.separator + "Recorder";
@@ -18,7 +18,7 @@ public class Constants {
 
 	public static String ALERT_ACTION="com.leui.record.alert";
 	
-	public static int NOTIFICATION_BACK_ID=100001;
+	public static int NOTIFICATION_BACK_ID=2222;
 	public static int NOTIFICATION_BACK_LED_ID=100002;
     public static final String NEXT_RECORD_INDEX="next_record_index";
 

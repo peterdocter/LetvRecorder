@@ -172,8 +172,8 @@ public class RecordTool {
 	}
 	
 	public static void hideNotificationWhenBack(Context context){
-		NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-		manager.cancel(Constants.NOTIFICATION_BACK_ID);
+		//NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+		//manager.cancel(Constants.NOTIFICATION_BACK_ID);
 	}
 
 
@@ -226,39 +226,39 @@ public class RecordTool {
 
 	
 	public static void showNotificationWhenBack(Context context,MediaRecorderState mRecorderState){
-        RecordTool.e("showNotificationWhenBack","showNotificationWhenBack 1 :"+isRecordInBack);
-        RecordTool.e("showNotificationWhenBack","showNotificationWhenBack 2 :"+isRecordInBack);
-        if(isRecordInBack){
-            Intent intent = new Intent(context, RecorderActivity.class);
-
-            PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
-
-            String title = context.getResources().getString(R.string.app_name);
-            String conStr;
-
-            RecordTool.e("showNotificationWhenBack","showNotificationWhenBack 2 :mRecorderState"+mRecorderState+"RecordApp:"+RecordApp.getInstance().getmState());
-            if(mRecorderState==MediaRecorderState.RECORDING){
-                conStr = context.getResources().getString(R.string.recording);
-            }else if(mRecorderState==MediaRecorderState.PAUSED){
-                conStr = context.getResources().getString(R.string.record_paused);
-            }else{
-                hideNotificationWhenBack(context);
-                return;
-            }
-
-            NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-//            Notification notification = new Notification(R.drawable.ic_rec_status, conStr, System.currentTimeMillis());
-            Notification notification = new Notification.Builder(context)
-                    .setSmallIcon(R.drawable.ic_rec_status_44)
-                    .setNotificationIcon(R.drawable.ic_rec_status)
-                    .setContentTitle(conStr)
-                    .setTicker(conStr)
-                    .setWhen(System.currentTimeMillis())
-                    .build();
-            notification.setLatestEventInfo(context, title, conStr, contentIntent);
-            notification.flags = Notification.FLAG_ONGOING_EVENT;
-            manager.notify(Constants.NOTIFICATION_BACK_ID, notification);
-        }
+//        RecordTool.e("showNotificationWhenBack","showNotificationWhenBack 1 :"+isRecordInBack);
+//        RecordTool.e("showNotificationWhenBack","showNotificationWhenBack 2 :"+isRecordInBack);
+//        if(isRecordInBack){
+//            Intent intent = new Intent(context, RecorderActivity.class);
+//
+//            PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
+//
+//            String title = context.getResources().getString(R.string.app_name);
+//            String conStr;
+//
+//            RecordTool.e("showNotificationWhenBack","showNotificationWhenBack 2 :mRecorderState"+mRecorderState+"RecordApp:"+RecordApp.getInstance().getmState());
+//            if(mRecorderState==MediaRecorderState.RECORDING){
+//                conStr = context.getResources().getString(R.string.recording);
+//            }else if(mRecorderState==MediaRecorderState.PAUSED){
+//                conStr = context.getResources().getString(R.string.record_paused);
+//            }else{
+//                hideNotificationWhenBack(context);
+//                return;
+//            }
+//
+//            NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+////            Notification notification = new Notification(R.drawable.ic_rec_status, conStr, System.currentTimeMillis());
+//            Notification notification = new Notification.Builder(context)
+//                    .setSmallIcon(R.drawable.ic_rec_status_44)
+//                    .setNotificationIcon(R.drawable.ic_rec_status)
+//                    .setContentTitle(conStr)
+//                    .setTicker(conStr)
+//                    .setWhen(System.currentTimeMillis())
+//                    .build();
+//            notification.setLatestEventInfo(context, title, conStr, contentIntent);
+//            notification.flags = Notification.FLAG_ONGOING_EVENT;
+//            manager.notify(Constants.NOTIFICATION_BACK_ID, notification);
+//        }
 
 	}
     private static boolean isLedOn=false;
@@ -270,20 +270,20 @@ public class RecordTool {
             super.handleMessage(msg);
         }
     };
-    private static Runnable runableLed = new Runnable() {
-
-        public void run() {
-            if (isLedOn) {
-                notifiManager.cancel(Constants.NOTIFICATION_BACK_LED_ID);
-                isLedOn=false;
-                ledHandler.postDelayed(this, 1000);
-            }else{
-                notifiManager.notify(Constants.NOTIFICATION_BACK_LED_ID, ledNotifi);
-                isLedOn=true;
-                ledHandler.postDelayed(this, 1000);
-            }
-        }
-    };
+    //private static Runnable runableLed = new Runnable() {
+    //
+    //    public void run() {
+    //        if (isLedOn) {
+    //            notifiManager.cancel(Constants.NOTIFICATION_BACK_LED_ID);
+    //            isLedOn=false;
+    //            ledHandler.postDelayed(this, 1000);
+    //        }else{
+    //            notifiManager.notify(Constants.NOTIFICATION_BACK_LED_ID, ledNotifi);
+    //            isLedOn=true;
+    //            ledHandler.postDelayed(this, 1000);
+    //        }
+    //    }
+    //};
 //    public static void showNotificationLedWhenBack(Context context){
 //        notifiManager= (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 //        ledNotifi = new Notification();
