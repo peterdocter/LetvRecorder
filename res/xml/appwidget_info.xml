@@ -19,6 +19,6 @@
     android:minHeight="110dip"
     android:updatePeriodMillis="0"
     android:initialLayout="@layout/recorder_app_widget"
-    android:widgetCategory="keyguard|home_screen"
+    android:widgetCategory="keyguard"
     >
 </appwidget-provider>
