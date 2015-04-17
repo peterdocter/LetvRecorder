@@ -102,7 +102,7 @@ public class Recorder{
 			if(state == MediaRecorderState.RECORDING){
 				handler.sendEmptyMessageDelayed(123, 20);
 			}
-		};
+		}
 	};
 	
 	public void beginUpdateTime(){
@@ -115,6 +115,7 @@ public class Recorder{
 		Message message = handler.obtainMessage(456);
 		handler.sendMessageAtFrontOfQueue(message);
 		handler.removeMessages(123);
+		handler.removeCallbacksAndMessages(null);
 	}
 
 	public Recorder(/*Context context*/) {

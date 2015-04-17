@@ -533,6 +533,16 @@ public class RecorderService extends Service implements RecorderInterface {
     }
     private void recorderReleaseAndSetNull() {
         synchronized (lock) {
+            //mRecorder.reset();
+            //mRecorder.release();
+            //mRecorder = null;
+            if (mRecorder == null)
+                return;
+            try {
+                mRecorder.stop();
+            }catch (RuntimeException exception){
+                exception.printStackTrace();
+            }
             mRecorder.reset();
             mRecorder.release();
             mRecorder = null;
@@ -583,11 +593,23 @@ public class RecorderService extends Service implements RecorderInterface {
 
     private void recorderStopAndRelease() {
         synchronized (lock) {
-            if (mRecorder != null) {
+            //if (mRecorder != null) {
+            //    mRecorder.stop();
+            //    mRecorder.release();
+            //    mRecorder = null;
+            //}
+
+            if (mRecorder == null)
+                return;
+            try {
                 mRecorder.stop();
-                mRecorder.release();
-                mRecorder = null;
+            }catch (RuntimeException exception){
+                exception.printStackTrace();
             }
+            mRecorder.reset();
+            mRecorder.release();
+            mRecorder = null;
+
         }
     }
 
