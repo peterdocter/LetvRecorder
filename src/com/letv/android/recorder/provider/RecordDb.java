@@ -291,13 +291,14 @@ public class RecordDb extends SQLiteOpenHelper {
 	}
 
     private String  getNameByPhoneNum(Context context,String fileName){
+        Cursor tCuror =null;
         try{
             String phoneNum = fileName.split("_")[6].replace(" ","");
             String[]  projection=new String[]{	ContactsContract.PhoneLookup.DISPLAY_NAME};
             String    selection =new String(ContactsContract.CommonDataKinds.Phone.NUMBER+" =  ?");
             String[]  selectionArgs=new String[]{phoneNum};
             String name = null;
-            Cursor tCuror= context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+            tCuror= context.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                     projection,
                     selection,
                     selectionArgs,
@@ -314,6 +315,10 @@ public class RecordDb extends SQLiteOpenHelper {
             return null!=name?name:phoneNum;
         }catch(ArrayIndexOutOfBoundsException e){
             return fileName;
+        }finally {
+            if(null!=tCuror){
+                tCuror.close();
+            }
         }
 
 
