@@ -780,6 +780,8 @@ public class RecorderService extends Service implements RecorderInterface {
         super.onDestroy();
 
         stopForeground(false);
+        mServiceHandler.removeCallbacksAndMessages(null);
+        mServiceLooper.quitSafely();
     }
 
     /**
