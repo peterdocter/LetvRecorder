@@ -65,6 +65,7 @@ public class PlayRecordActivity extends Activity implements
 
 	private  Handler mHandler;
 	private  boolean restart=false;
+	private long mOldItime,mTimeOffset;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -339,7 +340,16 @@ public class PlayRecordActivity extends Activity implements
 
 			@Override
 			public void onTrackProgressChange(int miTime) {
+				if(mOldItime>=miTime){
+					mTimeOffset+=100;
+				}
+				miTime+=mTimeOffset;
+				mOldItime=miTime;
                 RecordTool.e(TAG, "onTrackProgressChange"+miTime);
+				//Log.e("onProgressChanged","progress=="+miTime);
+				if(miTime>=mSeekBar.getMax()){
+					miTime = mSeekBar.getMax();
+				}
 				mSeekBar.setProgress(miTime);
 				curTime.setText(RecordTool.recordTimeFormat(miTime));
 			}
@@ -374,6 +384,8 @@ public class PlayRecordActivity extends Activity implements
 				if(instance!=null){
 					instance.notifyDataSetChanged(mEntry);
 				}
+				mOldItime=-1;
+				mTimeOffset=0;
 			}
 
 			@Override

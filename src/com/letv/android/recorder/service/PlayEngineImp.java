@@ -1,101 +1,121 @@
 package com.letv.android.recorder.service;
 
-import java.io.IOException;
-
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnPreparedListener;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
-
 import com.letv.android.recorder.RecordApp;
 import com.letv.android.recorder.service.Recorder.MediaRecorderState;
 import com.letv.android.recorder.tool.AudioManagerUtil;
 import com.letv.android.recorder.tool.RecordTool;
 import com.letv.android.recorder.tool.SettingTool;
 
+import java.io.IOException;
+
 @SuppressLint("HandlerLeak")
 public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorListener, OnPreparedListener {
-	private static MediaPlayer player;
-	private static PlayEngineImp playEngineImp;
-	
-	private PlayEngineListener pEngineListener;
+    private static MediaPlayer player;
+    private static PlayEngineImp playEngineImp;
 
-	
-	private Handler handler = new Handler() {
-		public void handleMessage(android.os.Message msg) {
-			if (msg.what == 0) {
-				pEngineListener.onTrackProgressChange(player.getCurrentPosition());
-				handler.sendEmptyMessageDelayed(0, 50);
-			}
-		};
-	};
-	
-	public PlayEngineListener getpEngineListener() {
-		return pEngineListener;
-	}
+    private PlayEngineListener pEngineListener;
 
-	public void setpEngineListener(PlayEngineListener pEngineListener) {
-		this.pEngineListener = pEngineListener;
-	}
 
-	private PlayEngineImp() {
+    private Handler handler = new Handler() {
+        public void handleMessage(android.os.Message msg) {
+            if (msg.what == 0) {
+                //pEngineListener.onTrackProgressChange(player.getCurrentPosition());
+                //handler.sendEmptyMessageDelayed(0, 50);
 
-	}
+                makeCountdownTimerChangeProgress();
+            }
+        }
+    };
+    private CountDownTimer changeProgressTimer;
 
-	public static PlayEngineImp getInstance() {
+    private void makeCountdownTimerChangeProgress() {
+        if (player != null) {
+            changeProgressTimer = new CountDownTimer(Integer.MAX_VALUE, 200) {
 
-		if (playEngineImp == null) {
-			playEngineImp = new PlayEngineImp();
-		}
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    pEngineListener.onTrackProgressChange(player.getCurrentPosition());
+                }
 
-		return playEngineImp;
-	}
+                @Override
+                public void onFinish() {
+                }
+            };
+            changeProgressTimer.start();
+        }
+    }
+
+
+    public PlayEngineListener getpEngineListener() {
+        return pEngineListener;
+    }
+
+    public void setpEngineListener(PlayEngineListener pEngineListener) {
+        this.pEngineListener = pEngineListener;
+    }
+
+    private PlayEngineImp() {
+
+    }
+
+    public static PlayEngineImp getInstance() {
+
+        if (playEngineImp == null) {
+            playEngineImp = new PlayEngineImp();
+        }
+
+        return playEngineImp;
+    }
 
     private String recordPath;
 
-	@Override
-	public void play(String path) {
-		try {
-			if (player == null) {
-				player = new MediaPlayer();
+    @Override
+    public void play(String path) {
+        try {
+            if (player == null) {
+                player = new MediaPlayer();
 //				player.reset();
-				player.setDataSource(path);
-				player.setOnCompletionListener(this);
-				player.setOnErrorListener(this);
-				if (SettingTool.getPlayMode(RecordApp.getInstance().getApplicationContext())== SettingTool.PlayMode.RECEIVER){
-					player.setAudioStreamType(AudioManager.STREAM_VOICE_CALL);
-				}
-				player.prepare();
+                player.setDataSource(path);
+                player.setOnCompletionListener(this);
+                player.setOnErrorListener(this);
+                if (SettingTool.getPlayMode(RecordApp.getInstance().getApplicationContext()) == SettingTool.PlayMode.RECEIVER) {
+                    player.setAudioStreamType(AudioManager.STREAM_VOICE_CALL);
+                }
+                player.prepare();
                 recordPath = path;
-			}
-
-            int result = AudioManagerUtil.initPrePlayingAudioFocus(afChangeListener);
-            if(result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED){
-			    player.start();
             }
 
-			RecordApp.getInstance().setmState(MediaRecorderState.PLAYING);
-			pEngineListener.onTrackStart(player.getCurrentPosition(), player.getDuration());
-			handler.sendEmptyMessage(0);
-		} catch (IllegalArgumentException e) {
-			// setError(INTERNAL_ERROR);
-			player = null;
+            int result = AudioManagerUtil.initPrePlayingAudioFocus(afChangeListener);
+            if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                player.start();
+            }
+
+            RecordApp.getInstance().setmState(MediaRecorderState.PLAYING);
+            pEngineListener.onTrackStart(player.getCurrentPosition(), player.getDuration());
+            handler.sendEmptyMessage(0);
+        } catch (IllegalArgumentException e) {
+            // setError(INTERNAL_ERROR);
+            player = null;
             recordPath = null;
-			return;
-		} catch (IOException e) {
-			// setError(STORAGE_ACCESS_ERROR);
-			player = null;
-            recordPath =null;
-			return;
-		}
-		// }
-	}
+            return;
+        } catch (IOException e) {
+            // setError(STORAGE_ACCESS_ERROR);
+            player = null;
+            recordPath = null;
+            return;
+        }
+        // }
+    }
 
 
 //    public static int initPrePlayingAudioFocus(){
@@ -111,15 +131,15 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
 
     private AudioManager.OnAudioFocusChangeListener afChangeListener = new AudioManager.OnAudioFocusChangeListener() {
         public void onAudioFocusChange(int focusChange) {
-            if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT){
+            if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
                 pause();
-            }else if(focusChange==AudioManager.AUDIOFOCUS_GAIN){
-                if(TextUtils.isEmpty(recordPath)) {
+            } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
+                if (TextUtils.isEmpty(recordPath)) {
                     play(recordPath);
                 }
-            }else if(focusChange==AudioManager.AUDIOFOCUS_LOSS){
+            } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
                 stop();
-            }else if(focusChange==AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK){
+            } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
                 pause();
             }
         }
@@ -127,77 +147,81 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
     };
 
 
-	@Override
-	public void seekTo(int msecond) {
-		if(player!=null){
-			player.seekTo(msecond);
-		}
-	}
+    @Override
+    public void seekTo(int msecond) {
+        if (player != null) {
+            player.seekTo(msecond);
+        }
+    }
 
-	@Override
-	public void stop() {
-		RecordTool.e("reboot->", "--------------------->2 play engine 1 :" + "player:" + player + ",state:" + RecordApp.getInstance().getmState());
-		if (player != null) {
-			player.stop();
-			player.release();
-			player = null;
-		}
+    @Override
+    public void stop() {
+        RecordTool.e("reboot->", "--------------------->2 play engine 1 :" + "player:" + player + ",state:" + RecordApp.getInstance().getmState());
+        if (player != null) {
+            player.stop();
+            player.release();
+            player = null;
+        }
         recordPath = null;
 
-		handler.removeMessages(0);
-		if (pEngineListener != null) {
-			pEngineListener.onTrackStop();
-		}
-		// mSampleStart = 0;
-		PlayService.stopPlay(RecordApp.getInstance());
-		RecordApp.getInstance().setmState(MediaRecorderState.PLAY_STOP);
-		RecordTool.e("reboot->","--------------------->3 play engine 2:" + RecordApp.getInstance().getmState());
+        changeProgressTimer.cancel();
+        changeProgressTimer = null;
+        //handler.removeMessages(0);
+        if (pEngineListener != null) {
+            pEngineListener.onTrackStop();
+        }
+        // mSampleStart = 0;
+        PlayService.stopPlay(RecordApp.getInstance());
+        RecordApp.getInstance().setmState(MediaRecorderState.PLAY_STOP);
+        RecordTool.e("reboot->", "--------------------->3 play engine 2:" + RecordApp.getInstance().getmState());
         AudioManagerUtil.destroyAudioFocus(afChangeListener);
-	}
+    }
 
-	@Override
-	public void pause() {
-		// mSampleStart = player.getCurrentPosition();
-		player.pause();
-		if (pEngineListener != null) {
-			pEngineListener.onTrackPause();
-		}
-		handler.removeMessages(0);
-		RecordApp.getInstance().setmState(MediaRecorderState.PLAYING_PAUSED);
-	}
+    @Override
+    public void pause() {
+        // mSampleStart = player.getCurrentPosition();
+        player.pause();
+        if (pEngineListener != null) {
+            pEngineListener.onTrackPause();
+        }
+        handler.removeMessages(0);
+        changeProgressTimer.cancel();
+        changeProgressTimer = null;
+        RecordApp.getInstance().setmState(MediaRecorderState.PLAYING_PAUSED);
+    }
 
-	@Override
-	public void next() {
-	}
+    @Override
+    public void next() {
+    }
 
-	@Override
-	public void prev() {
-	}
+    @Override
+    public void prev() {
+    }
 
-	int errorNum = 0;
+    int errorNum = 0;
 
 
-	@Override
-	public void onCompletion(MediaPlayer arg0) {
-		stop();
-	}
+    @Override
+    public void onCompletion(MediaPlayer arg0) {
+        stop();
+    }
 
-	public boolean isPlaying() {
+    public boolean isPlaying() {
 
-		return player.isPlaying();
-	}
+        return player.isPlaying();
+    }
 
-	public int getCurrentPosition() {
-		return player.getCurrentPosition();
-	}
+    public int getCurrentPosition() {
+        return player.getCurrentPosition();
+    }
 
-	@Override
-	public void onPrepared(MediaPlayer mp) {
-	}
+    @Override
+    public void onPrepared(MediaPlayer mp) {
+    }
 
-	@Override
-	public boolean onError(MediaPlayer mp, int what, int extra) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    @Override
+    public boolean onError(MediaPlayer mp, int what, int extra) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }
