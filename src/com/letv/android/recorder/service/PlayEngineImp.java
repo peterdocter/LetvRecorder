@@ -30,19 +30,21 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
             if (msg.what == 0) {
                 //pEngineListener.onTrackProgressChange(player.getCurrentPosition());
                 //handler.sendEmptyMessageDelayed(0, 50);
-
-                makeCountdownTimerChangeProgress();
+                //makeCountdownTimerChangeProgress();
             }
         }
+
+        ;
     };
+
     private CountDownTimer changeProgressTimer;
 
     private void makeCountdownTimerChangeProgress() {
         if (player != null) {
 
-            int countDownInterval =50;
+            int countDownInterval = 50;
 
-            if(player.getDuration()>3*60*1000){
+            if (player.getDuration() > 3 * 60 * 1000) {
                 countDownInterval = 200;
             }
 
@@ -108,7 +110,8 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
 
             RecordApp.getInstance().setmState(MediaRecorderState.PLAYING);
             pEngineListener.onTrackStart(player.getCurrentPosition(), player.getDuration());
-            handler.sendEmptyMessage(0);
+            //handler.sendEmptyMessage(0);
+            makeCountdownTimerChangeProgress();
         } catch (IllegalArgumentException e) {
             // setError(INTERNAL_ERROR);
             player = null;
@@ -170,9 +173,8 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
         }
         recordPath = null;
 
-        changeProgressTimer.cancel();
-        changeProgressTimer = null;
         //handler.removeMessages(0);
+        changeProgressTimer.cancel();
         if (pEngineListener != null) {
             pEngineListener.onTrackStop();
         }
@@ -190,9 +192,8 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
         if (pEngineListener != null) {
             pEngineListener.onTrackPause();
         }
-        handler.removeMessages(0);
+        //handler.removeMessages(0);
         changeProgressTimer.cancel();
-        changeProgressTimer = null;
         RecordApp.getInstance().setmState(MediaRecorderState.PLAYING_PAUSED);
     }
 
