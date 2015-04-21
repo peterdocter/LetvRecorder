@@ -9,7 +9,6 @@ import android.media.MediaPlayer.OnPreparedListener;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.text.TextUtils;
-import android.util.Log;
 import com.letv.android.recorder.RecordApp;
 import com.letv.android.recorder.service.Recorder.MediaRecorderState;
 import com.letv.android.recorder.tool.AudioManagerUtil;
@@ -40,7 +39,14 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
 
     private void makeCountdownTimerChangeProgress() {
         if (player != null) {
-            changeProgressTimer = new CountDownTimer(Integer.MAX_VALUE, 200) {
+
+            int countDownInterval =50;
+
+            if(player.getDuration()>3*60*1000){
+                countDownInterval = 200;
+            }
+
+            changeProgressTimer = new CountDownTimer(Integer.MAX_VALUE, countDownInterval) {
 
                 @Override
                 public void onTick(long millisUntilFinished) {
