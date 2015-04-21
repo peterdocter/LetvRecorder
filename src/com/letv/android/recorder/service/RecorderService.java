@@ -236,7 +236,7 @@ public class RecorderService extends Service implements RecorderInterface {
         String title = getResources().getString(R.string.app_name);
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notification = new Notification.Builder(this);
-        notificationConfig = new NotificationConfig(title,R.drawable.ic_rec_status_44,R.drawable.ic_rec_status);
+        notificationConfig = new NotificationConfig(title,R.drawable.ic_rec_status_44,R.drawable.recording_notification_bar);
         updateNotificationFinish();
     }
 
@@ -1041,7 +1041,8 @@ class TimeCountTimerTask extends TimerTask {
         notification.setContentTitle(notificationConfig.contentTitle)
                 .setSmallIcon(notificationConfig.smallIconRes)
                 .setContentIntent(contentIntent)
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), notificationConfig.largeIconRes))
+                .setNotificationIcon(notificationConfig.largeIconRes)
+                //.setLargeIcon(BitmapFactory.decodeResource(getResources(), notificationConfig.largeIconRes))
                 .setContentText(contentText)
                 .setTicker(ticker);
         startForeground(Constants.NOTIFICATION_BACK_ID, notification.build());
