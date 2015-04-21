@@ -490,7 +490,7 @@ public class RecorderService extends Service implements RecorderInterface {
             RecordTool.e(LOG_TAG, "start:" + recordStartTime);
             timerStart();
             sendStateBroadcast();
-            AudioManagerUtil.initPrePlayingAudioFocus(null);
+            AudioManagerUtil.initPrePlayingAudioFocus(afChangeListener);
 
             AudioManager am = (AudioManager) RecordApp.getInstance().getSystemService(Context.AUDIO_SERVICE);
             RecordTool.e(LOG_TAG, "start:" + am.getProperty("Recorder"));
@@ -566,6 +566,7 @@ public class RecorderService extends Service implements RecorderInterface {
 //        if(!isRemoteRecord){
 //            RecordTool.showNotificationWhenBack(getApplicationContext());
 //        }
+//        AudioManagerUtil.destroyAudioFocus(null);
         return true;
     }
 
@@ -587,7 +588,7 @@ public class RecorderService extends Service implements RecorderInterface {
         showNotification = false;
         sendAlertBroadcast();
         RecordTool.e(LOG_TAG, "stopRecording }");
-        AudioManagerUtil.destroyAudioFocus(null);
+        AudioManagerUtil.destroyAudioFocus(afChangeListener);
         return true;
     }
 
@@ -956,6 +957,32 @@ private final class ServiceHandler extends Handler {
         onHandleIntent((Intent) msg.obj);
     }
 }
+
+    private AudioManager.OnAudioFocusChangeListener afChangeListener = new AudioManager.OnAudioFocusChangeListener() {
+        public void onAudioFocusChange(int focusChange) {
+            if(!RecordTool.canClick(1000)){
+                return;
+            }
+            if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT){//-2
+                if (RecordApp.getInstance().getmState()==MediaRecorderState.RECORDING)
+                {
+                    RecorderService.pauseRecoring(getApplicationContext());
+                }
+            }else if(focusChange==AudioManager.AUDIOFOCUS_GAIN){//1
+                if(RecordApp.getInstance().getmState()==MediaRecorderState.STOPPED&&RecordApp.getInstance().getmState()==MediaRecorderState.PAUSED){
+                    RecorderService.startRecording(getApplicationContext());
+                }
+            }else if(focusChange==AudioManager.AUDIOFOCUS_LOSS){//-1
+                if (RecordApp.getInstance().getmState()==MediaRecorderState.RECORDING)
+                {
+                    RecorderService.pauseRecoring(getApplicationContext());
+                }
+            }else if(focusChange==AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK){//-3
+
+            }
+        }
+
+    };
 
 class TimeCountTimerTask extends TimerTask {
     @Override

@@ -87,14 +87,14 @@
                 <action android:name="com.leui.record.alert" />
             </intent-filter>
         </receiver>
-
+<!--
         <receiver android:name=".receiver.PhoneReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE"/>
                 <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
             </intent-filter>
         </receiver>
-
+-->
         <provider
             android:name="com.letv.android.recorder.provider.RecordProvider"
             android:authorities="com.letv.provider.record"
