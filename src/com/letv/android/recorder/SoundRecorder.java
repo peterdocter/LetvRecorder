@@ -154,13 +154,6 @@ public class SoundRecorder extends AbsRecorderActivity {
         return result;
     }
 
-    @Override
-    public void finish() {
-        Intent intent = new Intent(this, RecorderService.class);
-        stopService(intent);
-        super.finish();
-    }
-
     Handler mHandler = new Handler(/* default looper */) {
         @Override
         public void handleMessage(Message msg) {
