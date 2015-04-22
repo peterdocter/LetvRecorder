@@ -1,12 +1,5 @@
 package com.letv.android.recorder.provider;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -14,15 +7,18 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.media.MediaMetadataRetriever;
-import android.media.MediaPlayer;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
-
-import android.util.Log;
 import com.letv.android.recorder.Constants;
-import com.letv.android.recorder.RecordApp;
 import com.letv.android.recorder.RecordEntry;
 import com.letv.android.recorder.tool.RecordTool;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RecordDb extends SQLiteOpenHelper {
 
@@ -88,7 +84,7 @@ public class RecordDb extends SQLiteOpenHelper {
 	
 	public synchronized RecordEntry query(String recordName){
 		if(!TextUtils.isEmpty(recordName)){
-			Cursor cursor = getReadableDatabase().query(RECORD_TABLE, null, RECORD_NAME +"=?", new String[]{recordName}, null, null, null);
+			Cursor cursor = getReadableDatabase().query(RECORD_TABLE, null, RECORD_NAME +"='"+recordName+"'", null, null, null, null);
 			if(cursor!=null&&cursor.moveToFirst()){
 				RecordEntry entry = new RecordEntry();
 				entry.setCall(1 == cursor.getInt(cursor.getColumnIndex(RECORD_IS_CALL)));

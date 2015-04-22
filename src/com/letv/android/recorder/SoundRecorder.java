@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -23,6 +25,7 @@ import java.util.Date;
 public class SoundRecorder extends AbsRecorderActivity {
 
     private final static String TAG="SoundRecorder";
+    public static final int RECORDER_FINISH=2;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -69,7 +72,8 @@ public class SoundRecorder extends AbsRecorderActivity {
         RecordTool.e(TAG,"saveRecordAndReturn:"+mRecorderState);
 		if (MediaRecorderState.RECORDING == mRecorderState || MediaRecorderState.PAUSED == mRecorderState) {
             mRecorder.stopRecording(this);
-            RecorderService.saveRecording(this, RecordApp.getInstance().getRecordName());
+            recordName=RecordApp.getInstance().getRecordName();
+            RecorderService.saveRecording(this, RecordApp.getInstance().getRecordName(),mHandler);
 		} else {
 			setResult(RESULT_CANCELED);
 			finish();
@@ -85,30 +89,30 @@ public class SoundRecorder extends AbsRecorderActivity {
 		updateUI();
 
 		if (MediaRecorderState.RECORDING == mRecorderState) {
-            recordName = RecordTool.getRecordName(this);
+            //recordName = RecordApp.getInstance().getRecordName();
             hasRecord = true;
 		} else if (MediaRecorderState.IDLE_STATE == mRecorderState && hasRecord) {
-			RecorderService.saveRecording(this, recordName);
-			Intent data = new Intent();
-
-			RecordDb db = RecordDb.getInstance(this);
-			RecordEntry entry = db.query(recordName);
-			RecordDb.destroyInstance();
-			if (entry != null) {
-                Uri uri = addToMediaDB(entry);
-
-                if(uri != null){
-                    data.setData(uri);
-                    setResult(RESULT_OK,data);
-                }else{
-                    setResult(RESULT_CANCELED);
-                }
-
-			}else{
-                setResult(RESULT_CANCELED);
-            }
-
-			finish();
+			//RecorderService.saveRecording(this, recordName,mHandler);
+			//Intent data = new Intent();
+            //
+			//RecordDb db = RecordDb.getInstance(this);
+			//RecordEntry entry = db.query(recordName);
+			//RecordDb.destroyInstance();
+			//if (entry != null) {
+             //   Uri uri = addToMediaDB(entry);
+            //
+             //   if(uri != null){
+             //       data.setData(uri);
+             //       setResult(RESULT_OK,data);
+             //   }else{
+             //       setResult(RESULT_CANCELED);
+             //   }
+            //
+			//}else{
+             //   setResult(RESULT_CANCELED);
+            //}
+            //
+			//finish();
 		}
 
 	}
@@ -150,5 +154,37 @@ public class SoundRecorder extends AbsRecorderActivity {
         return result;
     }
 
+    @Override
+    public void finish() {
+        Intent intent = new Intent(this, RecorderService.class);
+        stopService(intent);
+        super.finish();
+    }
+
+    Handler mHandler = new Handler(/* default looper */) {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case RECORDER_FINISH:
+                    Intent data = new Intent();
+                    RecordDb db = RecordDb.getInstance(SoundRecorder.this);
+                    RecordEntry entry = db.query(recordName);
+                    RecordDb.destroyInstance();
+                    if (entry != null) {
+                       Uri uri = addToMediaDB(entry);
+                       if(uri != null){
+                           data.setData(uri);
+                           setResult(RESULT_OK,data);
+                       }else{
+                           setResult(RESULT_CANCELED);
+                       }
+                    }else{
+                       setResult(RESULT_CANCELED);
+                    }
+                    finish();
+                    break;
+            }
+        }
+    };
 
 }

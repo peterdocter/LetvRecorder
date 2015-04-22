@@ -149,6 +149,7 @@ public class RecorderService extends Service implements RecorderInterface {
 
 
     private static final Object lock =new Object();
+    private Messenger recorderActivityCallback;
 
     public static int getDB() {
         int db = 0;// 分贝
@@ -268,6 +269,7 @@ public class RecorderService extends Service implements RecorderInterface {
             } else if (action == ACTION_DELE_RECORDING) {
                 deleRecording();
             } else if (action == ACTION_SAVE_RECORDING) {
+                recorderActivityCallback = intent.getParcelableExtra("messenger");
                 saveRecording(recordName);
             }
         }
@@ -724,6 +726,18 @@ public class RecorderService extends Service implements RecorderInterface {
         mTmpFiles.clear();
         clearRecorderData();
         sendStateBroadcast();
+
+        if(recorderActivityCallback!=null) {
+            Message m = Message.obtain();
+            m.what = SoundRecorder.RECORDER_FINISH;
+            //m.obj = this;
+            try {
+                recorderActivityCallback.send(m);
+            } catch (RemoteException e) {
+                Log.e("Messenger", "Error passing service object back to activity.");
+            }
+        }
+
         return true;
     }
 
@@ -926,6 +940,17 @@ public class RecorderService extends Service implements RecorderInterface {
         RecorderService.recordName = recordName;
         isRemoteRecord = false;
     }
+
+    public static void saveRecording(Context context, String recordName,Handler recorderHandler) {
+        RecordTool.e(LOG_TAG, "static:saveRecording");
+        Intent target = new Intent(context, RecorderService.class);
+        target.putExtra(ACTION_NAME, RecorderService.ACTION_SAVE_RECORDING);
+        target.putExtra("messenger", new Messenger(recorderHandler));
+        context.startService(target);
+        RecorderService.recordName = recordName;
+        isRemoteRecord = false;
+    }
+
 
     public static void deleteRecording(Context context) {
         RecordTool.e(LOG_TAG, "static:deleteRecording");
