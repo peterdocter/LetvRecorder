@@ -68,6 +68,8 @@
             </intent-filter>
             <meta-data android:name="android.application.settings.TYPE"
                        android:value="android.application.settings.TYPE_MEDIA"/>
+            <meta-data android:name="android.application.settings.PRIOPRITY"
+                       android:value="12" />
         </activity>
 
         <!-- record service -->
