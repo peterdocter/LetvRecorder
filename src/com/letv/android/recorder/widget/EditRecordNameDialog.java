@@ -77,7 +77,8 @@ public class EditRecordNameDialog {
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 
         if(isEdit){
-            mEditText.setText(mEntry.getRecordName());
+            mEditText.setText(RecordTool.getRecordName(mEntry.getFilePath()));
+            //mEditText.setText(mEntry.getRecordName());
         }else{
             mEditText.setText(RecordApp.getInstance().getRecordName());
         }
