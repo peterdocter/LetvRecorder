@@ -21,13 +21,18 @@
         <!-- <item name="android:windowTranslucentStatus">true</item> -->
        <!--  <item name="android:windowTranslucentNavigation">true</item> -->
         <item name="android:statusBarColor">@color/actionBarBackground</item>
-        <item name="android:windowBackground">@drawable/window_bg</item>
+        <!--<item name="android:windowBackground">@drawable/window_bg</item>-->
         <item name="android:actionModeBackground">@color/actionBarBackground</item>
        <!--   <item name="android:colorPrimary">@color/calculator_accent_color</item> -->
         <!-- <item name="android:navigationBarColor">@color/actionBarBackground</item> -->
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:homeAsUpIndicator">@android:drawable/le_actionbar_menuitem_white_back</item>
     </style>
+
+    <style name="MainActivityTheme" parent="@style/AppTheme">
+        <item name="android:windowBackground">@drawable/window_bg</item>
+    </style>
+
 
     <style name="recordSettingTheme" parent="@*android:style/Theme.Leui">
         <item name="android:homeAsUpIndicator">@*android:drawable/le_top_btn_icon_reback</item>
