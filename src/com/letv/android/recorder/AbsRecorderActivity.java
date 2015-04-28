@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator;
 import android.app.*;
 import android.appwidget.AppWidgetManager;
 import android.content.*;
+import android.content.res.Configuration;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -48,6 +49,7 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
 //    protected LeTopWidget topWidget;
 
     private boolean isFistTime=false;
+    private boolean isConfigurationChanged;
 
     public boolean isFistTime() {
         return isFistTime;
@@ -139,13 +141,18 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
         if (mReceiver != null) {
             unregisterReceiver(mReceiver);
         }
-        Intent intent = new Intent(this, RecorderService.class);
-        stopService(intent);
-        MediaRecorderState state = MediaRecorderState.getState("IDLE_STATE");
-        mRecorder.setState(state);
-        RecordTool.hideNotificationWhenBack(this);
-        LockScreen.hideLockScreenWidget(this);
-        clearWidget();
+
+        if(isConfigurationChanged){
+            isConfigurationChanged=false;
+        }else {
+            Intent intent = new Intent(this, RecorderService.class);
+            stopService(intent);
+            MediaRecorderState state = MediaRecorderState.getState("IDLE_STATE");
+            mRecorder.setState(state);
+            RecordTool.hideNotificationWhenBack(this);
+            LockScreen.hideLockScreenWidget(this);
+            clearWidget();
+        }
         super.onDestroy();
     }
 
@@ -295,6 +302,20 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
     public void onError(int error) {
 
     }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        isConfigurationChanged=true;
+        restartActivity();
+    }
+
+    private void restartActivity() {
+        Intent intent = getIntent();
+        finish();
+        startActivity(intent);
+    }
+
 
     private class RecorderReceiver extends BroadcastReceiver {
 

@@ -32,6 +32,7 @@
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/MainActivityTheme"
+            android:configChanges="letvTheme|locale|layoutDirection"
                 >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -42,6 +43,7 @@
             android:name=".SoundRecorder"
             android:label="@string/app_name"
             android:launchMode="singleTop"
+            android:configChanges="letvTheme|locale|layoutDirection"
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.provider.MediaStore.RECORD_SOUND" />
@@ -57,7 +59,9 @@
         <activity
             android:name="com.letv.android.recorder.PlayRecordActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/TranslucentTheme" >
+            android:theme="@style/TranslucentTheme"
+            android:configChanges="letvTheme|locale|layoutDirection"
+                >
         </activity>
 
         <activity android:name="com.letv.android.recorder.settings.RecorderSetting"

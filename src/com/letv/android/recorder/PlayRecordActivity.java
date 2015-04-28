@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.graphics.drawable.AnimationDrawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -131,6 +132,7 @@ public class PlayRecordActivity extends Activity implements
 //		unregisterSensorListener();
 //		PlayEngineImp.getInstance().setpEngineListener(null);
 //		PlayEngineImp.getInstance().stop();
+        stopPlay();
         super.onDestroy();
     }
 
@@ -503,4 +505,21 @@ public class PlayRecordActivity extends Activity implements
         mHandler.removeMessages(1);
         mHandler.sendEmptyMessageDelayed(1, 590);
     }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        //isConfigurationChanged=true;
+        restartActivity();
+    }
+
+    private void restartActivity() {
+        //stopPlay();
+        //Intent intent = new Intent(this,RecorderActivity.class);
+        finish();
+        //startActivity(intent);
+    }
+
+
+
 }
