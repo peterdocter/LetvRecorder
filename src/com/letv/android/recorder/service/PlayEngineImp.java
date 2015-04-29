@@ -9,6 +9,7 @@ import android.media.MediaPlayer.OnPreparedListener;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 import com.letv.android.recorder.RecordApp;
 import com.letv.android.recorder.service.Recorder.MediaRecorderState;
 import com.letv.android.recorder.tool.AudioManagerUtil;
@@ -52,7 +53,9 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
 
                 @Override
                 public void onTick(long millisUntilFinished) {
-                    pEngineListener.onTrackProgressChange(player.getCurrentPosition());
+                    if(player!=null&&pEngineListener!=null) {
+                        pEngineListener.onTrackProgressChange(player.getCurrentPosition());
+                    }
                 }
 
                 @Override
@@ -174,7 +177,9 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
         recordPath = null;
 
         //handler.removeMessages(0);
-        changeProgressTimer.cancel();
+        if(changeProgressTimer!=null) {
+            changeProgressTimer.cancel();
+        }
         if (pEngineListener != null) {
             pEngineListener.onTrackStop();
         }
@@ -193,7 +198,9 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
             pEngineListener.onTrackPause();
         }
         //handler.removeMessages(0);
-        changeProgressTimer.cancel();
+        if(changeProgressTimer!=null) {
+            changeProgressTimer.cancel();
+        }
         RecordApp.getInstance().setmState(MediaRecorderState.PLAYING_PAUSED);
     }
 
@@ -210,6 +217,7 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
 
     @Override
     public void onCompletion(MediaPlayer arg0) {
+        Log.e("MyMediaPlayer","onCompletion...");
         stop();
     }
 

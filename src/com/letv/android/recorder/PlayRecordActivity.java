@@ -361,15 +361,21 @@ public class PlayRecordActivity extends Activity implements
 
     @Override
     public void onTrackPause() {
-        RecordTool.e(TAG, "onTrackPause");
-        receiverMode();
-        unregisterHeadsetPlugReceiver();
-        playBtn.setImageResource(R.drawable.frame_pause_play);
-        AnimationDrawable am_record = (AnimationDrawable) playBtn.getDrawable();
-        am_record.start();
-        if (instance != null) {
-            instance.notifyDataSetChanged(mEntry);
-        }
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                RecordTool.e(TAG, "onTrackPause");
+                receiverMode();
+                unregisterHeadsetPlugReceiver();
+                playBtn.setImageResource(R.drawable.frame_pause_play);
+                AnimationDrawable am_record = (AnimationDrawable) playBtn.getDrawable();
+                am_record.start();
+                if (instance != null) {
+                    instance.notifyDataSetChanged(mEntry);
+                }
+            }
+        });
     }
 
     @Override
