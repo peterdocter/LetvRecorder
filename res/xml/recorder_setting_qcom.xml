@@ -10,9 +10,10 @@
             android:defaultValue="true"
             android:summary="@string/screen_widget_summary"
             android:title="@string/screen_widget_title"/>
-    <SwitchPreference
-            android:key="record_silence"
-            android:title="@string/record_silence_title"/>
+    <!--<SwitchPreference-->
+            <!--android:visibility="gone"-->
+            <!--android:key="record_silence"-->
+            <!--android:title="@string/record_silence_title"/>-->
     <com.letv.leui.preference.LeListPreference
             android:key="scene_mode"
             android:title="@string/scene_title"
