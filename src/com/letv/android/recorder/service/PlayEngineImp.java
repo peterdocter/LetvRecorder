@@ -54,7 +54,9 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
                 @Override
                 public void onTick(long millisUntilFinished) {
                     if(player!=null&&pEngineListener!=null) {
-                        pEngineListener.onTrackProgressChange(player.getCurrentPosition());
+                        int iPos = player.getCurrentPosition();
+                        //Log.v("Recorder", "Current Position : " + iPos + "  Duration : " + player.getDuration());
+                        pEngineListener.onTrackProgressChange(iPos);
                     }
                 }
 
@@ -143,6 +145,7 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
 
     private AudioManager.OnAudioFocusChangeListener afChangeListener = new AudioManager.OnAudioFocusChangeListener() {
         public void onAudioFocusChange(int focusChange) {
+            Log.v("Recorder", "onAudioFocusChange : " + focusChange);
             if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
                 pause();
             } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {

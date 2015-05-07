@@ -345,16 +345,16 @@ public class PlayRecordActivity extends Activity implements
     @Override
     public void onTrackProgressChange(int miTime) {
         int max = mSeekBar.getMax();
-        if (mOldItime >= miTime) {
-            mTimeOffset += max>=3*60*1000?200:50;
-        }
-        miTime += mTimeOffset;
-        mOldItime = miTime;
+        //if (mOldItime >= miTime) {
+        //    mTimeOffset += max>=3*60*1000?200:50;
+        //}
+        //miTime += mTimeOffset;
+        //mOldItime = miTime;
         RecordTool.e(TAG, "onTrackProgressChange" + miTime);
         //Log.e("onProgressChanged","progress=="+miTime);
-        if (miTime >= max) {
-            miTime = max;
-        }
+        //if (miTime >= max) {
+        //    miTime = max;
+        //}
         mSeekBar.setProgress(miTime);
         curTime.setText(RecordTool.recordTimeFormat(miTime));
     }
