@@ -63,7 +63,7 @@ public class SettingTool {
     public static AudioQulityPram getAudioQulity(Context context){
 
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-        String qulityLevel=sp.getString(AUDIO_QULITY_MODE,String.valueOf(1));
+        String qulityLevel=sp.getString(AUDIO_QULITY_MODE,"3");
         if(context instanceof SoundRecorder){
             qulityLevel="1";
         }

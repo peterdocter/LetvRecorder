@@ -251,7 +251,7 @@ public class RecordDb extends SQLiteOpenHelper {
         FileInputStream fis = null;
         String strDuration=null;
 
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         retriever.setDataSource(file.getPath());
         strDuration = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
 
