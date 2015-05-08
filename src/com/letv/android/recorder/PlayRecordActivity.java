@@ -385,18 +385,26 @@ public class PlayRecordActivity extends Activity implements
 
     @Override
     public void onTrackStop() {
-        RecordTool.e(TAG, "onTrackStop");
-        speakerMode();
-        unregisterHeadsetPlugReceiver();
-        playBtn.setImageResource(R.drawable.frame_pause_play);
-        AnimationDrawable am_record = (AnimationDrawable) playBtn.getDrawable();
-        am_record.start();
-        mSeekBar.setProgress(mSeekBar.getMax());
-        if (instance != null) {
-            instance.notifyDataSetChanged(mEntry);
-        }
-        mOldItime = -1;
-        mTimeOffset = 0;
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                RecordTool.e(TAG, "onTrackStop");
+                speakerMode();
+                unregisterHeadsetPlugReceiver();
+                playBtn.setImageResource(R.drawable.frame_pause_play);
+                AnimationDrawable am_record = (AnimationDrawable) playBtn.getDrawable();
+                am_record.start();
+                mSeekBar.setProgress(mSeekBar.getMax());
+                if (instance != null) {
+                    instance.notifyDataSetChanged(mEntry);
+                }
+                mOldItime = -1;
+                mTimeOffset = 0;
+
+            }
+        });
+
     }
 
     @Override
