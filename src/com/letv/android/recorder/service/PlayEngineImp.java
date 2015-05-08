@@ -153,7 +153,7 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
                     play(recordPath);
                 }
             } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
-                stop();
+                pause();
             } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {
                 pause();
             }
