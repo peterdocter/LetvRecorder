@@ -390,7 +390,8 @@ public class PlayRecordActivity extends Activity implements
             @Override
             public void run() {
                 RecordTool.e(TAG, "onTrackStop");
-                speakerMode();
+                //speakerMode();
+                receiverMode();
                 unregisterHeadsetPlugReceiver();
                 playBtn.setImageResource(R.drawable.frame_pause_play);
                 AnimationDrawable am_record = (AnimationDrawable) playBtn.getDrawable();
