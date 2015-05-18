@@ -1,7 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?><resources>
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
 
-    <string name="record_note">Recordings</string>
-    <string name="no_recorder">No recordings</string>
+    <string name="record_note">Recorded files</string>
+    <string name="no_recorder">No recorded files</string>
     <string name="new_recorder">New recording</string>
 
     <string name="new_recorder_xliff">New recording %d</string>
@@ -10,7 +11,7 @@
     <string name="call_record_filename_xliff">(%d)</string>
 
     <string name="input_new_recorder_name">Enter name for new recording</string>
-    <string name="edit_recorder_name">Edit recording name</string>
+    <string name="edit_recorder_name">Edit file name</string>
     <string name="no_change_recordname">Name unedited</string>
     <string name="share">Share</string>
     <string name="record_files">Recording file</string>
@@ -37,15 +38,15 @@
     <string name="recording">Recording...</string>
     <string name="saving_record">Saving...</string>
     <string name="record_over_max_time">Recording exceeds 1 hour</string>
-    <string name="record_name_cannot_null">Recording name cannot be empty</string>
-    <string name="record_existed">A recording by that name already exists</string>
+    <string name="record_name_cannot_null">File name cannot be blank</string>
+    <string name="record_existed">File name already exists</string>
 
     <string name="storage_full">Storage is full</string>
 
     <string name="record_paused">Recording paused</string>
 
-    <string name="delete_record_dialog_title">Delete %d recordings</string>
-    <string name="please_select_reoord">please select</string>
+    <string name="delete_record_dialog_title">Delete %d file(s)?</string>
+    <string name="please_select_reoord">Please select</string>
 
     <string name="create_file_fail">Name is too long or contains special characters</string>
 
@@ -55,19 +56,19 @@
     <!-- setting -->
     <string name="play_mode_title">Earpiece mode</string>
     <string name="play_mode_summary">Play recordings through earpiece speaker when enabled</string>
-    <string name="screen_widget_title">Recording lock screen widget</string>
-    <string name="screen_widget_summary">Show recording widget when screen is locked?</string>
+    <string name="screen_widget_title">Lock screen widget when recording</string>
+    <string name="screen_widget_summary">Show recording widget when screen is locked</string>
     <string name="record_silence_title">Silence ringer while recording</string>
     <string name="scene_title">Scene settings</string>
     <string name="audio_qulity_title">Audio quality</string>
-    <string name="voice_recording">Recording</string>
+    <string name="voice_recording">Recorded calls</string>
 
     <string name="play_record_playing">Playing</string>
-    <string name="play_record_pause">Pause</string>
+    <string name="play_record_pause">Paused</string>
     <string name="ready_record">Ready</string>
-    <string name="record_error">Record Error</string>
-    <string name="record_exception">Start Exception</string>
-    <string name="app_keyword_call_record">Can\'t change</string>
+    <string name="record_error">Recording error</string>
+    <string name="record_exception">Error launching recorder</string>
+    <string name="app_keyword_call_record">Unable to modify app ID</string>
 
     <string-array name="scene_entries">
         <item>Record voice</item>
