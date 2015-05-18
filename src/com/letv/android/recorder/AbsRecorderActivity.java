@@ -1,37 +1,26 @@
 package com.letv.android.recorder;
 
-import android.animation.ObjectAnimator;
-import android.app.*;
+import android.app.Activity;
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.*;
 import android.content.res.Configuration;
 import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.RemoteViews;
-import android.widget.TextView;
-import android.view.WindowManager;
-import android.animation.ObjectAnimator;
-
 import com.letv.android.recorder.fragment.RecordedFragment;
 import com.letv.android.recorder.service.Recorder;
-import com.letv.android.recorder.service.RecorderService;
 import com.letv.android.recorder.service.Recorder.MediaRecorderState;
 import com.letv.android.recorder.service.Recorder.OnRecordTimeChangedListener;
 import com.letv.android.recorder.service.Recorder.OnStateChangedListener;
+import com.letv.android.recorder.service.RecorderService;
 import com.letv.android.recorder.tool.LockScreen;
 import com.letv.android.recorder.tool.RecordTool;
-import com.letv.android.recorder.tool.StatusBarTool;
 import com.letv.android.recorder.widget.FlagImageView;
 import com.letv.android.recorder.widget.RecorderAppWidget;
 
@@ -191,6 +180,9 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
                     mRecorder.startRecording(this);
                 } else if (mRecorderState == MediaRecorderState.RECORDING) {
                     mRecorder.pauseRecording(this);
+                }else if (mRecorderState == MediaRecorderState.PLAYING_PAUSED ||mRecorderState == MediaRecorderState.PLAY_STOP) {
+                    MediaRecorderState state = MediaRecorderState.getState("IDLE_STATE");
+                    mRecorder.setState(state);
                 }
                 break;
             case R.id.stopBtn:
