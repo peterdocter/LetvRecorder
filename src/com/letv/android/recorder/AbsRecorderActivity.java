@@ -6,6 +6,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.*;
 import android.content.res.Configuration;
 import android.graphics.drawable.AnimationDrawable;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -54,6 +55,7 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
 
         setContentView(R.layout.activity_recorder);
 //        isFistTime = RecordTool.isFirstLaunch(this);
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
         mReceiver = new RecorderReceiver();
         mRecorder = Recorder.getInstance();

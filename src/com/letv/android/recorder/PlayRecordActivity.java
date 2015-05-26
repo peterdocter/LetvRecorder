@@ -73,6 +73,7 @@ public class PlayRecordActivity extends Activity implements
         super.onCreate(savedInstanceState);
         mEntry = (RecordEntry) getIntent().getSerializableExtra(RECORD_ENTRY);
         setContentView(R.layout.activity_play);
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
         curTime = (TextView) findViewById(R.id.current_time);
         totalTime = (TextView) findViewById(R.id.total_time);
@@ -464,7 +465,7 @@ public class PlayRecordActivity extends Activity implements
         RecordTool.e(TAG, "正常模式");
 //		audioManager.setMicrophoneMute(false);
         audioManager.setSpeakerphoneOn(true);// 使用扬声器外放，即使已经插入耳机
-        setVolumeControlStream(AudioManager.STREAM_MUSIC);//控制声音的大小
+//        setVolumeControlStream(AudioManager.STREAM_MUSIC);//控制声音的大小
         audioManager.setMode(AudioManager.MODE_NORMAL);
     }
 
@@ -476,7 +477,7 @@ public class PlayRecordActivity extends Activity implements
         RecordTool.e(TAG, "听筒模式");
 //		audioManager.setMicrophoneMute(true);
 //		audioManager.setRouting(AudioManager.MODE_NORMAL, AudioManager.ROUTE_EARPIECE, AudioManager.ROUTE_ALL);
-        setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
+//        setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
         audioManager.setMode(AudioManager.MODE_IN_CALL);
         audioManager.setSpeakerphoneOn(false);
     }
