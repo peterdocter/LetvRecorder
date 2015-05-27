@@ -84,7 +84,11 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
     public static PlayEngineImp getInstance() {
 
         if (playEngineImp == null) {
-            playEngineImp = new PlayEngineImp();
+            synchronized (PlayEngineImp.class) {
+                if (playEngineImp == null) {
+                    playEngineImp = new PlayEngineImp();
+                }
+            }
         }
 
         return playEngineImp;
@@ -114,7 +118,9 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
             }
 
             RecordApp.getInstance().setmState(MediaRecorderState.PLAYING);
-            pEngineListener.onTrackStart(player.getCurrentPosition(), player.getDuration());
+            if (pEngineListener != null) {
+                pEngineListener.onTrackStart(player.getCurrentPosition(), player.getDuration());
+            }
             //handler.sendEmptyMessage(0);
             makeCountdownTimerChangeProgress();
         } catch (IllegalArgumentException e) {
