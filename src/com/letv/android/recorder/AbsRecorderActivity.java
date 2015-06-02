@@ -8,6 +8,7 @@ import android.content.res.Configuration;
 import android.graphics.drawable.AnimationDrawable;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
@@ -20,6 +21,7 @@ import com.letv.android.recorder.service.Recorder.MediaRecorderState;
 import com.letv.android.recorder.service.Recorder.OnRecordTimeChangedListener;
 import com.letv.android.recorder.service.Recorder.OnStateChangedListener;
 import com.letv.android.recorder.service.RecorderService;
+import com.letv.android.recorder.settings.RecorderSetting;
 import com.letv.android.recorder.tool.LockScreen;
 import com.letv.android.recorder.tool.RecordTool;
 import com.letv.android.recorder.widget.FlagImageView;
@@ -329,6 +331,15 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
             recordedFragment.updateRecordTimeUI(timeMillils,db);
         }
         flagBtn.setFlagCount(RecordApp.getInstance().getFlags().size());
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_MENU && mRecorderState == MediaRecorderState.IDLE_STATE) {
+            Intent in = new Intent(getApplicationContext(), RecorderSetting.class);
+            startActivity(in);
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
 }
