@@ -18,7 +18,6 @@ import android.app.*;
 import android.app.ActivityThread;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaRecorder;
 import android.media.MediaRecorder.OnErrorListener;
@@ -151,6 +150,7 @@ public class RecorderService extends Service implements RecorderInterface {
 
     private static final Object lock = new Object();
     private Messenger recorderActivityCallback;
+    private TimeCountTimerTask mTimeCountTask;
 
     public static int getDB() {
         int db = 0;// 分贝
@@ -202,9 +202,11 @@ public class RecorderService extends Service implements RecorderInterface {
     private void timerStart() {
         RecordTool.e(LOG_TAG, "timerStart");
         newObjectForWidget();
-        mTimer = new Timer();
-        mTimeCountTimerTask = new TimeCountTimerTask();
-        mTimer.schedule(mTimeCountTimerTask, 20, 20);
+//        mTimer = new Timer();
+//        mTimeCountTimerTask = new TimeCountTimerTask();
+//        mTimer.schedule(mTimeCountTimerTask, 20, 20);
+        mTimeCountTask = new TimeCountTimerTask(Long.MAX_VALUE, 20);
+        mTimeCountTask.start();
     }
 
     private void timerStop() {
@@ -216,6 +218,9 @@ public class RecorderService extends Service implements RecorderInterface {
         if (mTimeCountTimerTask != null) {
             mTimeCountTimerTask.cancel();
             mTimer = null;
+        }
+        if (mTimeCountTask != null) {
+            mTimeCountTask.cancel();
         }
         mTimeCount = 0;
     }
@@ -489,7 +494,7 @@ public class RecorderService extends Service implements RecorderInterface {
             //mRecorder.start();
             recorderPrepareAndStart();
             RecordTool.e("startRecording", "startRecording:start");
-            recordStartTime = System.currentTimeMillis();
+            recordStartTime = SystemClock.uptimeMillis();
             RecordTool.e(LOG_TAG, "start:" + recordStartTime);
             timerStart();
             sendStateBroadcast();
@@ -558,7 +563,7 @@ public class RecorderService extends Service implements RecorderInterface {
     public boolean pauseRecording() {
         RecordTool.loge(LOG_TAG, "pauseRecording");
         mRecorderState = MediaRecorderState.PAUSED;
-        recordedDuring += System.currentTimeMillis() - recordStartTime;
+        recordedDuring += SystemClock.uptimeMillis() - recordStartTime;
         timerStop();
         //if (mRecorder != null) {
         //    mRecorder.stop();
@@ -578,7 +583,8 @@ public class RecorderService extends Service implements RecorderInterface {
     public boolean stopRecording() {
         RecordTool.loge(LOG_TAG, "stopRecording {");
         if (MediaRecorderState.RECORDING == mRecorderState) {
-            recordRealDuring = recordedDuring + System.currentTimeMillis() - recordStartTime;
+            long uptimeMillis = SystemClock.uptimeMillis();
+            recordRealDuring = recordedDuring + uptimeMillis - recordStartTime;
         }
         timerStop();
         mRecorderState = MediaRecorderState.IDLE_STATE;
@@ -814,7 +820,7 @@ public class RecorderService extends Service implements RecorderInterface {
         if (mRecorderState == MediaRecorderState.PAUSED ||
                 mRecorderState == MediaRecorderState.STOPPED) {
             recordedDuring = RecordTool.getRecordedTime(getApplicationContext());
-            recordedDuring += System.currentTimeMillis() - recordStartTime;
+            recordedDuring += SystemClock.uptimeMillis() - recordStartTime;
             recordStartTime = 0;
         }
 
@@ -1014,11 +1020,23 @@ public class RecorderService extends Service implements RecorderInterface {
 
     };
 
-    class TimeCountTimerTask extends TimerTask {
+    class TimeCountTimerTask extends CountDownTimer{
+
+        /**
+         * @param millisInFuture    The number of millis in the future from the call
+         *                          to {@link #start()} until the countdown is done and {@link #onFinish()}
+         *                          is called.
+         * @param countDownInterval The interval along the way to receive
+         *                          {@link #onTick(long)} callbacks.
+         */
+        public TimeCountTimerTask(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);
+        }
+
         @Override
-        public void run() {
+        public void onTick(long millisUntilFinished) {
             RecordTool.e(LOG_TAG, "TimerTask" + this.hashCode() + "run:" + mTimeCount);
-            long temp_currentTimeMills = System.currentTimeMillis();
+            long temp_currentTimeMills = SystemClock.uptimeMillis();
             recordRealDuring = recordedDuring + (temp_currentTimeMills - recordStartTime);
             if (recordRealDuring >= MAX_TIME_LENGTH && !showNotification) {
                 showNotification = true;
@@ -1053,11 +1071,57 @@ public class RecorderService extends Service implements RecorderInterface {
         }
 
         @Override
-        public boolean cancel() {
-            RecordTool.e(LOG_TAG, "cancel");
-            return super.cancel();
+        public void onFinish() {
         }
     }
+
+//    class TimeCountTimerTask extends TimerTask {
+//        @Override
+//        public void run() {
+//            RecordTool.e(LOG_TAG, "TimerTask" + this.hashCode() + "run:" + mTimeCount);
+//            long temp_currentTimeMills = SystemClock.uptimeMillis();
+//            if (mTimeCount % 50 == 0) {
+//                Log.i(TAG, temp_currentTimeMills + "--"+mTimeCount);
+//            }
+//            recordRealDuring = recordedDuring + (temp_currentTimeMills - recordStartTime);
+//            if (recordRealDuring >= MAX_TIME_LENGTH && !showNotification) {
+//                showNotification = true;
+//                sendAlertBroadcast();
+//            }
+//            boolean isFull = mRemainingTimeCalculator.storageFull();
+//            if (isFull) {
+//                stopRecording();
+//                saveRecording(RecordApp.getInstance().getRecordName());
+//                if (!storageFullCallBack()) {
+//                    mHandler.postDelayed(alertStorage, 500);
+//                }
+//                return;
+//            }
+//            mTimeCount++;
+//
+//            //最好作如下判读if(后台录音&&到达刷新时间&&当前widget是锁屏还是桌面小部件)
+//            if (0 == mTimeCount % 50 && pm.isInteractive() && mAppWidgetProvider.hasInstances(RecorderService.this)) {
+//                RecordTool.e("TimeCountTimerTask", "TimerTask" + this.hashCode() + "widgetupdate" + mTimeCount);
+//                if (null == mRemoteViews) {
+//                    mRemoteViews = new RemoteViews(Constants.PACKAGE_NAME, R.layout.recorder_app_widget);
+//                }
+//                if (null == mAppWidgetManager) {
+//                    mAppWidgetManager = AppWidgetManager.getInstance(RecorderService.this);
+//                }
+//                if (null == mComponentName) {
+//                    mComponentName = new ComponentName(RecorderService.this, RecorderAppWidget.class);
+//                }
+//                mRemoteViews.setTextViewText(R.id.remote_record_time_during, RecordTool.recordTimeFormat(RecordTool.getRecordTime(RecorderService.this)));
+//                mAppWidgetManager.updateAppWidget(mComponentName, mRemoteViews);
+//            }
+//        }
+//
+//        @Override
+//        public boolean cancel() {
+//            RecordTool.e(LOG_TAG, "cancel");
+//            return super.cancel();
+//        }
+//    }
 
     private void createNotification() {
         updateNotification(null);

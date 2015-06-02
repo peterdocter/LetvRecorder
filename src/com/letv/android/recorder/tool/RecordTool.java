@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -160,7 +161,7 @@ public class RecordTool {
 	public static long preClickMillis=0;
 	
 	public static boolean canClick(int timeInterval){
-		long curClickMillis=System.currentTimeMillis();
+        long curClickMillis = SystemClock.uptimeMillis();
 
         timeInterval = Math.max(timeInterval,500);
 
