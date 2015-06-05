@@ -130,7 +130,7 @@ public class RecordTool {
             SharedPreferences.Editor editor= sp.edit();
             editor.putLong(RECORDER_START_TIME,startTime);
             editor.commit();
-            return recordedTime + System.currentTimeMillis() - startTime;
+            return recordedTime + SystemClock.uptimeMillis() - startTime;
         }else{
             return recordedTime;
         }
