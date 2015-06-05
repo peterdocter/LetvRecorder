@@ -519,7 +519,7 @@ public class PlayRecordActivity extends Activity implements
         shareBtn.setVisibility(View.INVISIBLE);
         editBtn.setVisibility(View.INVISIBLE);
         mHandler.removeMessages(1);
-        mHandler.sendEmptyMessageDelayed(1, 590);
+        mHandler.sendEmptyMessageDelayed(1, 490);
     }
 
     @Override
