@@ -490,8 +490,8 @@ public class PlayRecordActivity extends Activity implements
         shareBtn.setEnabled(false);
         playBtn.setEnabled(false);
         editBtn.setEnabled(false);
-        PlayEngineImp.getInstance().stop();
         PlayEngineImp.getInstance().setpEngineListener(null);
+        PlayEngineImp.getInstance().stop();
         if (instance != null) {
             instance.notifyDataSetChanged(null);
         }
@@ -507,13 +507,13 @@ public class PlayRecordActivity extends Activity implements
         if (RecordApp.getInstance().getmState() == MediaRecorderState.PLAYING) {
             playBtn.setImageResource(R.drawable.frame_pause_record);
         } else if (RecordApp.getInstance().getmState() == MediaRecorderState.PLAY_STOP) {
-            playBtn.setImageResource(R.drawable.frame_play_record);
+//            playBtn.setImageResource(R.drawable.frame_play_record);
         }
 
         RecordApp.getInstance().setmState(MediaRecorderState.IDLE_STATE);
         RecordTool.e(TAG, "stopPlay:state:" + RecordApp.getInstance().getmState());
-        AnimationDrawable am_record = (AnimationDrawable) playBtn.getDrawable();
-        am_record.start();
+//        AnimationDrawable am_record = (AnimationDrawable) playBtn.getDrawable();
+//        am_record.start();
 
 
         shareBtn.setVisibility(View.INVISIBLE);
