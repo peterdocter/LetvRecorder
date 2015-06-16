@@ -487,7 +487,7 @@ public class RecorderService extends Service implements RecorderInterface {
             }
         });
         try {
-            stopAudioPlayback();
+//            stopAudioPlayback();
             RecordTool.e("startRecording", "startRecording:prepare {");
             RecordTool.e("startRecording", "startRecording:prepare }");
             //mRecorder.prepare();

@@ -35,6 +35,7 @@ import android.widget.Toast;
 import com.letv.android.recorder.fragment.RecorderAdapter;
 import com.letv.android.recorder.provider.ProviderTool;
 import com.letv.android.recorder.provider.RecordDb;
+import com.letv.android.recorder.receiver.RecordFileObserver;
 import com.letv.android.recorder.service.PlayEngineImp;
 import com.letv.android.recorder.service.PlayEngineListener;
 import com.letv.android.recorder.service.PlayService;
@@ -47,7 +48,7 @@ import com.letv.android.recorder.widget.RecorderSeekBar;
 import com.letv.leui.widget.LeTopSlideToastHelper;
 
 public class PlayRecordActivity extends Activity implements
-        OnClickListener, SensorEventListener, PlayEngineListener {
+        OnClickListener, SensorEventListener, PlayEngineListener, RecordFileObserver.OnRecordFileChangeListener {
     private final String TAG = "PlayRecordActivity";
     public static final String RECORD_ENTRY = "record_entry";
     private RecordEntry mEntry;
@@ -64,9 +65,19 @@ public class PlayRecordActivity extends Activity implements
 
     private RecorderAdapter instance = RecorderAdapter.getInstance();
 
-    private Handler mHandler;
     private boolean restart = false;
     private long mOldItime, mTimeOffset;
+    private RecordFileObserver fileObserver;
+
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == 1) {
+                PlayRecordActivity.this.finish();
+            }
+            super.handleMessage(msg);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,18 +86,38 @@ public class PlayRecordActivity extends Activity implements
         setContentView(R.layout.activity_play);
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
-        curTime = (TextView) findViewById(R.id.current_time);
-        totalTime = (TextView) findViewById(R.id.total_time);
-        mSeekBar = (RecorderSeekBar) findViewById(R.id.play_seekbar);
-        shareBtn = (ImageView) findViewById(R.id.shareBtn);
-        playBtn = (ImageView) findViewById(R.id.playBtn);
-        editBtn = (ImageView) findViewById(R.id.editBtn);
+        findView();
 
-        curTime.setText(RecordTool.recordTimeFormat(0));
-        RecordTool.e(TAG, "onCreate:" + RecordTool.timeFormat(0, "mm:ss"));
-        totalTime.setText(RecordTool.recordTimeFormat(mEntry.getRecordDuring()));
-        mSeekBar.setMax((int) mEntry.getRecordDuring());
+        initView();
 
+        initPlayService();
+
+        playAnim();
+
+        initListener();
+    }
+
+    private void initListener() {
+        findViewById(R.id.empty_part).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                stopPlay();
+            }
+        });
+
+        //init file observer,when file was deleted,stop it
+        fileObserver = new RecordFileObserver(this, this);
+        fileObserver.startWatching();
+    }
+
+    private void playAnim() {
+        Animation an_edit = AnimationUtils.loadAnimation(PlayRecordActivity.this, R.anim.anim_in_bottom);
+        an_edit.setStartOffset(70);
+        shareBtn.startAnimation(AnimationUtils.loadAnimation(PlayRecordActivity.this, R.anim.anim_in_bottom));
+        editBtn.startAnimation(an_edit);
+    }
+
+    private void initPlayService() {
         audioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
         sensorManager = (SensorManager) RecordApp.getInstance().getSystemService(Context.SENSOR_SERVICE);
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
@@ -94,27 +125,22 @@ public class PlayRecordActivity extends Activity implements
         mSeekBar.setFlags(mEntry.getFlags());
         PlayEngineImp.getInstance().setpEngineListener(this);
         PlayService.startPlay(this, mEntry.getFilePath());
+    }
 
-        Animation an_edit = AnimationUtils.loadAnimation(PlayRecordActivity.this, R.anim.anim_in_bottom);
-        an_edit.setStartOffset(70);
-        shareBtn.startAnimation(AnimationUtils.loadAnimation(PlayRecordActivity.this, R.anim.anim_in_bottom));
-        editBtn.startAnimation(an_edit);
+    private void initView() {
+        curTime.setText(RecordTool.recordTimeFormat(0));
+        RecordTool.e(TAG, "onCreate:" + RecordTool.timeFormat(0, "mm:ss"));
+        totalTime.setText(RecordTool.recordTimeFormat(mEntry.getRecordDuring()));
+        mSeekBar.setMax((int) mEntry.getRecordDuring());
+    }
 
-        findViewById(R.id.empty_part).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                stopPlay();
-            }
-        });
-        mHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                if (msg.what == 1) {
-                    PlayRecordActivity.this.finish();
-                }
-                super.handleMessage(msg);
-            }
-        };
+    private void findView() {
+        curTime = (TextView) findViewById(R.id.current_time);
+        totalTime = (TextView) findViewById(R.id.total_time);
+        mSeekBar = (RecorderSeekBar) findViewById(R.id.play_seekbar);
+        shareBtn = (ImageView) findViewById(R.id.shareBtn);
+        playBtn = (ImageView) findViewById(R.id.playBtn);
+        editBtn = (ImageView) findViewById(R.id.editBtn);
     }
 
     @Override
@@ -134,6 +160,8 @@ public class PlayRecordActivity extends Activity implements
 //		PlayEngineImp.getInstance().setpEngineListener(null);
 //		PlayEngineImp.getInstance().stop();
         stopPlay();
+        //stop watching file
+        fileObserver.stopWatching();
         super.onDestroy();
     }
 
@@ -167,8 +195,8 @@ public class PlayRecordActivity extends Activity implements
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 if (fromUser) {
-                    mOldItime=-1;
-                    mTimeOffset=0;
+                    mOldItime = -1;
+                    mTimeOffset = 0;
                     PlayEngineImp.getInstance().seekTo(progress);
                 }
             }
@@ -290,6 +318,13 @@ public class PlayRecordActivity extends Activity implements
             } catch (Exception e) {
 //				e.printStackTrace();
             }
+        }
+    }
+
+    @Override
+    public void onDeleted(String path) {
+        if (mEntry.getFilePath().equals(path)) {
+            stopPlay();
         }
     }
 
@@ -535,7 +570,6 @@ public class PlayRecordActivity extends Activity implements
         finish();
         //startActivity(intent);
     }
-
 
 
 }
