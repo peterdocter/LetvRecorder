@@ -505,6 +505,7 @@ public class RecorderService extends Service implements RecorderInterface {
             RecordTool.e(LOG_TAG, "start:" + am.getParameters("Recorder"));
         } catch (Exception startExe) {
             startExe.printStackTrace();
+            mRecorder.reset();
             LeTopSlideToastHelper.getToastHelper(getApplicationContext(), LeTopSlideToastHelper.LENGTH_SHORT,
                     getResources().getString(R.string.record_exception), null,
                     null, null,
