@@ -58,6 +58,7 @@
         </activity>
         <activity
             android:name="com.letv.android.recorder.PlayRecordActivity"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/TranslucentTheme"
             android:configChanges="letvTheme|locale|layoutDirection"
