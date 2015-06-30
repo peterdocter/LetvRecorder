@@ -126,6 +126,14 @@ public class RecorderAppWidget extends AppWidgetProvider{
             Intent startIntent = new Intent(ACTION_START);
             PendingIntent startPendingIntent = PendingIntent.getBroadcast(context,0,startIntent,0);
 
+            Intent flagIntent = new Intent(ACTION_FLAG);
+            PendingIntent flagPendingIntent = PendingIntent.getBroadcast(context,0,flagIntent,0);
+
+            Intent doneIntent = new Intent(ACTION_DONE);
+            PendingIntent donePendingIntent = PendingIntent.getBroadcast(context,0,doneIntent,0);
+
+            remoteViews.setOnClickPendingIntent(R.id.remote_record_flag, flagPendingIntent);
+            remoteViews.setOnClickPendingIntent(R.id.remote_record_done, donePendingIntent);
             remoteViews.setOnClickPendingIntent(R.id.remote_record_action, startPendingIntent);
             remoteViews.setImageViewResource(R.id.remote_record_action,R.drawable.start_selector);
             remoteViews.setTextViewText(R.id.remote_record_name, RecordTool.getNewRecordName(context));
