@@ -484,7 +484,7 @@ public class PlayRecordActivity extends Activity implements
         if (RecordApp.getInstance().getmState() == MediaRecorderState.PLAYING ||
                 RecordApp.getInstance().getmState() == MediaRecorderState.PLAYING_PAUSED) {
 
-            if (SettingTool.getPlayMode(this) == SettingTool.PlayMode.SPEAKER) {// 强制使用扬声器
+            if (SettingTool.getPlayMode(this) == SettingTool.PlayMode.SPEAKER && audioManager.getMode() != AudioManager.MODE_IN_CALL) {// 强制使用扬声器
                 speakerMode();
             } else if (SettingTool.getPlayMode(this) == SettingTool.PlayMode.RECEIVER) {// 强制使用听筒
                 receiverMode();

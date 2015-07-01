@@ -114,8 +114,8 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
 
             int result = AudioManagerUtil.initPrePlayingAudioFocus(afChangeListener);
             if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-                player.start();
             }
+            player.start();
 
             RecordApp.getInstance().setmState(MediaRecorderState.PLAYING);
             if (pEngineListener != null) {
