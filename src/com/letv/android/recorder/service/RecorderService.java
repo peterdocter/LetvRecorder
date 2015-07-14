@@ -644,6 +644,11 @@ public class RecorderService extends Service implements RecorderInterface {
 
     @Override
     public boolean saveRecording(String recordName) {
+        //reason of null point maybe caused by force stop service
+        if (audioQulityPram == null) {
+            return false;
+        }
+
         //metadata byte
         int offset = 6;
         if (FeatureUtil.hasSceneSetting(this) && audioQulityPram.OutputFormat == 4) {
@@ -1022,7 +1027,7 @@ public class RecorderService extends Service implements RecorderInterface {
 
     };
 
-    class TimeCountTimerTask extends CountDownTimer{
+    class TimeCountTimerTask extends CountDownTimer {
 
         /**
          * @param millisInFuture    The number of millis in the future from the call
