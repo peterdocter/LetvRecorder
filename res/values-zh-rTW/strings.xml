@@ -10,7 +10,7 @@
     <string name="create_file_fail">名稱含有特殊符號或檔案名稱過長</string>
     <string name="storage_full">儲存空間已滿</string>
     <string name="record_file_name_format">錄音-yyMMdd-HH-mm-ss</string>
-    <string name="select_item_xliff">已選取 %d 個</string>
+    <string name="select_item_xliff">已選取%d個</string>
     <string name="edit_recorder_name">編輯錄音名稱</string>
     <string name="no_selected_share">未選取共用</string>
     <string name="voice_recording">正在錄音</string>
@@ -33,7 +33,7 @@
     <string name="record_pase">錄音已暫停</string>
     <string name="audio_qulity_title">錄音品質</string>
     <string name="play_mode_title">聽筒模式</string>
-    <string name="new_recorder_xliff">新錄音 %d</string>
+    <string name="new_recorder_xliff">新錄音%d</string>
     <string name="app_name">錄音機</string>
     <string name="input_new_recorder_name">輸入新錄音的名稱</string>
     <string name="no_change_recordname">名稱未編輯</string>
@@ -47,7 +47,7 @@
     <string name="new_recorder">新錄音</string>
     <string name="screen_widget_title">錄音鎖定螢幕外掛程式</string>
     <string name="continue_record">繼續錄音</string>
-    <string name="delete_record_dialog_title">刪除 %d 個錄音檔</string>
+    <string name="delete_record_dialog_title">刪除%d個錄音檔</string>
     <string name="record_note">錄音清單</string>
     <string name="edit">編輯</string>
     <string name="play">播放</string>
@@ -58,12 +58,12 @@
     <string name="select_all">全選</string>
     <string name="record_over_max_time">錄音超過一小時</string>
     <string name="record_name_cannot_null">錄音名稱不可空白</string>
-    <string name="please_select_reoord">请选择录音</string>
-    <string name="ready_record">准备就绪</string>
-    <string name="record_error">录音出错</string>
-    <string name="record_exception">录音启动异常</string>
+    <string name="please_select_reoord">請選擇錄音</string>
+    <string name="ready_record">準備就緒</string>
+    <string name="record_error">錄音發生錯誤</string>
+    <string name="record_exception">錄音啟動異常</string>
 
-    <string name="app_keyword_call_record">不能修改应用标识</string>
+    <string name="app_keyword_call_record">無法修改應用標識</string>
     <string-array name="audio_qulity_entries">
         <item>高等品质</item>
         <item>中等品质</item>
@@ -87,5 +87,5 @@
         <item>1</item>
         <item>2</item>
     </string-array>
-
+    <string name="saving_record">正在儲存…</string>
 </resources>
