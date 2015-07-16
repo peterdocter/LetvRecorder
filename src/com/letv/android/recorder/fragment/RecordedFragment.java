@@ -737,6 +737,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
             StatusBarTool.updateStausBar(getActivity(), false);
             boolean isShowList = false;
             RecordDb db = RecordDb.getInstance(getActivity());
+            db.syncDBFromSdCard(getActivity());
             if (recordedAdapter.isShowCallRecord()) {
                 if (db.getCallRecordCounts() > 0) {
                     recordedAdapter.setRecordList(db.getCallRecords());

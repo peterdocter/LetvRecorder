@@ -173,10 +173,12 @@ public class RecordDb extends SQLiteOpenHelper {
 		if (cursor != null) {
 			while (cursor.moveToNext()) {
 				String path = cursor.getString(cursor.getColumnIndex(RECORD_PATH));
-				if (!TextUtils.isEmpty(path)) {
+                String during = cursor.getString(cursor.getColumnIndex(RECORD_DURING));
+                int isCall = cursor.getInt(cursor.getColumnIndex(RECORD_IS_CALL));
+                if (!TextUtils.isEmpty(path)) {
 					File file = new File(path);
-					if (!file.exists()) {
-						getWritableDatabase().delete(RECORD_TABLE, RECORD_PATH + "=?", new String[] { path });
+                    if (!file.exists() || (isCall == 1 && !during.equals(getFileDuring(file) + ""))) {
+                        getWritableDatabase().delete(RECORD_TABLE, RECORD_PATH + "=?", new String[] { path });
 					}else{
                         savedPath.add(path);
                     }
@@ -271,7 +273,7 @@ public class RecordDb extends SQLiteOpenHelper {
 		if (mInstance == null) {
 			mInstance = new RecordDb(context);
 		}
-        mInstance.syncDBFromSdCard(context);
+//        mInstance.syncDBFromSdCard(context);
         return mInstance;
 	}
 

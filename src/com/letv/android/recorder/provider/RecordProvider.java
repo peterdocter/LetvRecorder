@@ -42,6 +42,7 @@ public class RecordProvider extends ContentProvider {
 	@Override
 	public boolean onCreate() {
 		recordDb = RecordDb.getInstance(getContext());
+		recordDb.syncDBFromSdCard(getContext());
 		return true;
 	}
 
