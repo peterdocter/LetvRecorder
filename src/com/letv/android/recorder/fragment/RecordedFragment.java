@@ -110,6 +110,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
         if (!isCallRecordUI() && !recordedAdapter.isActionMode()) {
             RecordTool.e(TAG, "onResumerefreshRecordList");
             refreshRecordList();
+            recordTime.setText(RecordTool.recordTimeFormat(RecorderService.recordRealDuring));
         }
         super.onResume();
     }
