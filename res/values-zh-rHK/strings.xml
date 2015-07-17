@@ -58,22 +58,22 @@
     <string name="select_all">全選</string>
     <string name="record_over_max_time">錄音超過一小時</string>
     <string name="record_name_cannot_null">錄音名稱不可空白</string>
-    <string name="please_select_reoord">请选择录音</string>
-    <string name="ready_record">准备就绪</string>
+    <string name="please_select_reoord">請選擇錄音</string>
+    <string name="ready_record">準備就緒</string>
     <string name="record_error">录音出错</string>
     <string name="record_exception">录音启动异常</string>
 
 
     <string name="app_keyword_call_record">不能修改应用标识</string>
     <string-array name="audio_qulity_entries">
-        <item>高等品质</item>
-        <item>中等品质</item>
-        <item>低等品质</item>
+        <item>高等品質</item>
+        <item>中等品質</item>
+        <item>低等品質</item>
     </string-array>
     <string-array name="audio_qulity_entries_des">
-        <item>高等品质保存为acc格式</item>
-        <item>中等品质保存为acc格式</item>
-        <item>低等品质保存为amr格式</item>
+        <item>高等品質保存为acc格式</item>
+        <item>中等品質保存为acc格式</item>
+        <item>低等品質保存为amr格式</item>
     </string-array>
     <string-array name="audio_qulity_value">
         <item>3</item>
