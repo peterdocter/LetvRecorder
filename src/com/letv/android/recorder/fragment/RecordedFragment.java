@@ -760,9 +760,9 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                 }
             }
             if (isShowList) {
+                recordedAdapter.notifyDataSetChanged();
                 if (recordVF != null && recordVF.getDisplayedChild() != PAGE_SHOW_RECORD_LIST)
                     recordVF.setDisplayedChild(PAGE_SHOW_RECORD_LIST);
-                recordedAdapter.notifyDataSetChanged();
             } else {
                 if (recordVF != null && recordVF.getDisplayedChild() != PAGE_NO_RECORD) {
                     recordVF.setDisplayedChild(PAGE_NO_RECORD);
