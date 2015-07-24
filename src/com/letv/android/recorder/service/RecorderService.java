@@ -1013,7 +1013,7 @@ public class RecorderService extends Service implements RecorderInterface {
                     RecorderService.pauseRecoring(getApplicationContext());
                 }
             } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {//1
-                if (RecordApp.getInstance().getmState() == MediaRecorderState.STOPPED && RecordApp.getInstance().getmState() == MediaRecorderState.PAUSED) {
+                if (RecordApp.getInstance().getmState() == MediaRecorderState.STOPPED || RecordApp.getInstance().getmState() == MediaRecorderState.PAUSED) {
                     RecorderService.startRecording(getApplicationContext());
                 }
             } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {//-1
