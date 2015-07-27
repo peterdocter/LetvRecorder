@@ -74,6 +74,8 @@ public class SettingTool {
             case "2":pram = context.getResources().getIntArray(R.array.standard); break;
             case "3":     pram = context.getResources().getIntArray(R.array.high); break;
         }
+        //AMR_WB, mono, Encode bitrate, Sample rate, OutputFormat.AMR_WB
+        pram = new int[]{2, 1, 23850, 16000, 4};
         return new AudioQulityPram(pram);
     }
 }
