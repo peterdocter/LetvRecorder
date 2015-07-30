@@ -4,6 +4,7 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -435,7 +436,7 @@ public class RecordTool {
 		sb.append(":");
 		sb.append(min<10?("0"+min):min);
 		sb.append(":");
-		sb.append(sec<10?("0"+sec):sec);
+		sb.append(sec < 10 ? ("0" + sec) : sec);
         return sb.toString();
 	}
 
@@ -543,4 +544,14 @@ public class RecordTool {
 
     }
 
+    public static boolean isServiceRunning(Context context) {
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningServiceInfo> runningServices = am.getRunningServices(50);
+        for (ActivityManager.RunningServiceInfo serviceInfo : runningServices) {
+            if (Constants.RecordService.equals(serviceInfo.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

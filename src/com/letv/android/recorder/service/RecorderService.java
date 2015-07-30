@@ -811,7 +811,7 @@ public class RecorderService extends Service implements RecorderInterface {
         LockScreen.hideLockScreenWidget(this);
         timerStop();
         saveRecording(recordName);
-        recorderReleaseAndSetNull();
+        stopRecording();
         super.onDestroy();
 
         stopForeground(false);

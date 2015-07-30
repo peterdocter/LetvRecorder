@@ -53,6 +53,10 @@ public class RecorderAppWidget extends AppWidgetProvider{
 //        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
 //        String stateStr =  sp.getString(RecordTool.getRecordState(context), Recorder.MediaRecorderState.getStateString(Recorder.MediaRecorderState.IDLE_STATE));
 //        Recorder.MediaRecorderState mState = Recorder.MediaRecorderState.getState(stateStr);
+        if (!RecordTool.isServiceRunning(context)) {
+            RecorderService.stopRecording(context);
+            return;
+        }
         Recorder.MediaRecorderState mState = RecordTool.getRecordState(context);
         RecordTool.e(LOG_CAT, "onReceive: mState:"+mState+"  action"+action);
         if(action.equals(ACTION_DONE)){

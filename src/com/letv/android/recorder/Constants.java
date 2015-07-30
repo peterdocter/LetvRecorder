@@ -31,5 +31,5 @@ public class Constants {
 
     public static final String PACKAGE_NAME="com.letv.android.recorder";
 
-
+	public static final String RecordService = "com.letv.android.recorder.service.RecorderService";
 }

@@ -69,9 +69,18 @@ public class AbsRecorderActivity extends Activity implements OnClickListener, On
         flagBtn.setOnClickListener(this);
 
 
+        initRecordState();
+
         IntentFilter filter = new IntentFilter();
         filter.addAction(RecorderService.RECORDER_SERVICE_BROADCAST_NAME);
         registerReceiver(mReceiver, filter);
+    }
+
+    private void initRecordState() {
+        if (!RecordTool.isServiceRunning(this)) {
+            RecordApp.getInstance().setmState(MediaRecorderState.IDLE_STATE);
+            LockScreen.hideLockScreenWidget(this);
+        }
     }
 
     @Override
