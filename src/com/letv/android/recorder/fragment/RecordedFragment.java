@@ -312,7 +312,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                                     delete_listener,
                                     cancel_listener,
                                     null,
-                                    new String[]{String.format(getResources().getString(R.string.delete_record_dialog_title), selecteds.length), "取消"},
+                                    new String[]{String.format(getResources().getString(R.string.delete_record_dialog_title), selecteds.length), getResources().getString(R.string.cancel)},
                                     null,
                                     null,
                                     null,
