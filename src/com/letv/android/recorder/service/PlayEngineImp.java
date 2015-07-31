@@ -98,6 +98,12 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
 
     @Override
     public void play(String path) {
+        //request audio focus
+        int result = AudioManagerUtil.initPrePlayingAudioFocus(afChangeListener);
+        if (result == AudioManager.AUDIOFOCUS_REQUEST_FAILED) {
+            return;
+        }
+
         try {
             if (player == null) {
                 player = new MediaPlayer();
@@ -112,9 +118,6 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
                 recordPath = path;
             }
 
-            int result = AudioManagerUtil.initPrePlayingAudioFocus(afChangeListener);
-            if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            }
             player.start();
 
             RecordApp.getInstance().setmState(MediaRecorderState.PLAYING);
@@ -155,7 +158,7 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
             if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT) {
                 pause();
             } else if (focusChange == AudioManager.AUDIOFOCUS_GAIN) {
-                if (TextUtils.isEmpty(recordPath)) {
+                if (!TextUtils.isEmpty(recordPath)) {
                     play(recordPath);
                 }
             } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
