@@ -1021,7 +1021,9 @@ public class RecorderService extends Service implements RecorderInterface {
                     RecorderService.pauseRecoring(getApplicationContext());
                 }
             } else if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK) {//-3
-
+                if (RecordApp.getInstance().getmState() == MediaRecorderState.RECORDING) {
+                    RecorderService.pauseRecoring(getApplicationContext());
+                }
             }
         }
 
