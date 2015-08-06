@@ -75,7 +75,7 @@
     <string name="record_error">录音出错</string>
     <string name="record_exception">录音启动异常</string>
     <string name="app_keyword_call_record">不能修改应用标识</string>
-
+    <string name="play_record_error">播放器启动异常</string>
 
     <string-array name="scene_entries">
         <item>录人声</item>

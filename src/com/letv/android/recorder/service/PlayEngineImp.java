@@ -1,6 +1,7 @@
 package com.letv.android.recorder.service;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -10,11 +11,13 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
+import com.letv.android.recorder.R;
 import com.letv.android.recorder.RecordApp;
 import com.letv.android.recorder.service.Recorder.MediaRecorderState;
 import com.letv.android.recorder.tool.AudioManagerUtil;
 import com.letv.android.recorder.tool.RecordTool;
 import com.letv.android.recorder.tool.SettingTool;
+import com.letv.leui.widget.LeTopSlideToastHelper;
 
 import java.io.IOException;
 
@@ -101,6 +104,14 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
         //request audio focus
         int result = AudioManagerUtil.initPrePlayingAudioFocus(afChangeListener);
         if (result == AudioManager.AUDIOFOCUS_REQUEST_FAILED) {
+            if (pEngineListener != null) {
+                Context context = (Context) pEngineListener;
+                LeTopSlideToastHelper.getToastHelper(context.getApplicationContext(), LeTopSlideToastHelper.LENGTH_SHORT,
+                        context.getResources().getString(R.string.play_record_error), null,
+                        null, null,
+                        null).show();
+                pEngineListener.onTrackError();
+            }
             return;
         }
 

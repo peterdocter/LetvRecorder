@@ -62,6 +62,7 @@
     <string name="ready_record">準備就緒</string>
     <string name="record_error">錄音發生錯誤</string>
     <string name="record_exception">錄音啟動異常</string>
+    <string name="play_record_error">播放器啟動異常</string>
 
     <string name="app_keyword_call_record">無法修改應用標識</string>
     <string-array name="audio_qulity_entries">
@@ -70,9 +71,9 @@
         <item>低等品质</item>
     </string-array>
     <string-array name="audio_qulity_entries_des">
-        <item>高等品质保存为acc格式</item>
-        <item>中等品质保存为acc格式</item>
-        <item>低等品质保存为amr格式</item>
+        <item>高等品質保存为acc格式</item>
+        <item>中等品質保存为acc格式</item>
+        <item>低等品質保存为amr格式</item>
     </string-array>
     <string-array name="audio_qulity_value">
         <item>3</item>

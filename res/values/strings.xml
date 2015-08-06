@@ -69,6 +69,7 @@
     <string name="record_error">Recording error</string>
     <string name="record_exception">Error launching recorder</string>
     <string name="app_keyword_call_record">Unable to modify app ID</string>
+    <string name="play_record_error">Error launching player</string>
 
     <string-array name="scene_entries">
         <item>Record voice</item>

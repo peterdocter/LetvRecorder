@@ -60,11 +60,11 @@
     <string name="record_name_cannot_null">錄音名稱不可空白</string>
     <string name="please_select_reoord">請選擇錄音</string>
     <string name="ready_record">準備就緒</string>
-    <string name="record_error">录音出错</string>
-    <string name="record_exception">录音启动异常</string>
+    <string name="record_error">錄音發生錯誤</string>
+    <string name="record_exception">錄音啟動異常</string>
+    <string name="play_record_error">播放器啟動異常</string>
 
-
-    <string name="app_keyword_call_record">不能修改应用标识</string>
+    <string name="app_keyword_call_record">無法修改應用標識</string>
     <string-array name="audio_qulity_entries">
         <item>高等品質</item>
         <item>中等品質</item>
