@@ -1072,10 +1072,12 @@ public class RecorderService extends Service implements RecorderInterface {
                     mAppWidgetManager = AppWidgetManager.getInstance(RecorderService.this);
                 }
                 if (null == mComponentName) {
+                    // maybe cause TransactionTooLargeException, so we don't use it more.
                     mComponentName = new ComponentName(RecorderService.this, RecorderAppWidget.class);
                 }
                 mRemoteViews.setTextViewText(R.id.remote_record_time_during, RecordTool.recordTimeFormat(RecordTool.getRecordTime(RecorderService.this)));
-                mAppWidgetManager.updateAppWidget(mComponentName, mRemoteViews);
+                // use appWidgetIds instead of ComponentName
+                mAppWidgetManager.updateAppWidget(mAppWidgetProvider.appWidgetIds, mRemoteViews);
             }
         }
 
