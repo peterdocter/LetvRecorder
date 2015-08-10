@@ -216,12 +216,14 @@ public class PlayEngineImp implements PlayEngine, OnCompletionListener, OnErrorL
     @Override
     public void pause() {
         // mSampleStart = player.getCurrentPosition();
-        player.pause();
+        if (player != null) {
+            player.pause();
+        }
         if (pEngineListener != null) {
             pEngineListener.onTrackPause();
         }
         //handler.removeMessages(0);
-        if(changeProgressTimer!=null) {
+        if (changeProgressTimer != null) {
             changeProgressTimer.cancel();
         }
         RecordApp.getInstance().setmState(MediaRecorderState.PLAYING_PAUSED);
