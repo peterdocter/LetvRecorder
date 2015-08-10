@@ -353,46 +353,57 @@ public class PlayRecordActivity extends Activity implements
 //		return new PlayEngineListener() {
 
     @Override
-    public void onTrackStart(int miTime, int totalTime) {
+    public void onTrackStart(final int miTime, final int totalTime) {
 
-        if (!restart) {
-            playBtn.setImageResource(R.drawable.frame_record_pause);
-            AnimationDrawable am_record = (AnimationDrawable) playBtn.getDrawable();
-            am_record.start();
-            restart = true;
-        } else {
-            playBtn.setImageResource(R.drawable.frame_play_pause);
-            AnimationDrawable am_record = (AnimationDrawable) playBtn.getDrawable();
-            am_record.start();
-        }
-        mSeekBar.setMax(totalTime);
-        RecordTool.e(TAG, "1:onTrackStart:totalTime" + totalTime + ":miTime:" + miTime);
-        curTime.setText(RecordTool.timeFormat(miTime, "mm:ss"));
-        PlayRecordActivity.this.totalTime.setText(RecordTool.recordTimeFormat(totalTime));
-        registerHeadsetPlugReceiver();
-        setPlayMode();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (!restart) {
+                    playBtn.setImageResource(R.drawable.frame_record_pause);
+                    AnimationDrawable am_record = (AnimationDrawable) playBtn.getDrawable();
+                    am_record.start();
+                    restart = true;
+                } else {
+                    playBtn.setImageResource(R.drawable.frame_play_pause);
+                    AnimationDrawable am_record = (AnimationDrawable) playBtn.getDrawable();
+                    am_record.start();
+                }
+                mSeekBar.setMax(totalTime);
+                RecordTool.e(TAG, "1:onTrackStart:totalTime" + totalTime + ":miTime:" + miTime);
+                curTime.setText(RecordTool.timeFormat(miTime, "mm:ss"));
+                PlayRecordActivity.this.totalTime.setText(RecordTool.recordTimeFormat(totalTime));
+                registerHeadsetPlugReceiver();
+                setPlayMode();
 //				RecorderAdapter instance = RecorderAdapter.getInstance();
-        if (instance != null) {
-            instance.notifyDataSetChanged(mEntry);
-        }
+                if (instance != null) {
+                    instance.notifyDataSetChanged(mEntry);
+                }
+            }
+        });
 
     }
 
     @Override
-    public void onTrackProgressChange(int miTime) {
-        int max = mSeekBar.getMax();
-        //if (mOldItime >= miTime) {
-        //    mTimeOffset += max>=3*60*1000?200:50;
-        //}
-        //miTime += mTimeOffset;
-        //mOldItime = miTime;
-        RecordTool.e(TAG, "onTrackProgressChange" + miTime);
-        //Log.e("onProgressChanged","progress=="+miTime);
-        //if (miTime >= max) {
-        //    miTime = max;
-        //}
-        mSeekBar.setProgress(miTime);
-        curTime.setText(RecordTool.recordTimeFormat(miTime));
+    public void onTrackProgressChange(final int miTime) {
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                int max = mSeekBar.getMax();
+                //if (mOldItime >= miTime) {
+                //    mTimeOffset += max>=3*60*1000?200:50;
+                //}
+                //miTime += mTimeOffset;
+                //mOldItime = miTime;
+                RecordTool.e(TAG, "onTrackProgressChange" + miTime);
+                //Log.e("onProgressChanged","progress=="+miTime);
+                //if (miTime >= max) {
+                //    miTime = max;
+                //}
+                mSeekBar.setProgress(miTime);
+                curTime.setText(RecordTool.recordTimeFormat(miTime));
+            }
+        });
     }
 
     @Override
