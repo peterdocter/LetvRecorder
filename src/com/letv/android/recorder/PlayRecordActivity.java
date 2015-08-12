@@ -509,28 +509,30 @@ public class PlayRecordActivity extends Activity implements
     }
 
     public void speakerMode() {
-        RecordTool.e(TAG, "shouldChangePlayMode:" + shouldChangePlayMode());
-        if (!shouldChangePlayMode()) {
-            return;
-        }
-        RecordTool.e(TAG, "正常模式");
-//		audioManager.setMicrophoneMute(false);
-        audioManager.setSpeakerphoneOn(true);// 使用扬声器外放，即使已经插入耳机
-//        setVolumeControlStream(AudioManager.STREAM_MUSIC);//控制声音的大小
-        audioManager.setMode(AudioManager.MODE_NORMAL);
+        // 08.12 默认为扬声器
+//        RecordTool.e(TAG, "shouldChangePlayMode:" + shouldChangePlayMode());
+//        if (!shouldChangePlayMode()) {
+//            return;
+//        }
+//        RecordTool.e(TAG, "正常模式");
+////		audioManager.setMicrophoneMute(false);
+//        audioManager.setSpeakerphoneOn(true);// 使用扬声器外放，即使已经插入耳机
+////        setVolumeControlStream(AudioManager.STREAM_MUSIC);//控制声音的大小
+//        audioManager.setMode(AudioManager.MODE_NORMAL);
     }
 
     public void receiverMode() {
-        RecordTool.e(TAG, "shouldChangePlayMode:" + shouldChangePlayMode());
-        if (!shouldChangePlayMode()) {
-            return;
-        }
-        RecordTool.e(TAG, "听筒模式");
-//		audioManager.setMicrophoneMute(true);
-//		audioManager.setRouting(AudioManager.MODE_NORMAL, AudioManager.ROUTE_EARPIECE, AudioManager.ROUTE_ALL);
-//        setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
-        audioManager.setMode(AudioManager.MODE_IN_CALL);
-        audioManager.setSpeakerphoneOn(false);
+        // 08.12 关闭听筒播放
+//        RecordTool.e(TAG, "shouldChangePlayMode:" + shouldChangePlayMode());
+//        if (!shouldChangePlayMode()) {
+//            return;
+//        }
+//        RecordTool.e(TAG, "听筒模式");
+////		audioManager.setMicrophoneMute(true);
+////		audioManager.setRouting(AudioManager.MODE_NORMAL, AudioManager.ROUTE_EARPIECE, AudioManager.ROUTE_ALL);
+////        setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
+//        audioManager.setMode(AudioManager.MODE_IN_CALL);
+//        audioManager.setSpeakerphoneOn(false);
     }
 
     public void stopPlay() {
