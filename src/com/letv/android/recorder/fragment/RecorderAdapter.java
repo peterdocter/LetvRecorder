@@ -2,17 +2,11 @@ package com.letv.android.recorder.fragment;
 
 import android.content.Context;
 import android.text.TextUtils;
-//import android.transition.TransitionManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
-import com.letv.android.recorder.widget.ActionBarTool;
+import android.widget.*;
 import com.letv.leui.widget.DividerFilter;
-import android.widget.TextView;
 
 import com.letv.android.recorder.R;
 import com.letv.android.recorder.RecordApp;
@@ -21,13 +15,16 @@ import com.letv.android.recorder.provider.RecordDb;
 import com.letv.android.recorder.service.Recorder.MediaRecorderState;
 import com.letv.android.recorder.tool.RecordTool;
 import com.letv.leui.widget.LeCheckBox;
+import com.letv.leui.widget.LeListView;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class RecorderAdapter extends BaseAdapter implements DividerFilter{
 
-	private Context context;
+    private static final String TAG = "RecorderAdapter";
+    private Context context;
 	private List<RecordEntry> recordList;
 	private List<Boolean> recordSelectFlag;
 	private boolean actionMode = false;
@@ -35,7 +32,7 @@ public class RecorderAdapter extends BaseAdapter implements DividerFilter{
     
     private RecordEntry playRecordEntry;
     
-    private ListView mListView;
+    private LeListView mListView;
 
     private boolean isScroll = false;
 
@@ -70,13 +67,15 @@ public class RecorderAdapter extends BaseAdapter implements DividerFilter{
     }
 
     public void setActionMode(boolean actionMode) {
-		this.actionMode = actionMode;
-        recordSelectFlag = new ArrayList<Boolean>();
+        this.actionMode = actionMode;
+        if (recordSelectFlag == null) {
+            recordSelectFlag = new ArrayList<Boolean>();
 
-        for(int i=0;i<getCount();i++){
-            recordSelectFlag.add(new Boolean(Boolean.FALSE));
+            for (int i = 0; i < getCount(); i++) {
+                recordSelectFlag.add(new Boolean(Boolean.FALSE));
+            }
         }
-	}
+    }
 
     public void clearSelectFlag(){
         if(recordSelectFlag!=null) {
@@ -143,7 +142,7 @@ public class RecorderAdapter extends BaseAdapter implements DividerFilter{
 	}
 
 
-    public void setListView(ListView mListView) {
+    public void setListView(LeListView mListView) {
         this.mListView = mListView;
 
         if(this.mListView!=null){
@@ -193,35 +192,39 @@ public class RecorderAdapter extends BaseAdapter implements DividerFilter{
 
 	@Override
 	public long getItemId(int arg0) {
-		return arg0;
-	}
+        if (recordList.size() != 0) {
+            return recordList.get(arg0).get_id();
+        }
+        return -1;
+    }
 
 	
 	public void notifyDataSetChanged(RecordEntry mRecordEntry) {
 		playRecordEntry = mRecordEntry;
 		super.notifyDataSetChanged();
 	}
-	
-	@Override
-	public View getView(int position , View arg1, ViewGroup arg2) {
-		ViewHolder holder = null;
-		if(arg1 ==null){
-			holder = new ViewHolder();
-			arg1 = LayoutInflater.from(context).inflate(R.layout.record_item, null);
-			holder.recordName = (TextView) arg1.findViewById(R.id.record_name);
-			holder.recordLength = (TextView) arg1.findViewById(R.id.record_length);
-			holder.recordTime = (TextView) arg1.findViewById(R.id.record_time);
-			holder.box= (LeCheckBox) arg1.findViewById(R.id.item_select);
+
+    @Override
+    public View getView(final int position , View arg1, ViewGroup arg2) {
+        ViewHolder holder = null;
+        if(arg1 ==null){
+            holder = new ViewHolder();
+            arg1 = LayoutInflater.from(context).inflate(R.layout.lelistview_item, null);
+            holder.recordName = (TextView) arg1.findViewById(R.id.record_name);
+            holder.recordLength = (TextView) arg1.findViewById(R.id.record_length);
+            holder.recordTime = (TextView) arg1.findViewById(R.id.record_time);
+            holder.box= (LeCheckBox) arg1.findViewById(R.id.item_select);
             holder.arrow = arg1.findViewById(R.id.arrow);
-			arg1.setTag(holder);
-		}else{
-			holder = (ViewHolder) arg1.getTag();
-		}
+            holder.mBackDelete = (ImageView) arg1.findViewById(R.id.delete);
+            arg1.setTag(holder);
+        }else{
+            holder = (ViewHolder) arg1.getTag();
+        }
 
-		RecordEntry entry = getItem(position);
+        RecordEntry entry = getItem(position);
 
-		holder.recordName.setText(entry.getRecordName());
-		holder.box.setVisibility(actionMode ? View.VISIBLE : View.GONE);
+        holder.recordName.setText(entry.getRecordName());
+        holder.box.setVisibility(actionMode ? View.VISIBLE : View.GONE);
         if(getItemViewType(position)!=ITEM_TYPE_CALL_SET) {
             holder.recordLength.setText(RecordTool.recordTimeFormat(entry.getRecordDuring()));
             holder.recordTime.setText(RecordTool.recordDateFormat(entry.getRecordTime()));
@@ -232,28 +235,26 @@ public class RecorderAdapter extends BaseAdapter implements DividerFilter{
             int callCount = RecordDb.getInstance(context).getCallRecordCounts();
 
             String str = context.getResources().getString(R.string.call_record_count_xliff);
-
-
-            holder.recordLength.setText(String.format(str,callCount));
+            holder.recordLength.setText(String.format(str, callCount));
             holder.arrow.setVisibility(View.VISIBLE);
         }
 
 
-		if(actionMode){
-			holder.box.setChecked(recordSelectFlag.get(position),!isScroll);
-		}else{
+        if(actionMode){
+            holder.box.setChecked(recordSelectFlag.get(position),!isScroll);
+        }else{
             if(holder.box.isChecked()){
                 holder.box.setChecked(false,false);
             }
         }
-		MediaRecorderState state = RecordApp.getInstance().getmState();
-    	if (MediaRecorderState.PLAYING == state || MediaRecorderState.PLAYING_PAUSED == state ||
+        MediaRecorderState state = RecordApp.getInstance().getmState();
+        if (MediaRecorderState.PLAYING == state || MediaRecorderState.PLAYING_PAUSED == state ||
                 MediaRecorderState.PLAY_STOP == state) {
-    		if(playRecordEntry!=null){
-    			if(TextUtils.equals(getItem(position).getFilePath(), playRecordEntry.getFilePath())){
-    				holder.recordName.setTextColor(getColor(R.color.title__color_play));
-            		holder.recordTime.setTextColor(getColor(R.color.sumary_color_play));
-            		holder.recordLength.setTextColor(getColor(R.color.sumary_color_play));
+            if(playRecordEntry!=null){
+                if(TextUtils.equals(getItem(position).getFilePath(), playRecordEntry.getFilePath())){
+                    holder.recordName.setTextColor(getColor(R.color.title__color_play));
+                    holder.recordTime.setTextColor(getColor(R.color.sumary_color_play));
+                    holder.recordLength.setTextColor(getColor(R.color.sumary_color_play));
 
                     if(MediaRecorderState.PLAYING == state){
                         String playStr = context.getResources().getString(R.string.play_record_playing);
@@ -263,38 +264,46 @@ public class RecorderAdapter extends BaseAdapter implements DividerFilter{
                         holder.recordLength.setText(pauseStr);
                     }
 
-    			}else{
-    				holder.recordName.setTextColor(getColor(R.color.title_color_a30));
-            		holder.recordTime.setTextColor(getColor(R.color.sumary_color_a30));
-            		holder.recordLength.setTextColor(getColor(R.color.sumary_color_a30));
-    			}
-    		}
-    	}else if(actionMode){
-    		if(isSelected(position)){
+                }else{
+                    holder.recordName.setTextColor(getColor(R.color.title_color_a30));
+                    holder.recordTime.setTextColor(getColor(R.color.sumary_color_a30));
+                    holder.recordLength.setTextColor(getColor(R.color.sumary_color_a30));
+                }
+            }
+        }else if(actionMode){
+            if(isSelected(position)){
                 arg1.setActivated(true);
-    			holder.recordName.setTextColor(getColor(R.color.title_color_selected));
-        		holder.recordTime.setTextColor(getColor(R.color.summary_color_selected));
-        		holder.recordLength.setTextColor(getColor(R.color.summary_color_selected));
-    		}else{
+                holder.recordName.setTextColor(getColor(R.color.title_color_selected));
+                holder.recordTime.setTextColor(getColor(R.color.summary_color_selected));
+                holder.recordLength.setTextColor(getColor(R.color.summary_color_selected));
+            }else{
                 arg1.setActivated(false);
-    			holder.recordName.setTextColor(getColor(R.color.title_color_a30));
-        		holder.recordTime.setTextColor(getColor(R.color.sumary_color_a30));
-        		holder.recordLength.setTextColor(getColor(R.color.sumary_color_a30));
-    		}
-    	}else{
+                holder.recordName.setTextColor(getColor(R.color.title_color_a30));
+                holder.recordTime.setTextColor(getColor(R.color.sumary_color_a30));
+                holder.recordLength.setTextColor(getColor(R.color.sumary_color_a30));
+            }
+        }else{
             arg1.setActivated(false);
-    		holder.recordName.setTextColor(getColor(R.color.title_color));
-    		holder.recordTime.setTextColor(getColor(R.color.summary_color));
-    		holder.recordLength.setTextColor(getColor(R.color.summary_color));
-    	}
-		
-		return arg1;
-	}
-	
+            holder.recordName.setTextColor(getColor(R.color.title_color));
+            holder.recordTime.setTextColor(getColor(R.color.summary_color));
+            holder.recordLength.setTextColor(getColor(R.color.summary_color));
+        }
+
+        holder.mBackDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListView.dismiss(position);
+                mListView.closeOpenedItems();
+            }
+        });
+
+        return arg1;
+    }
+
 	private int getColor(int res){
-		return context.getResources().getColor(res); 
+		return context.getResources().getColor(res);
 	}
-	
+
     
     public boolean topDividerEnabled() {
         return false;
@@ -324,6 +333,7 @@ public class RecorderAdapter extends BaseAdapter implements DividerFilter{
 		TextView recordName,recordLength,recordTime;
 		LeCheckBox box;
         View arrow;
+        ImageView mBackDelete;
 	}
 
 
@@ -372,11 +382,20 @@ public class RecorderAdapter extends BaseAdapter implements DividerFilter{
         }
     }
 
+    @Override
+    public void notifyDataSetChanged() {
+        super.notifyDataSetChanged();
+        mListView.closeOpenedItems();
+    }
+
+    @Override
+    public boolean hasStableIds() {
+        return true;
+    }
 
     public static final int ITEM_TYPE_CALL_RECORD=1001;
     public static final int ITEM_TYPE_NORMAL_RECORD=1002;
     public static final int ITEM_TYPE_CALL_SET=1003;
-
 
     @Override
     public boolean forceDrawDivider(int position){

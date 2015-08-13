@@ -1,8 +1,9 @@
 <ViewFlipper xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/recordVF"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+             xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:leui="http://schemas.android.com/apk/prv/res/android"
+             android:id="@+id/recordVF"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent">
 
     <!-- no record layout -->
 
@@ -32,15 +33,35 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ListView
-            android:id="@+id/record_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbarStyle="outsideOverlay"
-            android:divider="@drawable/list_divider"
-            android:dividerHeight="1px"
-             >
-        </ListView>
+        <!--<ListView-->
+            <!--android:id="@+id/record_list"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:scrollbarStyle="outsideOverlay"-->
+            <!--android:divider="@drawable/list_divider"-->
+            <!--android:dividerHeight="1px"-->
+             <!-->-->
+        <!--</ListView>-->
+
+        <com.letv.leui.widget.LeListView
+                android:id="@+id/record_list"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:divider="@drawable/list_divider"
+                android:dividerHeight="1px"
+                android:drawSelectorOnTop="true"
+                android:footerDividersEnabled="true"
+
+                leui:leSwipeBackView="@+id/back"
+                leui:leSwipeFrontView="@+id/front"
+                leui:leListViewMode="leSwipe"
+                leui:leSwipeActionLeft="reveal"
+                leui:leSwipeAnimationTime="200"
+                leui:leSwipeCloseAllItemsWhenMoveList="true"
+                leui:leSwipeMode="left"
+                leui:leSwipeOffsetLeft="56dp"
+                />
+
     </RelativeLayout>
     
     <include layout="@layout/fragment_recording"/>

@@ -2,7 +2,7 @@
 <resources>
     <color name="tanslucent_half">#D9191821</color>
     <color name="listBackground">#f4f2ed</color>
-    <color name="actionBarBackground">#141419</color>
+    <color name="actionBarBackground">#000000</color>
     <color name="actionBarTitleColor">#daddde</color>
     <color name="actionBarLine">#27272d</color>
     <color name="actionBarColor">#dadada</color>

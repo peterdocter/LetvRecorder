@@ -9,18 +9,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import com.letv.android.recorder.fragment.RecordedFragment;
-import com.letv.android.recorder.provider.ProviderTool;
 import com.letv.android.recorder.provider.RecordDb;
 import com.letv.android.recorder.service.Recorder.MediaRecorderState;
 import com.letv.android.recorder.service.RecorderService;
 import com.letv.android.recorder.tool.RecordTool;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class SoundRecorder extends AbsRecorderActivity {
 
@@ -32,7 +28,7 @@ public class SoundRecorder extends AbsRecorderActivity {
 //        topWidget.setCenterTitle(R.string.record_note);
 
         recordedFragment = new RecordedFragment();
-        recordedFragment.setCallRecordUI(true);
+        recordedFragment.setShowCallingRecordUI(true);
         getFragmentManager().beginTransaction().add(R.id.container, recordedFragment).commit();
 //        mRecorder.startRecording(this);
 	}
@@ -59,7 +55,7 @@ public class SoundRecorder extends AbsRecorderActivity {
 
     @Override
     protected void onDestroy() {
-        recordedFragment.setCallRecordUI(false);
+        recordedFragment.setShowCallingRecordUI(false);
         super.onDestroy();
     }
 

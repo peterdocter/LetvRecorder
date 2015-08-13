@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:leui="http://schemas.android.com/apk/prv/res/android"
+        android:id="@+id/back"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:tag="back"
+        android:background="@color/defalut_black"
+        >
+
+        <ImageButton
+                android:id="@+id/delete"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_alignParentRight="true"
+                android:layout_gravity="center"
+                android:src="@*android:drawable/le_bottom_btn_icon_delete_white"
+                android:background="@color/buttom_red"
+                />
+
+    <LinearLayout
+            android:id="@+id/front"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/record_item_height"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="@dimen/record_item_padding_left"
+            android:paddingRight="@dimen/record_item_padding_right"
+            android:minHeight="@dimen/record_item_height"
+            android:background="@drawable/record_list_bgcolor_selector">
+
+        <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:minHeight="56dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:gravity="center_vertical"
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp">
+
+            <TextView
+                    android:id="@+id/record_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="22dp"
+                    android:text="@string/new_recorder"
+                    android:textSize="@dimen/textSizeLage"
+                    android:includeFontPadding="false"
+                    android:gravity="center_vertical"
+                    android:singleLine="true"
+                    android:textColor="@color/title_color"
+                    android:fontFamily="hans-sans-normal"/>
+
+            <TextView
+                    android:id="@+id/record_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="20dp"
+                    android:textColor="@color/summary_color"
+                    android:includeFontPadding="false"
+                    android:gravity="center_vertical"
+                    android:textSize="@dimen/textSizeMedium"
+                    android:fontFamily="sans-serif-light"/>
+
+        </LinearLayout>
+
+        <TextView
+                android:id="@+id/record_length"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/summary_color"
+                android:includeFontPadding="false"
+                android:textSize="@dimen/textSizeMedium"
+                android:fontFamily="sans-serif-light"/>
+
+        <ImageView
+                android:id="@+id/arrow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="14dp"
+                android:src="@drawable/ic_rec_call_arrow"/>
+
+        <com.letv.leui.widget.LeCheckBox
+                android:id="@+id/item_select"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:clickable="false"
+                leui:leBoxOnColor="#ff0000"
+                leui:leBoxTrackColor="#181819"
+                leui:leBoxBorderColor="@color/sumary_color_a30"
+                android:focusable="false"
+                android:visibility="gone"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

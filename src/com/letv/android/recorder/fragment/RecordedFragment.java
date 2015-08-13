@@ -1,40 +1,33 @@
 package com.letv.android.recorder.fragment;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
-import android.app.AlertDialog;
+import android.app.ActionBar;
 import android.app.Dialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.TypedArray;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.ActionBar;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.transition.TransitionManager;
-import android.util.Log;
-import android.view.ActionMode;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
+import android.transition.TransitionSet;
+import android.view.*;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
-
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.ViewFlipper;
 import com.letv.android.recorder.*;
-import com.letv.android.recorder.R;
 import com.letv.android.recorder.provider.ProviderTool;
 import com.letv.android.recorder.provider.RecordDb;
 import com.letv.android.recorder.service.Recorder;
 import com.letv.android.recorder.service.Recorder.MediaRecorderState;
+import com.letv.android.recorder.service.RecorderService;
 import com.letv.android.recorder.tool.FileSyncContentProvider;
 import com.letv.android.recorder.tool.FileTool;
 import com.letv.android.recorder.tool.RecordTool;
@@ -42,114 +35,47 @@ import com.letv.android.recorder.tool.StatusBarTool;
 import com.letv.android.recorder.widget.ActionBarTool;
 import com.letv.android.recorder.widget.EditRecordNameDialog;
 import com.letv.android.recorder.widget.RecordingView;
-import com.letv.android.recorder.service.RecorderService;
-import com.letv.leui.widget.LeBottomWidget;
-import com.letv.leui.widget.LeCheckBox;
-import com.letv.leui.widget.LeTopSlideToastHelper;
-import com.letv.leui.widget.LeBottomSheet;
+import com.letv.leui.widget.*;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class RecordedFragment extends Fragment implements OnClickListener {
 
     static String TAG = "RecordedFragment";
-    private View rootView = null;
-    private ViewFlipper recordVF;
-    private ListView recordList;
-    private TextView recordTime;
-    //	private TextView recordStartTime;
-    private TextView recordName;
-    private View updateName, recordViewMask;
-    private RecordingView recordingView;
-
-    private RecorderAdapter recordedAdapter;
-
-
-    private List<Boolean> recordSelectFlag;
-
-    private View cancelView, backView;
-    private MenuItem /*selectMenu,*/selectAllMenu, selectNoneMenu;
 
     private final int PAGE_NO_RECORD = 0;
     private final int PAGE_SHOW_RECORD_LIST = 1;
     private final int PAGE_SHOW_RECORDING = 2;
 
     protected LeBottomWidget leBottomWidget;
+    private ViewFlipper mViewFlipper;
+    private LeListView mLeListView;
+    private TextView tv_recordTime;
+    private TextView tv_recordName;
+    private View v_editName, v_pauseMask;
+    private RecordingView mRecordingView;
+
+    private RecorderAdapter mRecorderAdapter;
+
+    private List<Boolean> mSelectedList;
+
+    private MenuItem /*selectMenu,*/selectAllMenu, selectNoneMenu;
 
     private ActionMode mActionMode = null;
     private ActionBar actionBar;
+    private int mActionBarHeight;
 
-    //  other app record launch record UI
-    private boolean callRecordUI = false;
+    private AsyncDeleteTask mAsyncDeleteTask;
+    private Map<Integer, AsyncDeleteTask> mAsyncTasks;
 
-    public boolean isCallRecordUI() {
-        return callRecordUI;
-    }
-
-    public void setCallRecordUI(boolean callRecordUI) {
-        this.callRecordUI = callRecordUI;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        RecordTool.e(TAG, "onCreate: !isCallRecordUI = " + !isCallRecordUI());
-        actionBar = getActivity().getActionBar();
-        actionBar.setTitle(R.string.record_note);
-        actionBar.setBottomLineDrawable(getResources().getDrawable(R.color.record_list_actionbar_color));
-        actionBar.setBottomLineHight(1);
-        if (!isCallRecordUI()) {
-            recordedAdapter = new RecorderAdapter(getActivity(), null, this);
-        }
-        setHasOptionsMenu(true);
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public void onResume() {
-//        RecordTool.e(TAG,"onResume:!isCallRecordUI()"+!isCallRecordUI()
-//                +"\n!((AbsRecorderActivity)getActivity()).isFistTime():"+!((AbsRecorderActivity)getActivity()).isFistTime()
-//                +"\n!recordedAdapter.isActionMode():"+!recordedAdapter.isActionMode());
-        if (!isCallRecordUI() && !recordedAdapter.isActionMode()) {
-            RecordTool.e(TAG, "onResumerefreshRecordList");
-//            refreshRecordList();
-            recordTime.setText(RecordTool.recordTimeFormat(RecorderService.recordRealDuring));
-        }
-        super.onResume();
-    }
-
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        RecordTool.e(TAG, "onCreateView");
-        rootView = inflater.inflate(R.layout.fragment_recorded, container, false);
-        recordVF = (ViewFlipper) rootView.findViewById(R.id.recordVF);
-        recordList = (ListView) rootView.findViewById(R.id.record_list);
-//        recordList.setOverScrollEnabled(false);
-        recordTime = (TextView) rootView.findViewById(R.id.record_time);
-//		recordStartTime = (TextView) rootView.findViewById(R.id.record_start_time);
-        recordName = (TextView) rootView.findViewById(R.id.record_title);
-        recordingView = (RecordingView) rootView.findViewById(R.id.recording_view);
-        updateName = rootView.findViewById(R.id.update_name);
-        recordViewMask = rootView.findViewById(R.id.record_pause_mask);
-        if (isCallRecordUI()) {
-            recordVF.setDisplayedChild(PAGE_SHOW_RECORDING);
-        }
-        if (((AbsRecorderActivity) getActivity()).isFistTime()) {
-            recordVF.setDisplayedChild(PAGE_SHOW_RECORDING);
-            fistTimeRecordTimeUI();
-        }
-        return rootView;
-    }
-
-    public void setFirstTime(boolean firstTime) {
-        if (firstTime) {
-            recordVF.setDisplayedChild(PAGE_SHOW_RECORDING);
-        }
-    }
-
-    public void fistTimeRecordTimeUI() {
-        String newStr = RecordTool.recordTimeFormat(0);
-        recordTime.setText(newStr);
-        recordName.setText(RecordTool.getNewRecordName(getActivity()));
-    }
+    private TransitionInflater mInflater;
+    // 是否正在做删除动画
+    // 如果正在做删除动画，则action mode退出时就不应该启动 退出多选模式 的动画，否则应该做 退出多选模式 的动画
+    private boolean mIsDeletingAnimRunning;
 
     /**
      * @param recordTimeMillis
@@ -157,76 +83,271 @@ public class RecordedFragment extends Fragment implements OnClickListener {
     public void updateRecordTimeUI(long recordTimeMillis, float db) {
         RecordTool.e(TAG, "updateRecordTimeUI:recordTimeMillis=" + recordTimeMillis + " db:" + db);
         if (!isDetached()) {
-            if (recordTime != null) {
+            if (tv_recordTime != null) {
                 String newStr = RecordTool.recordTimeFormat(recordTimeMillis);
-                if (!recordTime.getText().toString().equals(newStr))
-                    recordTime.setText(newStr);
+                if (!tv_recordTime.getText().toString().equals(newStr))
+                    tv_recordTime.setText(newStr);
             }
-            if (recordName != null) {
+            if (tv_recordName != null) {
                 String newStr = RecordApp.getInstance().getRecordName();
-                if (!recordName.getText().toString().equals(newStr)) {
-                    recordName.setText(RecordApp.getInstance().getRecordName());
+                if (!tv_recordName.getText().toString().equals(newStr)) {
+                    tv_recordName.setText(RecordApp.getInstance().getRecordName());
                 }
             }
-            if (recordingView != null) {
-                RecordTool.e(TAG, "recordingView:" + recordingView);
-                recordingView.updateRecordUI(recordTimeMillis, db);
+            if (mRecordingView != null) {
+                RecordTool.e(TAG, "mRecordingView:" + mRecordingView);
+                mRecordingView.updateRecordUI(recordTimeMillis, db);
             }
         }
     }
 
     public void stopRecording() {
-        if (recordingView != null) {
-            recordingView.stopRecording();
+        if (mRecordingView != null) {
+            mRecordingView.stopRecording();
         }
     }
 
     public void startRecording() {
-        if (recordingView != null) {
-            recordingView.startRecording();
+        if (mRecordingView != null) {
+            mRecordingView.startRecording();
         }
     }
 
-    public void resumeRecording() {
-        if (recordingView != null) {
-            recordingView.resumeRecording();
+    //  whether the ListView is shown normal record or calling reocrd
+    private boolean showCallingRecordUI = false;
+
+    public boolean isShowCallingRecordUI() {
+        return showCallingRecordUI;
+    }
+
+    public void setShowCallingRecordUI(boolean isCallingReocrdUI) {
+        this.showCallingRecordUI = isCallingReocrdUI;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        actionBar = getActivity().getActionBar();
+        actionBar.setTitle(R.string.record_note);
+        actionBar.setBottomLineDrawable(getResources().getDrawable(R.color.record_list_actionbar_color));
+        actionBar.setBottomLineHight(1);
+        if (!isShowCallingRecordUI()) {
+            mRecorderAdapter = new RecorderAdapter(getActivity(), null, this);
         }
+        setHasOptionsMenu(true);
+        mInflater = TransitionInflater.from(getActivity());
+        super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_recorded, container, false);
+        mViewFlipper = (ViewFlipper) rootView.findViewById(R.id.recordVF);
+        mLeListView = (LeListView) rootView.findViewById(R.id.record_list);
+        mRecordingView = (RecordingView) rootView.findViewById(R.id.recording_view);
+        tv_recordTime = (TextView) rootView.findViewById(R.id.record_time);
+        tv_recordName = (TextView) rootView.findViewById(R.id.record_title);
+        v_editName = rootView.findViewById(R.id.update_name);
+        v_pauseMask = rootView.findViewById(R.id.record_pause_mask);
+        return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (isShowCallingRecordUI()) {
+            mViewFlipper.setDisplayedChild(PAGE_SHOW_RECORDING);
+        }
+        if (((AbsRecorderActivity) getActivity()).isFistTime()) {
+            mViewFlipper.setDisplayedChild(PAGE_SHOW_RECORDING);
+            fistTimeRecordTimeUI();
+        }
+        if (RecordApp.isFromWidget) {
+            Recorder.getInstance().checkRecorderState();
+            RecordApp.isFromWidget = false;
+        }
+    }
+
+    public void fistTimeRecordTimeUI() {
+        String newStr = RecordTool.recordTimeFormat(0);
+        tv_recordTime.setText(newStr);
+        tv_recordName.setText(RecordTool.getNewRecordName(getActivity()));
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        RecordTool.e(TAG, "onActivityCreated:" + isCallRecordUI());
-        if (!isCallRecordUI()) {
-            TypedArray actionbarSizeTypedArray = getActivity().obtainStyledAttributes(new int[]{
-                    android.R.attr.actionBarSize
-            });
 
-            int h = (int) actionbarSizeTypedArray.getDimension(0, 0);
-//			recordList.setPadding(0, 0, 0, 0);
+        if (!isShowCallingRecordUI()) {
+            mActionBarHeight = StatusBarTool.getActionBarHeight(getActivity());
+            initLeListView();
 
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) recordList.getLayoutParams();
-            params.topMargin = h;
-            recordList.setLayoutParams(params);
-            recordList.setAdapter(recordedAdapter);
-            recordedAdapter.setListView(recordList);
-            if (!((AbsRecorderActivity) getActivity()).isFistTime()) {
-                RecordTool.e(TAG, "onActivityCreated:+refreshRecordList");
-                refreshRecordList();
-            }
-            recordList.setOnItemClickListener(getRecordItemClickListener());
-            recordList.setOnItemLongClickListener(longClickListener);
-            updateName.setOnClickListener(getUpdateRecordListener());
-            recordVF.setInAnimation(getActivity(), android.R.anim.fade_in);
-            recordVF.setOutAnimation(getActivity(), android.R.anim.fade_out);
+            v_editName.setOnClickListener(mEditNameOnClickListener);
+            mViewFlipper.setInAnimation(getActivity(), android.R.anim.fade_in);
+            mViewFlipper.setOutAnimation(getActivity(), android.R.anim.fade_out);
 
-            leBottomWidget = (LeBottomWidget) getActivity().findViewById(R.id.bottom_widget);
             initBottomWidget();
         }
 
         super.onActivityCreated(savedInstanceState);
     }
 
+    private void initLeListView() {
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mLeListView.getLayoutParams();
+        params.topMargin = mActionBarHeight;
+        mLeListView.setLayoutParams(params);
+
+        mLeListView.setAdapter(mRecorderAdapter);
+        mRecorderAdapter.setListView(mLeListView);
+
+        mLeListView.setSwipeListViewListener(mSwipeListViewListener);
+        mLeListView.setOnItemClickListener(mItemClickListener);
+        mLeListView.setOnItemLongClickListener(mLongClickListener);
+    }
+
+    private SwipeListViewListener mSwipeListViewListener = new BaseSwipeListViewListener(){
+
+        private RecordEntry entry;
+        private boolean isDismiss;
+
+        @Override
+        public int onChangeSwipeMode(int position) {
+            if (mRecorderAdapter.isActionMode()) {
+                return SwipeListViewHelper.SWIPE_MODE_NONE;
+            }
+            // the item that type is calling record.
+            if (mRecorderAdapter.isHasCallRecord() && !mRecorderAdapter.isShowCallRecord() && position == 0) {
+                return SwipeListViewHelper.SWIPE_MODE_NONE;
+            }
+            return super.onChangeSwipeMode(position);
+        }
+
+        @Override
+        public void onDismiss(int[] reverseSortedPositions) {
+            List<RecordEntry> recordList = mRecorderAdapter.getRecordList();
+            // whether offset is 1 when there has item of calling record, or offset is 0.
+            int offset = 0;
+            if (mRecorderAdapter.isHasCallRecord() && !mRecorderAdapter.isShowCallRecord()) {
+                offset = 1;
+            }
+            int position = reverseSortedPositions[0] - offset;
+
+            entry = recordList.get(position);
+            isDismiss = true;
+        }
+
+        @Override
+        public void onClosed(int position, boolean fromRight) {
+            if (isDismiss) {
+                runDeleteAsyncTask(entry);
+                isDismiss = false;
+            }
+        }
+    };
+
+    private void runDeleteAsyncTask(RecordEntry entry) {
+        if (mAsyncTasks == null) {
+            // put async task, cancel it on onDestroy method
+            mAsyncTasks = new HashMap<>();
+        }
+
+        if (mAsyncTasks.containsKey(entry.hashCode())) {
+            return;
+        }
+
+        // remove record from disk and database
+        mAsyncDeleteTask = new AsyncDeleteTask(entry);
+        mAsyncTasks.put(entry.hashCode(), mAsyncDeleteTask);
+        mAsyncDeleteTask.execute();
+    }
+
+    private OnItemClickListener mItemClickListener = new OnItemClickListener() {
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+            if (mRecorderAdapter.isActionMode()) {
+                boolean flag = mSelectedList.get(position);
+                mSelectedList.set(position, !flag);
+                mRecorderAdapter.notifyDataSetChanged();
+                changeSelectStatus();
+                mActionMode.invalidate();
+            } else {
+
+                if (mRecorderAdapter.getItemViewType(position) == RecorderAdapter.ITEM_TYPE_CALL_SET) {
+                    mRecorderAdapter.setShowCallRecord(true);
+                    mRecorderAdapter.setRecordList(RecordDb.getInstance(getActivity()).getCallRecords());
+                    mRecorderAdapter.notifyDataSetChanged();
+                    ActionBarTool.changeActionBar(getActivity(), true);
+                    getActivity().invalidateOptionsMenu();
+                    updateActionBarAndBottomLayout();
+                    return;
+                }
+
+                if (!RecordTool.canClick(500)) {
+                    return;
+                }
+
+                Intent intent = new Intent(getActivity(), PlayRecordActivity.class);
+                intent.putExtra(PlayRecordActivity.RECORD_ENTRY, (RecordEntry) (parent.getItemAtPosition(position)));
+                getActivity().startActivity(intent);
+                getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+            }
+
+        }
+    };
+
+    private OnItemLongClickListener mLongClickListener = new OnItemLongClickListener() {
+
+        @Override
+        public boolean onItemLongClick(AdapterView<?> parent, View view,
+                                       int position, long id) {
+            if (mRecorderAdapter.isActionMode()) {
+                return false;
+            }
+
+            getActivity().startActionMode(mCallback);
+
+            // record which item is clicked
+            boolean flag = mSelectedList.get(position);
+            mSelectedList.set(position, !flag);
+            mRecorderAdapter.notifyDataSetChanged();
+
+            enterActionMode();
+            return true;
+        }
+
+    };
+
+    private OnClickListener mEditNameOnClickListener = new OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            final EditRecordNameDialog mdialog = new EditRecordNameDialog(getActivity());
+            mdialog.setPositiveButton(new Dialog.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (FileTool.acceptNewFileName(mdialog.getText())) {
+                        if (RecordTool.canSave(getActivity(), mdialog.getText())) {
+                            RecordApp.getInstance().setRecordName(mdialog.getText());
+                        }
+                    } else {
+                        LeTopSlideToastHelper.getToastHelper(getActivity(), LeTopSlideToastHelper.LENGTH_SHORT,
+                                getResources().getString(R.string.create_file_fail), null,
+                                null, null,
+                                null).show();
+                    }
+                }
+            });
+            mdialog.setNegativeButton(new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            mdialog.show(null, false);
+        }
+    };
+
     private void initBottomWidget() {
+        leBottomWidget = (LeBottomWidget) getActivity().findViewById(R.id.bottom_widget);
         if (leBottomWidget != null) {
             leBottomWidget.setModeAndTabCount(LeBottomWidget.MODE_ICON_ONLY, 3);
             leBottomWidget.addTab(0, com.android.internal.R.drawable.le_bottom_btn_icon_share_white, getResources().getString(R.string.share));
@@ -269,35 +390,28 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                                 @Override
                                 public void onClick(View v) {
                                     for (int i = 0; i < selecteds.length; i++) {
-                                        int type = recordedAdapter.getItemViewType(selecteds[i]);
+                                        int type = mRecorderAdapter.getItemViewType(selecteds[i]);
+                                        RecordDb db = RecordDb.getInstance(getActivity());
+
                                         if (type == RecorderAdapter.ITEM_TYPE_CALL_SET) {
-                                            RecordDb db = RecordDb.getInstance(getActivity());
                                             List<RecordEntry> callRecords = db.getCallRecords();
-                                            if (callRecords != null && callRecords.size() > 0) {
-                                                for (RecordEntry call : callRecords) {
-                                                    String path = call.getFilePath();
-                                                    File delFile = new File(path);
-                                                    delFile.delete();
-                                                    FileSyncContentProvider.removeImageFromLib(getActivity(),
-                                                            path);
-                                                }
-                                            }
+                                            RecordEntry entry = callRecords.get(selecteds[i]);
+                                            runDeleteAsyncTask(entry);
                                         } else {
-                                            String path = recordedAdapter.getItem(selecteds[i]).getFilePath();
-                                            File delFile = new File(path);
-                                            delFile.delete();
-                                            FileSyncContentProvider.removeImageFromLib(getActivity(),
-                                                    path);
+                                            List<RecordEntry> normalRecords = db.getNormalRecords();
+                                            RecordEntry entry = normalRecords.get(selecteds[i]);
+                                            runDeleteAsyncTask(entry);
                                         }
+
                                     }
-                                    refreshRecordList();
-                                    updateSherlockUI();
-                                    if (recordedAdapter.isActionMode()) {
-                                        recordedAdapter.setActionMode(true);
-                                    }
-                                    if (mActionMode != null) {
-                                        mActionMode.invalidate();
-                                    }
+//                                    refreshRecordList();
+//                                    updateSherlockUI();
+//                                    if (mRecorderAdapter.isActionMode()) {
+//                                        mRecorderAdapter.setActionMode(true);
+//                                    }
+//                                    if (mActionMode != null) {
+//                                        mActionMode.invalidate();
+//                                    }
                                     mBottomSheet.disappear();
                                 }
                             };
@@ -323,7 +437,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                             break;
                         case 2:
 
-                            int type = recordedAdapter.getItemViewType(getSelectedIndexs()[0]);
+                            int type = mRecorderAdapter.getItemViewType(getSelectedIndexs()[0]);
                             if (type == RecorderAdapter.ITEM_TYPE_CALL_SET) {
                                 LeTopSlideToastHelper.getToastHelper(getActivity(), LeTopSlideToastHelper.LENGTH_SHORT,
                                         getResources().getString(R.string.app_keyword_call_record), null,
@@ -371,7 +485,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                                 }
                             });
 
-                            mDialog.show(recordedAdapter.getItem(getSelectedIndexs()[0]), true);
+                            mDialog.show(mRecorderAdapter.getItem(getSelectedIndexs()[0]), true);
 
                             break;
                         default:
@@ -387,50 +501,45 @@ public class RecordedFragment extends Fragment implements OnClickListener {
         }
     }
 
-    private OnItemLongClickListener longClickListener = new OnItemLongClickListener() {
-
-        @Override
-        public boolean onItemLongClick(AdapterView<?> parent, View view,
-                                       int position, long id) {
-            RecordTool.e(TAG, "longClickListener");
-            if (recordedAdapter.isActionMode())
-                return false;
-            initSelectItem();
-//            TransitionManager.beginDelayedTransition(parent,ActionBarTool.autoTransition);//引起长按listView后无法多选
-            getActivity().startActionMode(mCallback);
-            RecordApp.getInstance().setActionMode(recordedAdapter.isActionMode());
-            if (recordedAdapter.isActionMode()) {
-                boolean flag = recordSelectFlag.get(position);
-                recordSelectFlag.set(position, !flag);
-                ((LeCheckBox) view.findViewById(R.id.item_select)).setChecked(!flag, true);
-                changeSelectStatus();
-                updateSherlockUI();
-                mActionMode.invalidate();
-            }
-            return true;
+    @Override
+    public void onResume() {
+        if (!isShowCallingRecordUI() && !mRecorderAdapter.isActionMode()) {
+            tv_recordTime.setText(RecordTool.recordTimeFormat(RecorderService.recordRealDuring));
+            refreshRecordList();
         }
-    };
+        super.onResume();
+    }
+
+    @Override
+    public void onDestroy() {
+        cancelNotRunTasks();
+        super.onDestroy();
+    }
+
+    private void cancelNotRunTasks() {
+        // cancel mAsyncDeleteTask
+        if (mAsyncTasks != null && mAsyncTasks.size() > 0) {
+            for (Integer id : mAsyncTasks.keySet()) {
+                mAsyncTasks.get(id).cancel(true);
+            }
+            mAsyncTasks.clear();
+        }
+    }
 
     private ActionMode.Callback mCallback = new ActionMode.Callback() {
 
         @Override
         public boolean onPrepareActionMode(ActionMode arg0, Menu arg1) {
-            RecordTool.e(TAG, "onPrepareActionMode");
             String itemXliff = getActivity().getResources().getString(R.string.select_item_xliff);
             mActionMode.setTitle(getSelectedCount() == 0 ? getActivity().getResources().getString(R.string.please_select_reoord) : String.format(itemXliff, getSelectedCount()));
 
-            if (recordedAdapter.isShowCallRecord()) {
-//	          backView.setVisibility(View.VISIBLE);
-            } else {
-//	          backView.setVisibility(View.GONE);
-            }
             MediaRecorderState state = RecordApp.getInstance().getmState();
             if (MediaRecorderState.RECORDING == state || MediaRecorderState.PAUSED == state || MediaRecorderState.STOPPED == state) {
                 actionBar.hide();
             } else {
                 actionBar.show();
-                if (recordedAdapter.isActionMode()) {
-                    if (getSelectedCount() != recordedAdapter.getCount()) {
+                if (mRecorderAdapter.isActionMode()) {
+                    if (getSelectedCount() != mRecorderAdapter.getCount()) {
                         selectAllMenu.setVisible(true);
                         selectNoneMenu.setVisible(false);
                     } else {
@@ -438,21 +547,19 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                         selectNoneMenu.setVisible(true);
                     }
                 } else {
-                    if (recordedAdapter.getCount() == 0 || (recordedAdapter.getCount() == 1
-                            && recordedAdapter.getItemViewType(0) == RecorderAdapter.ITEM_TYPE_CALL_SET)) {
+                    if (mRecorderAdapter.getCount() == 0 || (mRecorderAdapter.getCount() == 1
+                            && mRecorderAdapter.getItemViewType(0) == RecorderAdapter.ITEM_TYPE_CALL_SET)) {
                         getActivity().findViewById(R.id.bottom_widget).setVisibility(View.GONE);
                         getActivity().findViewById(R.id.record_control_layout).setVisibility(View.VISIBLE);
                     }
                 }
             }
-            return false;
+            return true;
         }
 
         @Override
         public void onDestroyActionMode(ActionMode arg0) {
-            cancelEdit();
-            RecordApp.getInstance().setActionMode(false);
-            mActionMode = null;
+            exitActionMode();
         }
 
         @Override
@@ -469,10 +576,10 @@ public class RecordedFragment extends Fragment implements OnClickListener {
         public boolean onActionItemClicked(ActionMode arg0, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.select_all:
-                    recordedAdapter.selectAllFlag();
+                    mRecorderAdapter.selectAllFlag();
                     break;
                 case R.id.select_none:
-                    recordedAdapter.clearSelectFlag();
+                    mRecorderAdapter.clearSelectFlag();
                     break;
                 default:
                     break;
@@ -482,124 +589,174 @@ public class RecordedFragment extends Fragment implements OnClickListener {
         }
     };
 
-    private OnClickListener getUpdateRecordListener() {
-        return new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final EditRecordNameDialog mdialog = new EditRecordNameDialog(getActivity());
-                mdialog.setPositiveButton(new Dialog.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (FileTool.acceptNewFileName(mdialog.getText())) {
-                            if (RecordTool.canSave(getActivity(), mdialog.getText())) {
-                                RecordApp.getInstance().setRecordName(mdialog.getText());
-                            }
-                        } else {
-                            LeTopSlideToastHelper.getToastHelper(getActivity(), LeTopSlideToastHelper.LENGTH_SHORT,
-                                    getResources().getString(R.string.create_file_fail), null,
-                                    null, null,
-                                    null).show();
-                        }
-                    }
-                });
-                mdialog.setNegativeButton(new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
+    private void enterActionMode() {
+        RecordApp.getInstance().setActionMode(true);
+        TransitionManager.beginDelayedTransition(mLeListView, createEnterTransition());
+        initSelectItem();
+        changeSelectStatus();
+        mActionMode.invalidate();
+    }
 
-                    }
-                });
-                mdialog.show(null, false);
+    private void exitActionMode() {
+        if (!mIsDeletingAnimRunning) {
+            RecordApp.getInstance().setActionMode(false);
+            mRecorderAdapter.setActionMode(false);
+            // exit action mode anim
+            TransitionManager.beginDelayedTransition(mLeListView, createExitTransition());
+            getActivity().invalidateOptionsMenu();
+            updateActionBarAndBottomLayout();
+            updateSherlockUI();
+            mRecorderAdapter.clearSelectFlag();
+            mActionMode = null;
+        }
+    }
+
+    private Transition createEnterTransition() {
+        Transition transitionEnterSelectMode = mInflater
+                .inflateTransition(com.android.internal.R.transition.listview_item_add_checkbox);
+        return transitionEnterSelectMode;
+    }
+
+    private Transition createExitTransition() {
+        Transition transitionExitSelectMode = mInflater
+                .inflateTransition(com.android.internal.R.transition.listview_item_delete_checkbox);
+        return transitionExitSelectMode;
+    }
+
+    private TransitionSet createDeleteItemsBottomTransition() {
+        TransitionSet transitionDeleteItemsBottom = (TransitionSet)mInflater
+                .inflateTransition(com.android.internal.R.transition.listview_delete_items_with_checkbox_slideup);
+
+        final Transition transitionShowEmptyView = mInflater
+                .inflateTransition(com.android.internal.R.transition.listview_show_empty_view);
+        transitionShowEmptyView.addTarget(v_pauseMask);
+
+        Transition.TransitionListener delete_listener = new Transition.TransitionListener() {
+            @Override
+            public void onTransitionStart(Transition transition) {
+                mIsDeletingAnimRunning = true; // 正在做删除动画
+                if (mActionMode != null) {
+                    mActionMode.invalidate();
+                }
             }
-        };
-    }
 
-    private void cancelEdit() {
-        refreshRecordList();
-        recordedAdapter.setActionMode(false);
-        getActivity().invalidateOptionsMenu();
-        updateActionBarAndBottomLayout();
-        updateSherlockUI();
-    }
-
-    private OnClickListener getSelectAllListener() {
-        return new OnClickListener() {
             @Override
-            public void onClick(View v) {
-                if (getSelectedCount() == recordedAdapter.getCount()) {
-                    //TODO
-                    recordedAdapter.clearSelectFlag();
+            public void onTransitionResume(Transition transition) {
+            }
+
+            @Override
+            public void onTransitionPause(Transition transition) {
+            }
+
+            @Override
+            public void onTransitionEnd(Transition transition) {
+                mIsDeletingAnimRunning = false; // 删除动画已经做完
+                if (mLeListView.getCount() - mLeListView.getFooterViewsCount() - mLeListView.getHeaderViewsCount() == 0) {
+                    TransitionManager.beginDelayedTransition(mLeListView, transitionShowEmptyView);
+                    mLeListView.setEmptyView(v_pauseMask);
                 } else {
-                    recordedAdapter.selectAllFlag();
+                    mLeListView.invalidate();
+                }
+            }
+
+            @Override
+            public void onTransitionCancel(Transition transition) {
+                mIsDeletingAnimRunning = false;
+                if (mLeListView.getCount() - mLeListView.getFooterViewsCount() - mLeListView.getHeaderViewsCount() == 0) {
+                    TransitionManager.beginDelayedTransition(mLeListView, transitionShowEmptyView);
+                    mLeListView.setEmptyView(v_pauseMask);
+                } else {
+                    mLeListView.invalidate();
                 }
             }
         };
+        // 给删除动画设置监听器
+        transitionDeleteItemsBottom.addListener(delete_listener);
+
+        // 将删除动画与 ListView 中的id 联系起来
+        setListViewItemIdToTransition(transitionDeleteItemsBottom);
+        return transitionDeleteItemsBottom;
     }
 
-    private OnClickListener getSelectModeListener() {
-        return new OnClickListener() {
+    private TransitionSet createDeleteItemsTopTransition() {
+        TransitionSet transitionDeleteItemsTop = (TransitionSet)mInflater
+                .inflateTransition(com.android.internal.R.transition.listview_delete_items_with_checkbox_slidedown);
+
+        final Transition transitionShowEmptyView = mInflater
+                .inflateTransition(com.android.internal.R.transition.listview_show_empty_view);
+        transitionShowEmptyView.addTarget(v_pauseMask);
+
+        Transition.TransitionListener delete_listener = new Transition.TransitionListener() {
+            @Override
+            public void onTransitionStart(Transition transition) {
+                mIsDeletingAnimRunning = true; // 正在做删除动画
+                if (mActionMode != null) {
+                    mActionMode.invalidate();
+                }
+                mLeListView.invalidate();
+            }
 
             @Override
-            public void onClick(View arg0) {
-                initSelectItem();
+            public void onTransitionResume(Transition transition) {
+            }
+
+            @Override
+            public void onTransitionPause(Transition transition) {
+            }
+
+            @Override
+            public void onTransitionEnd(Transition transition) {
+                mIsDeletingAnimRunning = false; // 删除动画已经做完
+                if (mLeListView.getCount() - mLeListView.getFooterViewsCount() - mLeListView.getHeaderViewsCount() == 0) {
+                    TransitionManager.beginDelayedTransition(mLeListView, transitionShowEmptyView);
+                    mLeListView.setEmptyView(v_pauseMask);
+                } else {
+                    mLeListView.invalidate();
+                }
+            }
+
+            @Override
+            public void onTransitionCancel(Transition transition) {
+                mIsDeletingAnimRunning = false;
+                if (mLeListView.getCount() - mLeListView.getFooterViewsCount() - mLeListView.getHeaderViewsCount() == 0) {
+                    TransitionManager.beginDelayedTransition(mLeListView, transitionShowEmptyView);
+                    mLeListView.setEmptyView(v_pauseMask);
+                } else {
+                    mLeListView.invalidate();
+                }
             }
         };
+        // 给删除动画设置监听器
+        transitionDeleteItemsTop.addListener(delete_listener);
+
+        // 将删除动画与 ListView 中的id 联系起来
+        setListViewItemIdToTransition(transitionDeleteItemsTop);
+        return transitionDeleteItemsTop;
+    }
+
+    private void setListViewItemIdToTransition(TransitionSet transitionSet) {
+        if (transitionSet == null)
+            return;
+
+        transitionSet.getTransitionAt(0).addTarget(R.id.back);
+        TransitionSet temp = (TransitionSet) transitionSet.getTransitionAt(1);
+        if (temp != null) {
+            temp.getTransitionAt(0).addTarget(R.id.item_select);
+        }
     }
 
     private void initSelectItem() {
-        RecordTool.e(TAG, "initSelectItem");
         getActivity().findViewById(R.id.bottom_widget).setVisibility(View.VISIBLE);
         getActivity().findViewById(R.id.record_control_layout).setVisibility(View.GONE);
-        recordedAdapter.setActionMode(true);
-        recordSelectFlag = recordedAdapter.getRecordSelectFlag();
+        mRecorderAdapter.setActionMode(true);
+        mSelectedList = mRecorderAdapter.getRecordSelectFlag();
         getActivity().invalidateOptionsMenu();
         updateSherlockUI();
     }
 
     public void changeSelectStatus() {
-        RecordTool.e(TAG, "changeSelectStatus");
         getActivity().invalidateOptionsMenu();
         updateSherlockUI();
-    }
-
-    private OnItemClickListener getRecordItemClickListener() {
-        return new OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                if (recordedAdapter.isActionMode()) {
-                    boolean flag = recordSelectFlag.get(position);
-                    recordSelectFlag.set(position, !flag);
-                    ((LeCheckBox) view.findViewById(R.id.item_select)).setChecked(!flag, true);
-                    recordedAdapter.notifyDataSetChanged();
-                    changeSelectStatus();
-//					updateSherlockUI();
-                    mActionMode.invalidate();
-                } else {
-
-                    if (recordedAdapter.getItemViewType(position) == RecorderAdapter.ITEM_TYPE_CALL_SET) {
-                        recordedAdapter.setShowCallRecord(true);
-                        recordedAdapter.setRecordList(RecordDb.getInstance(getActivity()).getCallRecords());
-                        RecordTool.e("rename", "rename 1");
-                        recordedAdapter.notifyDataSetChanged();
-                        ActionBarTool.changeActionBar(getActivity(), true);
-                        getActivity().invalidateOptionsMenu();
-                        updateActionBarAndBottomLayout();
-                        return;
-                    }
-
-                    if (!RecordTool.canClick(500)) {
-                        return;
-                    }
-
-                    RecordTool.e("rename", "rename 2");
-                    Intent intent = new Intent(getActivity(), PlayRecordActivity.class);
-                    intent.putExtra(PlayRecordActivity.RECORD_ENTRY, (RecordEntry) (parent.getItemAtPosition(position)));
-                    getActivity().startActivity(intent);
-                    getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-                }
-            }
-        };
     }
 
     @Override
@@ -615,9 +772,8 @@ public class RecordedFragment extends Fragment implements OnClickListener {
     }
 
     protected void updateSherlockUI() {
-        RecordTool.e(TAG, "updateSherlockUI");
         int selectCount = getSelectedCount();
-        if (recordedAdapter.isActionMode()) {
+        if (mRecorderAdapter.isActionMode()) {
 
             leBottomWidget.setEnable(0, selectCount > 0);
             leBottomWidget.setEnable(1, selectCount > 0);
@@ -627,7 +783,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
             getActivity().findViewById(R.id.record_control_layout).setVisibility(View.GONE);
         } else {
             getActivity().findViewById(R.id.bottom_widget).setVisibility(View.GONE);
-            if (recordedAdapter.isShowCallRecord()) {
+            if (mRecorderAdapter.isShowCallRecord()) {
                 getActivity().findViewById(R.id.record_control_layout).setVisibility(View.GONE);
             } else {
                 getActivity().findViewById(R.id.record_control_layout).setVisibility(View.VISIBLE);
@@ -636,11 +792,10 @@ public class RecordedFragment extends Fragment implements OnClickListener {
     }
 
     protected void updateActionBarAndBottomLayout() {
-        RecordTool.e(TAG, "updateActionBarAndBottomLayout");
-        if (recordedAdapter.isShowCallRecord()) {
+        if (mRecorderAdapter.isShowCallRecord()) {
             getActivity().findViewById(R.id.record_control_layout).setVisibility(View.GONE);
         } else {
-            if (recordedAdapter.isActionMode()) {
+            if (mRecorderAdapter.isActionMode()) {
                 getActivity().findViewById(R.id.record_control_layout).setVisibility(View.GONE);
             } else {
                 getActivity().findViewById(R.id.record_control_layout).setVisibility(View.VISIBLE);
@@ -648,90 +803,66 @@ public class RecordedFragment extends Fragment implements OnClickListener {
         }
     }
 
-    protected void setEnabled(View view, boolean enable) {
-        if (view instanceof ViewGroup) {
-            view.setEnabled(enable);
-            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
-                setEnabled(((ViewGroup) view).getChildAt(i), enable);
-            }
-        } else {
-            view.setEnabled(enable);
-        }
-    }
-
     public void refreshRecordList() {
-        RecordTool.e(TAG, "refreshRecordList:isCallRecordUI():" + isCallRecordUI());
-        if (isCallRecordUI()) {
+        if (isShowCallingRecordUI() && mIsDeletingAnimRunning) {
             return;
         }
 
         MediaRecorderState state = RecordTool.getRecordState(getActivity());
 
         if (MediaRecorderState.RECORDING == state || MediaRecorderState.PAUSED == state /*|| MediaRecorderState.STOPPED == state*/) {
-            if (recordVF.getDisplayedChild() != PAGE_SHOW_RECORDING)
-                recordVF.setDisplayedChild(PAGE_SHOW_RECORDING);
+            if (mViewFlipper.getDisplayedChild() != PAGE_SHOW_RECORDING)
+                mViewFlipper.setDisplayedChild(PAGE_SHOW_RECORDING);
 
             if (MediaRecorderState.PAUSED == state) {
-                ObjectAnimator animator = ObjectAnimator.ofFloat(recordViewMask, "alpha", 0, 1);
+                ObjectAnimator animator = ObjectAnimator.ofFloat(v_pauseMask, "alpha", 0, 1);
                 animator.setDuration(400);
 
                 animator.addListener(new Animator.AnimatorListener() {
                     @Override
                     public void onAnimationStart(Animator animation) {
-                        recordViewMask.setVisibility(View.VISIBLE);
+                        v_pauseMask.setVisibility(View.VISIBLE);
                         StatusBarTool.updateStausBar(getActivity(), true);
-                        recordViewMask.setOnClickListener(new OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-
-                            }
-                        });
                     }
 
                     @Override
-                    public void onAnimationEnd(Animator animation) {
-
-                    }
+                    public void onAnimationEnd(Animator animation) {}
 
                     @Override
-                    public void onAnimationCancel(Animator animation) {
-
-                    }
+                    public void onAnimationCancel(Animator animation) {}
 
                     @Override
-                    public void onAnimationRepeat(Animator animation) {
-
-                    }
+                    public void onAnimationRepeat(Animator animation) {}
                 });
+
                 animator.start();
+
             } else {
-                final ObjectAnimator animator = ObjectAnimator.ofFloat(recordViewMask, "alpha", 1, 0);
+                final ObjectAnimator animator = ObjectAnimator.ofFloat(v_pauseMask, "alpha", 1, 0);
                 animator.setDuration(400);
                 StatusBarTool.updateStausBar(getActivity(), false);
                 animator.addListener(new Animator.AnimatorListener() {
                     @Override
                     public void onAnimationStart(Animator animation) {
-                        if (recordingView.getVisibility() == View.GONE) {
+                        if (mRecordingView.getVisibility() == View.GONE) {
                             animator.cancel();
                         }
                     }
 
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        recordViewMask.setVisibility(View.GONE);
+                        v_pauseMask.setVisibility(View.GONE);
                     }
 
                     @Override
-                    public void onAnimationCancel(Animator animation) {
-
-                    }
+                    public void onAnimationCancel(Animator animation) {}
 
                     @Override
-                    public void onAnimationRepeat(Animator animation) {
-
-                    }
+                    public void onAnimationRepeat(Animator animation) {}
                 });
+
                 animator.start();
+
             }
 
         } else {
@@ -739,13 +870,13 @@ public class RecordedFragment extends Fragment implements OnClickListener {
             boolean isShowList = false;
             RecordDb db = RecordDb.getInstance(getActivity());
             db.syncDBFromSdCard(getActivity());
-            if (recordedAdapter.isShowCallRecord()) {
+            if (mRecorderAdapter.isShowCallRecord()) {
                 if (db.getCallRecordCounts() > 0) {
-                    recordedAdapter.setRecordList(db.getCallRecords());
+                    mRecorderAdapter.setRecordList(db.getCallRecords());
                     isShowList = true;
                 } else {
-                    recordedAdapter.setShowCallRecord(false);
-                    recordedAdapter.setRecordList(db.getNormalRecords());
+                    mRecorderAdapter.setShowCallRecord(false);
+                    mRecorderAdapter.setRecordList(db.getNormalRecords());
                     if (db.getNormalRecordCounts() > 0) {
                         isShowList = true;
                     } else {
@@ -753,7 +884,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                     }
                 }
             } else {
-                recordedAdapter.setRecordList(db.getNormalRecords());
+                mRecorderAdapter.setRecordList(db.getNormalRecords());
                 if (db.getNormalRecordCounts() + db.getCallRecordCounts() > 0) {
                     isShowList = true;
                 } else {
@@ -761,34 +892,34 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                 }
             }
             if (isShowList) {
-                recordedAdapter.notifyDataSetChanged();
-                if (recordVF != null && recordVF.getDisplayedChild() != PAGE_SHOW_RECORD_LIST)
-                    recordVF.setDisplayedChild(PAGE_SHOW_RECORD_LIST);
+                mRecorderAdapter.notifyDataSetChanged();
+                if (mViewFlipper != null && mViewFlipper.getDisplayedChild() != PAGE_SHOW_RECORD_LIST)
+                    mViewFlipper.setDisplayedChild(PAGE_SHOW_RECORD_LIST);
             } else {
-                if (recordVF != null && recordVF.getDisplayedChild() != PAGE_NO_RECORD) {
-                    recordVF.setDisplayedChild(PAGE_NO_RECORD);
+                if (mViewFlipper != null && mViewFlipper.getDisplayedChild() != PAGE_NO_RECORD) {
+                    mViewFlipper.setDisplayedChild(PAGE_NO_RECORD);
                     if (mActionMode != null) {
                         mActionMode.finish();
                     }
                 }
 
             }
-            recordedAdapter.setHasCall(db.getCallRecordCounts() > 0);
+            mRecorderAdapter.setHasCall(db.getCallRecordCounts() > 0);
         }
         updateActionBarAndBottomLayout();
     }
 
     public boolean onBackPressed() {
-        if (recordedAdapter.isActionMode()) {
-            cancelEdit();
+        if (mRecorderAdapter.isActionMode()) {
+            exitActionMode();
             return true;
         }
 
-        if (recordedAdapter.isShowCallRecord()) {
-            recordedAdapter.setActionMode(false);
-            recordedAdapter.setShowCallRecord(false);
-            recordedAdapter.setRecordList(RecordDb.getInstance(getActivity()).getNormalRecords());
-            recordedAdapter.notifyDataSetChanged();
+        if (mRecorderAdapter.isShowCallRecord()) {
+            mRecorderAdapter.setActionMode(false);
+            mRecorderAdapter.setShowCallRecord(false);
+            mRecorderAdapter.setRecordList(RecordDb.getInstance(getActivity()).getNormalRecords());
+            mRecorderAdapter.notifyDataSetChanged();
             ActionBarTool.changeActionBar(getActivity(), false);
             updateSherlockUI();
             updateActionBarAndBottomLayout();
@@ -799,18 +930,13 @@ public class RecordedFragment extends Fragment implements OnClickListener {
         return false;
     }
 
-    @Override
-    public void onClick(View v) {
-
-    }
-
     public String[] getSelectedPaths() {
         ArrayList<String> path = new ArrayList<String>();
         RecordTool.loge(this.getClass().getSimpleName(), "count:" + getSelectedCount());
         int cursor = 0;
         int[] selecteds = getSelectedIndexs();
         for (int i = 0; i < selecteds.length; i++) {
-            int type = recordedAdapter.getItemViewType(selecteds[i]);
+            int type = mRecorderAdapter.getItemViewType(selecteds[i]);
             if (type == RecorderAdapter.ITEM_TYPE_CALL_SET) {
                 RecordDb db = RecordDb.getInstance(getActivity());
                 List<RecordEntry> callRecords = db.getCallRecords();
@@ -820,7 +946,7 @@ public class RecordedFragment extends Fragment implements OnClickListener {
                     }
                 }
             } else {
-                path.add(recordedAdapter.getItem(selecteds[i]).getFilePath());
+                path.add(mRecorderAdapter.getItem(selecteds[i]).getFilePath());
             }
         }
         String[] pathArr = new String[path.size()];
@@ -830,8 +956,8 @@ public class RecordedFragment extends Fragment implements OnClickListener {
     public int[] getSelectedIndexs() {
         int[] flagIndexs = new int[getSelectedCount()];
         int cursor = 0;
-        for (int i = 0; i < recordSelectFlag.size(); i++) {
-            if (recordSelectFlag.get(i)) {
+        for (int i = 0; i < mSelectedList.size(); i++) {
+            if (mSelectedList.get(i)) {
                 flagIndexs[cursor++] = i;
             }
         }
@@ -840,13 +966,13 @@ public class RecordedFragment extends Fragment implements OnClickListener {
     }
 
     public int getSelectedCount() {
-        recordSelectFlag = recordedAdapter.getRecordSelectFlag();
-        if (recordSelectFlag == null) {
+        mSelectedList = mRecorderAdapter.getRecordSelectFlag();
+        if (mSelectedList == null) {
             return 0;
         }
 
         int count = 0;
-        for (boolean flag : recordSelectFlag) {
+        for (boolean flag : mSelectedList) {
             if (flag)
                 count++;
         }
@@ -854,11 +980,58 @@ public class RecordedFragment extends Fragment implements OnClickListener {
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        if (RecordApp.isFromWidget) {
-            Recorder.getInstance().checkRecorderState();
-            RecordApp.isFromWidget = false;
+    public void onClick(View v) {
+    }
+
+    private class AsyncDeleteTask extends AsyncTask<Void, Void, Integer> {
+
+        private final int DELETE_SUCCESS = 0;
+        private final int DELETE_FAILURE = -1;
+
+        private final RecordEntry entry;
+
+        public AsyncDeleteTask(RecordEntry entry) {
+            super();
+            this.entry = entry;
+        }
+
+        @Override
+        protected Integer doInBackground(Void... params) {
+            String filePath = entry.getFilePath();
+            File delFile = new File(filePath);
+            if (delFile.delete()) {
+                FileSyncContentProvider.removeImageFromLib(getActivity(),
+                        filePath);
+                RecordDb.getInstance(getActivity()).syncDBFromSdCard(getActivity());
+                return DELETE_SUCCESS;
+            }
+            return DELETE_SUCCESS;
+        }
+
+        @Override
+        protected void onPostExecute(Integer integer) {
+            switch (integer) {
+                case DELETE_SUCCESS:
+                    break;
+                case DELETE_FAILURE:
+                    break;
+            }
+            executeAnim();
+            mAsyncTasks.remove(entry.hashCode());
+        }
+
+        private void executeAnim() {
+            // 还有任务没有完成，不做更新的操作
+            if (mAsyncTasks.size() != 1) {
+                return;
+            }
+
+            if (mLeListView.getLastVisiblePosition() == mLeListView.getCount() - 1) {
+                TransitionManager.beginDelayedTransition(mLeListView, createDeleteItemsTopTransition());
+            } else {
+                TransitionManager.beginDelayedTransition(mLeListView, createDeleteItemsBottomTransition());
+            }
+            refreshRecordList();
         }
     }
 }
